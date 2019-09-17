@@ -2,15 +2,17 @@
 $large-breakpoint: 64em !default;
 $medium-breakpoint: 42em !default;
 
+$main-background-color: #000000 !default;  //#282C34 atom dark
+
 // Headers
 $header-heading-color: #fff !default; // f
-$header-bg-color: #000000 !default;
+$header-bg-color: $main-background-color !default;
 $header-bg-color-secondary: #155799 !default;
 
 // Text
 $section-headings-color: #fff !default; //000000
-$body-text-color: #000000 !default; //606c71
-$body-link-color: #000000 !default; //1e6bb8 post-link
+$body-text-color: #fff !default; //606c71
+$body-link-color: #1e6bb8 !default; //1e6bb8
 $blockquote-text-color: #819198 !default;
 
 // Code
