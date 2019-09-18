@@ -2,4 +2,4 @@
 layout: home
 ---
 
-Hi, I am Thang Le. A data scientist. A passionate ML learner. I created this blog to summarize what I've learned. Welcome to my blog <3
+Hi everyone. I am Thang Le, a data scientist, a passionate ML learner also. I create this blog to summarize what I have learned. Welcome to my blog <3<3<3

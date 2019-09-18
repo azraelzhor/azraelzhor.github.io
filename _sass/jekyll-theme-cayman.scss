@@ -162,6 +162,25 @@ a {
   }
 }
 
+.project-date {
+  margin-bottom: 0rem;
+  font-weight: normal;
+  opacity: 0.7;
+  font-style: italic;
+
+  @include large {
+    font-size: 1.0rem;
+  }
+
+  @include medium {
+    font-size: 0.95rem;
+  }
+
+  @include small {
+    font-size: 0.75rem;
+  }
+}
+
 .main-content {
   word-wrap: break-word;
 
@@ -357,6 +376,8 @@ a {
   padding-top: 2rem;
   margin-top: 2rem;
   // border-top: solid 1px $hr-border-color;
+  // position: absolute;
+  // bottom: 0;
 
   @include large {
     font-size: 1rem;
@@ -368,6 +389,60 @@ a {
 
   @include small {
     font-size: 0.9rem;
+  }
+
+  .my-span-icon {
+
+    a {
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: none;
+    }
+
+    @include large {
+      padding: 0px 5px 0px 5px;
+    }
+
+    @include medium {
+      //font-size: 1rem;
+      padding: 0px 10px 10px 10px;
+    }
+
+    @include small {
+      padding: 0px 10px 10px 10px;
+    }
+  }
+
+  .my-svg-icon {
+
+    color: $body-text-color; // IE8
+    fill: $body-text-color; // IE8
+    width: 24px;
+    height: 24px;
+
+    &:hover {
+      text-decoration: none;
+      color: $section-headings-color; // IE8
+      fill: $section-headings-color;
+      transform: scale(1.25);
+      transition: color .5s, transform .2s ease-out
+    }
+
+    @include large {
+      width: 28px;
+      height: 28px;
+    }
+
+    @include medium {
+      width: 32px;
+      height: 32px;
+    }
+
+    @include small {
+      width: 36px;
+      height: 36px;
+    }
   }
 }
 
