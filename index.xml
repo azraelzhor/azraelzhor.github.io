@@ -1,0 +1,590 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Thang Le</title>
+    <link>https://azraelzhor.github.io/</link>
+      <atom:link href="https://azraelzhor.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <description>Thang Le</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language>
+    <image>
+      <url>img/map[gravatar:%!s(bool=true) shape:circle]</url>
+      <title>Thang Le</title>
+      <link>https://azraelzhor.github.io/</link>
+    </image>
+    
+    <item>
+      <title>Dive into Faster RCNN</title>
+      <link>https://azraelzhor.github.io/post/faster-rcnn/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://azraelzhor.github.io/post/faster-rcnn/</guid>
+      <description>&lt;p&gt;Last year, I had a chance to be involved in an Advanced Computer Vision class held by a non-profit organization. During the class, object detection is one of the fields that I found myself interested in the most. This motivated me to write a series of blogs in order to understand better some famous approaches that has been applied in the field. Though, the idea has been postponed until recently :v. The first part of this series is about Faster RCN, one of the state-of-the-art method used for object detection. In this blog post, I will walk you through the detail of Faster RCNN. Hopefully, at the end of this blog, you would figure out the way Faster RCNN works.&lt;/p&gt;
+&lt;h2 id=&#34;outline&#34;&gt;Outline&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a href=&#34;#intro&#34;&gt;Object detection&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;#faster-rcnn&#34;&gt;Faster RCNN&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a href=&#34;&#34;&gt;VGG Shared Network&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;&#34;&gt;Region Proposal Network&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;&#34;&gt;Region-based CNN&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;#loss-function&#34;&gt;Loss Function&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a href=&#34;&#34;&gt;Regression Loss&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;&#34;&gt;Classification Loss&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;#training&#34;&gt;Training&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a href=&#34;&#34;&gt;Augment data&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;&#34;&gt;Create anchor generator&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;#detection&#34;&gt;Detection&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;a-little-bit-of-object-detection&#34;&gt;A little bit of object detection&lt;/h2&gt;
+&lt;p&gt;In object detection, we received an image with bounding boxes indicating a various type of objects. There are many approaches these days.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://i.imgur.com/agk4axh.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a id=&#34;faster-rcnn&#34;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;faster-rcnn-architecture&#34;&gt;Faster RCNN architecture&lt;/h2&gt;
+&lt;p&gt;Faster RCNN is the last detection model in the RCNN trilogy (RCNN - Fast RCNN - Faster RCNN), which relies on proposed regions to detect objects. Though, unlike its predecessors  which use selective search to find out the best regions, Faster RCNN makes use of neural network and &amp;ldquo;learn&amp;rdquo; to propose regions directly. These proposed regions then is fed into another neural network to be refined once again.&lt;/p&gt;
+&lt;!-- This is the main reason that makes Faster RCNN faster and better than its predecessors. --&gt;
+&lt;p&gt;First, let take a look at the overall architecture of Faster RCNN. It comprises of $2$ modules&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The region proposal module takes feature map from a feature network and proposes regions&lt;/li&gt;
+&lt;li&gt;The Fast RCNN detector module takes those regions to predict the classes that the object belongs to.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://i.imgur.com/Zsu3nEn.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;The feature network, which is VGG in the context of this blog, is shared between both model.&lt;/p&gt;
+&lt;p&gt;To easily keep track of the story, let&amp;rsquo;s follow a specific example in which we are given an image of shape $300\times400\times3$.&lt;/p&gt;
+&lt;h3 id=&#34;feature-shared-network&#34;&gt;Feature Shared Network&lt;/h3&gt;
+&lt;p&gt;[TODO]Pretrained models&lt;/p&gt;
+&lt;p&gt;We use VGG as a feature network. The VGG receives an input image and produce a feature map with reduced sizes. The size of the feature map is determined by the net structure. For example, in case we use VGG, the feature map&amp;rsquo;s shape is $18 \times 25 \times 512$.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://i.imgur.com/dut8uoM.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;region-proposal-network-rpn&#34;&gt;Region Proposal Network (RPN)&lt;/h3&gt;
+&lt;p&gt;The goal of RPN is to propose regions that highly contain object. In order to do that, RPN does&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;generate a predefined number of fixed-size anchors&lt;/li&gt;
+&lt;li&gt;predict the objectness of each of these anchors&lt;/li&gt;
+&lt;li&gt;refine their coordinates&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;predefined-anchors&#34;&gt;Predefined anchors&lt;/h4&gt;
+&lt;!-- RPN accepts VGG feature map as input. --&gt;
+&lt;p&gt;For each pixel spatial location on the VGG feature map, we generate a predefined number of fixed size anchors. The shape of these anchor boxes are determined by a combination of predefined scales and edge ratios. In our example, if we use $3$ scales $64$, $128$, $256$ and $3$ edge ratios $1:1$, $1:2$, $2:1$, there will be $3*3=9$ type of anchors at each pixel location and a total of $18 * 25 * 9 = 4050$ anchors to be generated as a result.
+&lt;img src=&#34;https://i.imgur.com/BxG5M0Z.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;It is important to note that even though anchor boxes are created based on the feature map&amp;rsquo;s spatial location, they reference to the original input image, in which anchor boxes generated from the same feature map pixel location are centered at the same point on the original input, as illustrated in this figure below.
+&lt;img src=&#34;https://i.imgur.com/BNTidcL.png&#34; width=&#34;400&#34;/&gt;&lt;/p&gt;
+&lt;!-- ![](https://i.imgur.com/3D1N77A.png) --&gt;
+&lt;!-- ![](https://i.imgur.com/scAnbm9.png) --&gt;
+&lt;h4 id=&#34;rpn-architecture&#34;&gt;RPN architecture&lt;/h4&gt;
+&lt;!-- It consists of 3 convolution layers: one convolutional layer with 512 filters of size 3x3 followed by two sibling 1x1 convolutional layers - one with $K$ filters acting as a classifier and the other with $4K$ filters acting as a regressor. --&gt;
+&lt;p&gt;The RPN is then designed to predict objectness of each anchor (classification) and its coordinates (regression). It consists of $3$ layers: one convolutional layer with $512$ filters of size $3 \times 3$ followed by two sibling $1 \times 1$ convolutional layers. These two sibling layers - one with $K$ filters and the other with $4K$ filters - allow for classification and regression, respectively.&lt;/p&gt;
+&lt;p&gt;&lt;img                    src=&#34;https://i.imgur.com/o1pTYG2.png&#34; width=&#34;500&#34;
+/&gt;&lt;/p&gt;
+&lt;p&gt;In our example, after passing the VGG feature map through RPN, it produces a classification output with shape of $18 \times 25 \times K$ and a regression output with shape of $18 \times 25 \times 4K$, where $K$ denotes the number of generated anchors at each feature map location.&lt;/p&gt;
+&lt;!-- ![](https://i.imgur.com/o1pTYG2.png) --&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def rpn(base_layers, num_anchors):
+    x = Conv2D(512, (3, 3), padding=&#39;same&#39;, activation=&#39;relu&#39;, kernel_initializer=&#39;normal&#39;, name=&#39;rpn_conv1&#39;)(base_layers)
+
+    x_class = Conv2D(num_anchors, (1, 1), activation=&#39;sigmoid&#39;, kernel_initializer=&#39;uniform&#39;, name=&#39;rpn_out_class&#39;)(x)
+    x_regr = Conv2D(num_anchors * 4, (1, 1), activation=&#39;linear&#39;, kernel_initializer=&#39;zero&#39;, name=&#39;rpn_out_regress&#39;)(x)
+
+    return [x_class, x_regr, base_layers]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;create-labeled-data-for-training-rpn&#34;&gt;Create labeled data for training RPN&lt;/h4&gt;
+&lt;p&gt;Now, we need labeled data to train the RPN.&lt;/p&gt;
+&lt;h5 id=&#34;label-for-classification&#34;&gt;Label for classification&lt;/h5&gt;
+&lt;p&gt;For training classification task, each anchor box is labeled as&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;positive - containing object&lt;/li&gt;
+&lt;li&gt;negative - background&lt;/li&gt;
+&lt;li&gt;ignored - being ignored when training&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;based on the overlap with its nearest ground-truth bounding box.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://i.imgur.com/3m5ITZD.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;We use IoU to measure these overlaps. Let $p$ denotes the IoU between current anchor box and its nearest ground-truth bounding box. The rule is detailed as follows&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;If $p &amp;gt; \text{max_rpn}$, label it positive&lt;/li&gt;
+&lt;li&gt;If $p &amp;lt; \text{min_rpn}$, label it negative&lt;/li&gt;
+&lt;li&gt;If $\text{min_rpn} &amp;lt; p &amp;lt; \text{max_rpn}$, ignore it when training&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# overlaps for RPN
+cfg.rpn_min_overlap = 0.3
+cfg.rpn_max_overlap = 0.7
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h5 id=&#34;label-for-regression&#34;&gt;Label for regression&lt;/h5&gt;
+&lt;p&gt;The anchor box refinement is modeled as a regression problem, in which we predict the delta $(\color{red}{t_x, t_y, t_w, t_h})$ for each anchor box. This delta denotes the change needed to refine our predefined anchor boxes, as illustrated in this figure below&lt;/p&gt;
+&lt;!-- ![](https://i.imgur.com/x7kGAvI.png) --&gt;
+&lt;img src=&#34;https://i.imgur.com/7h3T6TK.png&#34; width=&#34;400&#34;/&gt;
+&lt;p&gt;Formally, we have&lt;/p&gt;
+&lt;div&gt;
+$$\begin{align}
+\color{blue}{x} &amp; = x_a + \color{red}{t_x}*w_a \\
+\color{blue}{y} &amp; = y_a + \color{red}{t_y}*h_a \\
+\color{blue}{w} &amp; = w_a * e^{\color{red}{t_w}} \\
+\color{blue}{h} &amp; = h_a * e^{\color{red}{t_h}}
+\end{align}
+$$
+&lt;/div&gt;
+&lt;p&gt;or&lt;/p&gt;
+&lt;div&gt;
+$$\begin{align}
+\color{red}{t_x} &amp; = (\color{blue}{x} - x_a) / w_a \\
+\color{red}{t_y} &amp; = (\color{blue}{y} - y_a) / h_a \\
+\color{red}{t_w} &amp; = log(\color{blue}{w}/w_a) \\
+\color{red}{t_h} &amp; = log(\color{blue}{h}/h_a)
+\end{align}
+$$
+&lt;/div&gt;
+&lt;p&gt;where $(x_a, y_a, w_a, h_a)$ denotes the anchor box&amp;rsquo;s coordinates and $(\color{blue}{x, y, w, h})$ denotes the refined box&amp;rsquo;s coordinates.&lt;/p&gt;
+&lt;p&gt;To create data for anchor regression training, we calculate the &amp;ldquo;ground-truth&amp;rdquo; delta $(\color{red}{t_x^*, t_y^*, t_w^*, t_h^*})$ based on each anchor box&amp;rsquo;s coordinates $(x_a, y_a, w_a, h_a)$ and its nearest ground-truth bounding box&amp;rsquo;s coordinates $(\color{blue}{x^*, y^*, w^*, h^*})$.&lt;/p&gt;
+&lt;div&gt;
+$$\begin{align}
+\color{red}{t_x^*} &amp; = (\color{blue}{x^*} - x_a) / w_a \\
+\color{red}{t_y^*} &amp; = (\color{blue}{y^*} - y_a) / h_a \\
+\color{red}{t_w^*} &amp; = log(\color{blue}{w^*}/w_a) \\
+\color{red}{t_h^*} &amp; = log(\color{blue}{h^*}/h_a)
+\end{align}
+$$
+&lt;/div&gt;
+&lt;p&gt;Among those generated anchor boxes, the positive anchors are probably outnumbered by the negative ones. Thus, to avoid imbalanced classification, we only use some anchor boxes for training. Specifically, only $256$ anchor boxes is chosen for training the RPN.&lt;/p&gt;
+&lt;p&gt;For example, with $4050$ anchor boxes generated, assume that we have $4000$ anchor boxes labeled as &amp;ldquo;positive&amp;rdquo;, $50$ anchor boxes labeled as &amp;ldquo;negative&amp;rdquo;&lt;/p&gt;
+&lt;h4 id=&#34;rpn-losses&#34;&gt;RPN losses&lt;/h4&gt;
+&lt;h5 id=&#34;1-regression-loss&#34;&gt;1. Regression Loss&lt;/h5&gt;
+&lt;p&gt;The smooth L1 loss is used for regression training. Its formulation is as below&lt;/p&gt;
+&lt;p&gt;$$smooth_{L1}(x) =
+\begin{cases}
+0.5x^2 &amp;amp; \mbox{if} ;  \lvert x \rvert &amp;lt; 1, \&lt;br&gt;
+\lvert x \rvert - 0.5 &amp;amp; \mbox{otherwise}.
+\end{cases}
+$$&lt;/p&gt;
+&lt;p&gt;where $x$ denotes the difference between prediction and ground truth $t  - \color{blue}{t^*}$.&lt;/p&gt;
+&lt;img src=&#34;https://i.imgur.com/HKcpwC2.png&#34; width=&#34;300&#34;/&gt;
+&lt;p&gt;The reason smooth L1 loss is preferred to L1 and L2 loss is because it can handle the problem of these two losses. Being quadratic for small values ($\lvert x \rvert &amp;lt; 1$) and linear for large values ($\lvert x \rvert \geq 1$), smooth L1 loss is now less sensitive to outliers than L2 loss and also does not suffer from the problem of L1 loss, which is not differentiable around zero.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# regression loss for rpn
+def rpn_loss_regr(cfg):
+    def rpn_loss_regr_fixed_num(y_true, y_pred):
+        x = y_true[:, :, :, 4 * cfg.num_anchors:] - y_pred
+        x_abs = K.abs(x)
+        x_bool = K.cast(K.less_equal(x_abs, 1.0), tf.float32)
+
+        return cfg.lambda_rpn_regr * K.sum(
+            y_true[:, :, :, :4 * cfg.num_anchors] * (x_bool * (0.5 * x * x) + (1 - x_bool) * (x_abs - 0.5))) / K.sum(cfg.epsilon + y_true[:, :, :, :4 * cfg.num_anchors])
+
+    return rpn_loss_regr_fixed_num
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h5 id=&#34;2-classification-loss&#34;&gt;2. Classification Loss&lt;/h5&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def rpn_loss_cls(cfg):
+    def rpn_loss_cls_fixed_num(y_true, y_pred):
+        return cfg.lambda_rpn_class * K.sum(y_true[:, :, :, :cfg.num_anchors] * K.binary_crossentropy(y_pred[:, :, :, :], y_true[:, :, :, cfg.num_anchors:])) / K.sum(cfg.epsilon + y_true[:, :, :, :cfg.num_anchors])
+
+    return rpn_loss_cls_fixed_num
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;use-rpn-to-propose-regions&#34;&gt;Use RPN to propose regions&lt;/h4&gt;
+&lt;h5 id=&#34;rpn-prediction&#34;&gt;RPN prediction&lt;/h5&gt;
+&lt;img src=&#34;https://i.imgur.com/uNnQDrw.png&#34; width=&#34;400&#34;/&gt;
+&lt;p&gt;After training, we use RPN to predict the bounding box coordinates at each feature map location.&lt;/p&gt;
+&lt;!-- $$\begin{align}
+\color{blue}{x} &amp; = x_a + \color{red}{t_x}*w_a \\
+\color{blue}{y} &amp; = y_a + \color{red}{t_y}*h_a \\
+\color{blue}{w} &amp; = w_a * e^{\color{red}{t_w}} \\
+\color{blue}{h} &amp; = h_a * e^\color{red}{t_h}
+\end{align}$$ --&gt;
+&lt;p&gt;In our example, there is $4050$ anchor boxes in total. Assume that the RPN predict $3000$ positive bounding boxes - meaning that they are containing object.&lt;/p&gt;
+&lt;h5 id=&#34;non-max-suppression&#34;&gt;Non-max suppression&lt;/h5&gt;
+&lt;img src=&#34;https://i.imgur.com/dn7grUV.png&#34; width=&#34;400&#34;/&gt;
+&lt;p&gt;It is very likely that there are many bounding boxes, among those are predicted by RPN, referring to the same object. This leads to redundant proposals, which can be eliminated by an algorithm known as non max suppression. The idea of non max suppression is to filter out all but the box with highest confidence score for each highly-overlapped bounding box cluster, making sure that a particular object is identified only once.&lt;/p&gt;
+&lt;p&gt;The algorithm can be summarized as follows:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Given a list of proposals along with their confidence score, and a predefined overlap threshold
+&lt;ul&gt;
+&lt;li&gt;Initialize a list $L$ to contain bounding boxes.&lt;/li&gt;
+&lt;li&gt;Sort the list, denoted by $S$,  by confidence score in descending order&lt;/li&gt;
+&lt;li&gt;Iterate through $S$, at each iteration
+&lt;ul&gt;
+&lt;li&gt;Compute the overlap between the current bounding box and the remain bounding boxes in $S$&lt;/li&gt;
+&lt;li&gt;Suppress all bounding boxes that have the computed overlap above the predefined threshold hold from $S$&lt;/li&gt;
+&lt;li&gt;Discard the current box from $S$, then move it to $L$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Return $L$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;img src=&#34;https://i.imgur.com/Mh1L9XC.png&#34; width=&#34;400&#34;/&gt;
+&lt;h3 id=&#34;region-based-convolutional-neural-network&#34;&gt;Region-based Convolutional Neural Network&lt;/h3&gt;
+&lt;p&gt;Now we have feature map patches as regions ready for the next phase. Now one notable problem arises here is that those proposed regions are not in the same shape, which makes it difficult for neural network training. This is where we need RoI pooling layer to help construct fixed-size feature maps from those arbitrary-size regions.&lt;/p&gt;
+&lt;h4 id=&#34;roi-pooling&#34;&gt;RoI Pooling&lt;/h4&gt;
+&lt;p&gt;To understand RoI pooling, let begin with a 2D example.&lt;/p&gt;
+&lt;h5 id=&#34;a-2d-example&#34;&gt;A 2D example&lt;/h5&gt;
+&lt;!--  Given an input slice of arbitrary size, --&gt;
+&lt;p&gt;No matter what the shape of the input slice is, a $2 \times 2$ RoI pooling layer always transform the input to the output of size $2 \times 2$ by&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Split the input into a $2 \times 2$ matrix of roughly equal regions&lt;/li&gt;
+&lt;li&gt;Do max pooling on each region&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;like this figure below (given input of shape $4 \times 4$ or $5 \times 5$).&lt;/p&gt;
+&lt;!-- ![](https://i.imgur.com/oSbRTQf.png) --&gt;
+&lt;img src=&#34;https://i.imgur.com/0Z6wlit.png&#34; width=&#34;400&#34;/&gt;
+&lt;h5 id=&#34;roi-used-in-faster-rcnn&#34;&gt;RoI used in Faster RCNN&lt;/h5&gt;
+&lt;img src=&#34;https://i.imgur.com/Clu7DyN.png&#34; width=&#34;400&#34;/&gt;
+&lt;h4 id=&#34;detection-network&#34;&gt;Detection Network&lt;/h4&gt;
+&lt;!-- Those fixed-size feature maps from RoI pooling are subsequently fed into the final classifier. --&gt;
+&lt;p&gt;Those fixed-size feature maps from RoI pooling are then flattened and subsequently fed into a fully connected network for final detection. The net consists of $2$ fully connected layers of $4096$ neurons, followed by other $2$ sibling fully connected layers - one has $N$ neurons for classifying proposals and the other has $4*(N - 1)$ neurons for bounding box regression, where $N$ denotes the number of classes, including the background. Note that when a bounding box is classified as background, regression is unneeded. Hence, it makes sense that we only need $4*(N - 1)$ neurons for regression in total.&lt;/p&gt;
+&lt;img src=&#34;https://i.imgur.com/o05O9LM.png&#34; width=&#34;500&#34;/&gt;
+&lt;p&gt;In our example, each $7\times7\times512$ feature map is fed to the detection net to produce the classification output has size of $4$, and the regression output has size of $12$.&lt;/p&gt;
+&lt;h4 id=&#34;labeled-data-for-fcnn&#34;&gt;Labeled data for FCNN&lt;/h4&gt;
+&lt;!-- After non max suppresion step, we get
+For each proposed region, the RPN predict  --&gt;
+&lt;h5 id=&#34;label-for-classification-1&#34;&gt;Label for classification&lt;/h5&gt;
+&lt;p&gt;Similar to the RPN, we make use of IoU metric to label data. Let $p$ denotes the overlap between a refined anchor box produced by RPN and its nearest ground-truth anchor box. For each anchor box we label as follows&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;if $p &amp;lt; \text{min_cls}$, ignore it when training.&lt;/li&gt;
+&lt;li&gt;if $\text{min_cls} \leq p &amp;lt; \text{max_cls}$, label it as background.&lt;/li&gt;
+&lt;li&gt;if $p \geq \text{max_cls}$, label it as the class to which its nearest ground-truth box belongs.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;cfg.classifier_min_overlap = 0.1
+cfg.classifier_max_overlap = 0.5
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h5 id=&#34;label-for-bounding-box-regression&#34;&gt;Label for bounding box regression&lt;/h5&gt;
+&lt;p&gt;For regression, we also calculate the &amp;ldquo;ground-truth&amp;rdquo; deltas $(\color{red}{t_x^*, t_y^*, t_w^*, t_h^*})$ in the same fashion as those in RPN, but now based on each refined anchor box&amp;rsquo;s coordinates from the RPN $(x_r, y_r, w_r, h_r)$ and its nearest ground-truth bounding box&amp;rsquo;s coordinates $(\color{blue}{x^*, y^*, w^*, h^*})$.&lt;/p&gt;
+&lt;!-- &lt;a id=&#34;loss-function&#34;&gt;&lt;/a&gt; --&gt;
+&lt;h4 id=&#34;rcnn-losses&#34;&gt;RCNN losses&lt;/h4&gt;
+&lt;h5 id=&#34;1-regression-loss-1&#34;&gt;1. Regression Loss&lt;/h5&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# regresssion loss for detection network
+def class_loss_regr(num_classes, cfg):
+    def class_loss_regr_fixed_num(y_true, y_pred):
+        x = y_true[:, :, 4*num_classes:] - y_pred
+        x_abs = K.abs(x)
+        x_bool = K.cast(K.less_equal(x_abs, 1.0), &#39;float32&#39;)
+        return cfg.lambda_cls_regr * K.sum(y_true[:, :, :4*num_classes] * (x_bool * (0.5 * x * x) + (1 - x_bool) * (x_abs - 0.5))) / K.sum(cfg.epsilon + y_true[:, :, :4*num_classes])
+    return class_loss_regr_fixed_num
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h5 id=&#34;2-classification-loss-1&#34;&gt;2. Classification Loss&lt;/h5&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def class_loss_cls(cfg):
+    def class_loss_cls_fixed_num(y_true, y_pred):
+        return cfg.lambda_cls_class * K.mean(categorical_crossentropy(y_true[0, :, :], y_pred[0, :, :]))
+    return class_loss_cls_fixed_num
+&lt;/code&gt;&lt;/pre&gt;
+&lt;!-- &lt;a id=&#34;training&#34;&gt;&lt;/a&gt;
+## Training
+
+&lt;a id=&#34;detection&#34;&gt;&lt;/a&gt;
+## Detection --&gt;
+&lt;p&gt;&lt;strong&gt;References&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks (
+&lt;a href=&#34;https://arxiv.org/abs/1506.01497&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;arxiv&lt;/a&gt;)&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Invertible Residual Networks for Generative Modeling</title>
+      <link>https://azraelzhor.github.io/post/invertible-residual-networks/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://azraelzhor.github.io/post/invertible-residual-networks/</guid>
+      <description>&lt;p&gt;If you have been involving in machine learning for a while, you should have known about residual networks, which are proved to be powerful for image classification. Yet, apart from classification, they can be made invertible by some simple tricks to be used in other machine learning tasks as well. This family of residual networks called &lt;strong&gt;Invertible Residual Networks&lt;/strong&gt; has been proposed  recently by J Behrmann, 2018. In this blog post, I will walk you through the invention of invertible residual networks.&lt;/p&gt;
+&lt;h2 id=&#34;table-of-contents&#34;&gt;Table of Contents&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a href=&#34;#motivation&#34;&gt;The motivation&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a href=&#34;#den-est&#34;&gt;Density estimation&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;#norm-flows&#34;&gt;Normalizing Flows&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a href=&#34;#change&#34;&gt;A change of variables&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;#flow&#34;&gt;A normalizing flows&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;#res-block&#34;&gt;The awesome residual block&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;#ires-net&#34;&gt;Making the nets invertible&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a href=&#34;#banach&#34;&gt;Fixed-point theorem&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;#lipschitz&#34;&gt;Enforcing Lipschitz constraint&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;#inverse&#34;&gt;How to yield the inverse output&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;#log-likelihood&#34;&gt;Computing the log likelihood&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a href=&#34;#log_matrix&#34;&gt;Log determinant&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;#trace-estimator&#34;&gt;Hutchinsons estimator&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;#code&#34;&gt;Implementations&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;a id=motivation&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;the-motivation&#34;&gt;The motivation&lt;/h2&gt;
+&lt;p&gt;Classification only tells difference between data points. This is clearly not fulfilling for greedy human beings. We want a better understanding of data or, to be more specific, the data distribution itself. This underlying distribution of data is literally what the task of density estimation tries to estimate.&lt;/p&gt;
+&lt;p&gt;&lt;a id=&#34;den-est&#34;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;density-estimation&#34;&gt;Density estimation&lt;/h3&gt;
+&lt;!-- A generative model explains how data is generated. Specifically, its ultimate goal is to estimate the distribution of observed data. --&gt;
+&lt;p&gt;Density estimation can be achieved through maximum likelihood estimation, in which we try to maximize the expected log-likehood&lt;/p&gt;
+&lt;div&gt;
+$$
+\mathbf{E}_{x \sim p_{data}(x)}{p(x; \theta)}
+$$
+&lt;/div&gt;
+&lt;p&gt;$$
+\mathbf{E}_{x \sim p_k(x) }{p(x; \theta)}
+$$&lt;/p&gt;
+&lt;p&gt;where $p_{data}(x)$ denotes the empirical distribution of observed data and $p(x; \theta)$ denotes our assumed parametric distribution (simply known as model distribution).&lt;/p&gt;
+&lt;p align=&#34;center&#34;&gt;
+  &lt;img src=&#34;https://i.imgur.com/eAeqbl8.png&#34; width=&#34;300px&#34;/&gt;
+&lt;/p&gt;
+&lt;p&gt;Yet, when data is complex and high dimensional, a problem arises. It is hard to construct a parametric distribution which is not only expressive enough to capture the complexity of data but also tractable for maximum likelihood estimation. This hurdle can be overcome with the help of normalizing flows, in which we rely on them to construct our more complex model distribution from a simple latent prior. As a parametric bridge between these two distributions, normalizing flows allow for tractable data likelihood computation, which makes maximum likelihood estimation now possible.&lt;/p&gt;
+&lt;!-- acting as a parametric bridge between a simple latent prior distribution and our more complex model distribution. --&gt;
+&lt;!--  in which we try to disentangle our complex empirical distribution into its simple latent counterpart, then do the maximum likelihood in the latent domain as illustrated in this figure below --&gt;
+&lt;!-- as we will see in the following section. --&gt;
+&lt;!-- ![](https://i.imgur.com/ldsPsB6.png) --&gt;
+&lt;p&gt;&lt;img src=&#34;https://i.imgur.com/JPPZwz3.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a id=&#34;norm-flows&#34;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;normalizing-flows&#34;&gt;Normalizing Flows&lt;/h3&gt;
+&lt;p&gt;Normalizing flows were first introduced to solve the problem of density estimation. Though, it later became popular when introduced to deal with variational inference by [1]. The idea of normalizing flows is very simple that it transforms one distribution to another arbitrarily complex distribution, through a sequence of invertible mapping functions.&lt;/p&gt;
+&lt;p&gt;&lt;a id=&#34;change&#34;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;h4 id=&#34;a-change-of-variables&#34;&gt;A change of variables&lt;/h4&gt;
+&lt;p&gt;But, let&amp;rsquo;s first take a look at a change of variables rule, which forms the basis for normalizing flows.&lt;/p&gt;
+&lt;p align=&#34;center&#34;&gt;
+  &lt;img src=&#34;https://i.imgur.com/YYBTSnI.png&#34; width=&#34;300px&#34;/&gt;
+  &lt;p align=&#34;center&#34;&gt;Figure 1. A change of variables&lt;p align=&#34;center&#34;&gt;
+&lt;/p&gt;
+&lt;p&gt;Given a random variable $x$ with its density function known as $p(x)$, if we map this variable using an invertible mapping $f$, so that $z = f(x)$ and $x = f^{-1}(z) ; \forall x, z,$ then $z$ is still a random variable. Its normalized density function is then defined as follows&lt;/p&gt;
+&lt;p&gt;$$
+p(z) = p(x) \left\lvert \det\frac{\partial f^{-1}}{\partial z} \right\rvert = p(x) {\left\lvert \det\frac{\partial f}{\partial x} \right\rvert}^{-1}, \tag{1}
+$$&lt;/p&gt;
+&lt;p&gt;where the first equality is due to preservation of total probability of in both domain; and the second equality follows from the inverse function theorem.&lt;/p&gt;
+&lt;p&gt;Taking logarithm of each side, we can rewrite $(1)$  as&lt;/p&gt;
+&lt;!-- $$\ln p(x) = \ln p(z) + \ln \left\lvert \det J_f(x) \right\rvert$$ --&gt;
+&lt;p&gt;$$\ln p(z) = \ln p(x) - \ln \left\lvert \det J_f(x) \right\rvert$$&lt;/p&gt;
+&lt;p&gt;where $J_f$ denotes the Jacobian matrix of function $f$ evaluated at point $x$.&lt;/p&gt;
+&lt;p&gt;&lt;a id=&#34;flow&#34;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;h4 id=&#34;a-normalzing-flow&#34;&gt;A normalzing flow&lt;/h4&gt;
+&lt;!-- ![](https://i.imgur.com/DVD3pno.png) --&gt;
+&lt;p align=&#34;center&#34;&gt;
+  &lt;img src=&#34;https://i.imgur.com/DVD3pno.png&#34; width=&#34;420px&#34;/&gt;
+  &lt;p align=&#34;center&#34;&gt;Figure 2. A normalizing flow&lt;p align=&#34;center&#34;&gt;
+&lt;/p&gt;
+&lt;p&gt;We can now form a normalizing flow by chaining together a finite sequence of these variable changes just described above. As an example, let us consider a flow in figure 2, in which we have $$z \equiv z_K = f_K \circ &amp;hellip; \circ f_2  \circ f_1 (x) \equiv F(x)$$&lt;/p&gt;
+&lt;p&gt;By consecutively applying variables change formula $(2)$, we get&lt;/p&gt;
+&lt;div&gt;
+$$\begin{align}
+\ln p(z) = \ln p(z_K) &amp; = \ln p(z_{K-1}) - \ln \left\lvert \det J_{f_K}(z_{K-1})\right\rvert \\
+&amp; = \ln p(z_{K-2}) - \sum_{k=K-1}^{K}\ln \left\lvert \det J_{f_k}(z_{k-1})\right\rvert \\
+&amp; = \;... \\
+&amp; = \ln p(x) - \sum_{k=1}^{K} \ln \left\lvert \det J_{f_k}(z_{k-1})\right\rvert \\
+\end{align}$$
+&lt;/div&gt;
+&lt;p&gt;Continuing the derivation we get&lt;/p&gt;
+&lt;div&gt;
+$$\begin{align}
+\ln p(z) &amp; = \ln p(x) - \ln \left\lvert \prod_{k=1}^{K} \det J_{f_k}(z_{k-1})\right\rvert \\
+&amp; = \ln p(x) - \ln \left\lvert \det \prod_{k=1}^{K} J_{f_k}(z_{k-1})\right\rvert \ (\because \det(AB) = \det(A)\det(B)) \\
+&amp; = \ln p(x) - \ln \left\lvert \det J_F(x)\right\rvert \ (\textrm{because of derivative chain rule})\\
+\end{align}$$
+&lt;/div&gt;
+It is easy to realize that the last equation is literally a variables change formula with transformation $F$. This does make sense because a normalizing flow can also be viewed as a change of variables but with a much more complex invertible transformation. Here, $F$ is clearly invertible as it is a composition of an arbitrary number of invertible functions.
+&lt;p&gt;By designing an appropriate $F$, we can obtain an arbitrarily complex normalized density function at the completion of a normalizing flow. Hence, normalizing flows can be intuitively interpreted as a systematic way to distort the input density function, making it more complex (like in variational inference setting) or simpler (like in density estimation setting). However, in order for normalizing flows to be useful in practice, we need to have two conditions satisfied&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The determinant of their Jacobian matrices $J_{f_k}$ need to be **easy to compute**, in order to obtain a tractable likelihood.&lt;/li&gt;
+&lt;li&gt;Those transformation functions $f_k$ obviously need to be &lt;strong&gt;invertible&lt;/strong&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;In fact, many approaches have been proposed to construct those easy-to-use transformation functions lately. Inspired by normalizing flows, the authors of the paper has also managed to exploit residual networks as transformation functions used for normalizing flows. Thus, before diving into the details, let take a look back at the architecture of residual networks.&lt;/p&gt;
+&lt;p&gt;&lt;a id=&#34;res-block&#34;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;the-awesome-residual-block&#34;&gt;The awesome residual block&lt;/h3&gt;
+&lt;p&gt;Residual network is composed of a sequence of residual blocks, with each block can be simplified as this figure below&lt;/p&gt;
+&lt;!-- &lt;p align=&#34;center&#34;&gt;
+  &lt;img src=&#34;https://i.imgur.com/WTuOajh.png&#34; width=&#34;200px&#34;/&gt;
+  &lt;p align=&#34;center&#34;&gt;Figure 3. A residual block&lt;p align=&#34;center&#34;&gt;
+&lt;/p&gt; --&gt;
+&lt;p align=&#34;center&#34;&gt;
+  &lt;img src=&#34;https://i.imgur.com/LAnhLeK.png&#34; width=&#34;200px&#34;/&gt;
+  &lt;p align=&#34;center&#34;&gt;Figure 3. A residual block&lt;p align=&#34;center&#34;&gt;
+&lt;/p&gt;
+&lt;p&gt;As we can see, each residual block consists of a residual part denoted by $g$ and an identity part. From mathematical viewpoint, each block can be clearly counted as a function which takes input $x$ and produces $z$ as output. Formally, we have
+$$
+z = f(x) = g(x) + x \tag{1}
+$$&lt;/p&gt;
+&lt;p&gt;Back to our main story, it is obvious that the goal is to make use of residual network as a transformation function for normalizing flows. Since residual network can be interpreted as a composition function of multiple residual blocks, making each individual block invertible is &lt;strong&gt;a sufficient condition&lt;/strong&gt; for the invertibility of the whole net.&lt;/p&gt;
+&lt;p&gt;&lt;a id=&#34;ires-net&#34;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;making-the-nets-invertible&#34;&gt;Making the nets invertible&lt;/h2&gt;
+&lt;p&gt;In the inverse phase, each block takes $z$ as input and produces $x$ as output. Thus, in order for a block to be invertible, we need to enforce the existence and uniqueness of output $x$ for each input $z$.&lt;/p&gt;
+&lt;p&gt;From $(1)$, we have
+$$x = z - g(x)$$&lt;/p&gt;
+&lt;p&gt;Let define $h(x) = z - g(x)$ to be a function of $x$, where z acts as a constant. The requirement can now be formulated as follows: The equation $x = h(x)$ must have only one root or, to put it in a formal way, &lt;strong&gt;$h(x)$ has a unique fixed point&lt;/strong&gt;.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Fixed point:&lt;/strong&gt;
+Let X be a metric space and let T: X → X be a mapping in X. A &lt;strong&gt;fixed point&lt;/strong&gt; of T is a point in X such that T(x) = x.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Fortunately, this requirement can be obtained according to the famous Banach fixed-point theorem.&lt;/p&gt;
+&lt;h3 id=&#34;fixed-point-theorem&#34;&gt;Fixed point theorem&lt;/h3&gt;
+&lt;p&gt;The Banach fixed point theorem, also called contraction mapping theorem, states that every contraction mapping in a complete metric space admits a unique fixed point.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Contraction mapping:&lt;/strong&gt;
+Let $(M, d)$ be a complete metric space. A function $T$: $M$ → $M$ is a contraction mapping if there exists a real number $0 \leq k &amp;lt; 1$ such that:&lt;/p&gt;
+&lt;p&gt;$$\quad d(T(x), T(y)) \leq k d(x, y) , \quad \quad \forall x, y \in M$$&lt;/p&gt;
+&lt;p&gt;The smallest $k$ for which the above inequality holds is called the &lt;strong&gt;Lipschitz constant&lt;/strong&gt; of $f$, denoted by $Lip(T)$&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Banach theorem:&lt;/strong&gt; Let $(M, d)$ be a complete metric space and $T$: $M$ → $M$ be a contraction mapping. Then T has a unique fixed point $x \in M$. Furthermore, if $y \in M$ is arbitrary chosen, then the iterates ${ {x_n}}_{n=0}^\infty$, given by&lt;/p&gt;
+&lt;div&gt;
+$$\begin{align}
+&amp; x_0 = y \\
+&amp; x_n = T(x_{n-1}), n \geq 1,
+\end{align}$$
+&lt;/div&gt;
+&lt;p&gt;have the property that $\lim_{n\to\infty} x_n = x$ as illustrated in the figure below.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://i.imgur.com/7O3gTWK.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p align=&#34;center&#34;&gt;Figure 1. Banach fixed point theorem&lt;p align=&#34;center&#34;&gt;
+&lt;!-- &gt; **Banach fixed point theorem**
+&gt; Let $(M, d)$ be a complete metric space and let $T$: $M$ &amp;rightarrow; $M$ be a contraction mapping. Then T has a unique fixed point $x \in M$. Furthermore, if $y \in M$ is arbitrary chosen, then the iterates $\{ {x_n}\}_{n=0}^\infty$, given by
+&gt;$$
+x_0 = y$$
+&gt;
+&gt;$$
+x_n = T(x_{n-1}), n \geq 1,
+$$
+&gt;
+&gt;have the property that $\lim_{n\to\infty} x_n = x$. --&gt;
+&lt;p&gt;[TODO] - Talk a little bit about Banach theorem&lt;/p&gt;
+&lt;h3 id=&#34;enforcing-lipschitz-constraint&#34;&gt;Enforcing Lipschitz constraint&lt;/h3&gt;
+&lt;p&gt;Based on the Banach theorem above, our enforcing condition then becomes&lt;/p&gt;
+&lt;p&gt;$$Lip(h) &amp;lt; 1 ;\textrm{or}; Lip(g) &amp;lt; 1$$&lt;/p&gt;
+&lt;p&gt;Hence $g$ can be implemented as a composition of contractive linear or nonlinear mappings like the figure below.&lt;/p&gt;
+&lt;p align=&#34;center&#34;&gt;
+  &lt;img src=&#34;https://i.imgur.com/Suno7Bn.png&#34; width=&#34;200px&#34;/&gt;
+  &lt;p align=&#34;center&#34;&gt;Figure 3. Contractive residual mapping&lt;p align=&#34;center&#34;&gt;
+&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;For nonlinear mappings, &lt;strong&gt;ReLU&lt;/strong&gt;, &lt;strong&gt;ELU&lt;/strong&gt; and &lt;strong&gt;tanh&lt;/strong&gt; are the possible choices for contraction constraint.&lt;/li&gt;
+&lt;li&gt;For linear mappings, implemented as convolutional layers $W_i$, they can be made contractive by satisfying the condition $$\lVert W_i \rVert_2 &amp;lt; 1 \quad \forall W_i$$ where $\lVert a \rVert_2$ denotes the spectral norm of matrix a.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Spectral norm of a matrix:&lt;/strong&gt;
+The largest singular value of a matrix.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;The spectral norm of non-square matrix $W_i$ can be directly estimated using the power iteration algorithm (by Gouk et el. 2018), which yields an underestimate $\tilde \sigma_i \leq \lVert W_i \rVert_2$. The algorithm can be summarized as follows:&lt;/p&gt;
+&lt;div&gt;
+$$\begin{align} &amp; \textrm{Initialize} \; x_0 \\ x_k &amp; = W_i^T W_i x_{k - 1}, \; \forall k, 1 \leq k \leq n \\ \tilde \sigma_i &amp; = \frac{\lVert W_i x_n\rVert_2}{\lVert x_n \rVert_2} \\ \end{align}$$
+&lt;/div&gt;
+&lt;p&gt;We then normalize the parameter $W_i$ by&lt;/p&gt;
+&lt;p&gt;$$ \tilde{W_i} = \begin{cases}
+\frac{cW_i}{\tilde \sigma_i}, &amp;amp; \mbox{if} ; \frac{c}{\tilde \sigma_i} &amp;lt; 1 \&lt;br&gt;
+W_i, &amp;amp;\mbox{else}
+\end{cases}$$ where $c$ is the hyperparameter ($c &amp;lt; 1$).&lt;/p&gt;
+&lt;p&gt;&lt;a id=fixed-point&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;how-to-yield-the-inverse-output&#34;&gt;How to yield the inverse output&lt;/h3&gt;
+&lt;p&gt;Though the constraint above guarantees invertibility of the residual network, it does not provide any analytical form for the inverse. Fortunately, inverse output of each residual block can be yielded through a simple fixed-point iteration, as described below&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Initialize value $x = x_0$&lt;/li&gt;
+&lt;li&gt;For each iteration $i$, $x_{i+1} = h(x_i) = z - g(x_i)$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;computing-the-likelihood&#34;&gt;Computing the likelihood&lt;/h2&gt;
+&lt;p&gt;So far, we have managed to construct invertible residual networks. We can now make use of them as a transformation for density estimation.&lt;/p&gt;
+&lt;!-- ![](https://i.imgur.com/yxrYwrz.png) --&gt;
+&lt;p&gt;&lt;img src=&#34;https://i.imgur.com/KzZ0MW7.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;!-- $$
+\ln p_x(x) = \ln p_z(z) + \ln |\det J_F(x)|
+$$ --&gt;
+&lt;p&gt;But there is still one problem need to be dealt with. In order for the likelihood to be tractable, we need to compute the determinant of the Jacobian matrix of the residual network $F$ or, instead, the determinant of the Jacobian matrix of each residual block $f$. $$\ln p(x) = \ln p(z) + \ln \left\lvert \det J_F(x)\right\rvert = \ln p(z) + \sum_{k=1}^{K} \ln \left\lvert \det J_{f_k}(z_{k-1})\right\rvert$$ The computation of the determinant of full Jacobian matrix requires $O(d^3)$ time, which makes it prohibitive for high-dimensional data like image. Fortunately, we can approximate the term in a certain way.&lt;/p&gt;
+&lt;h3 id=&#34;the-log-determinant-term&#34;&gt;The log determinant term&lt;/h3&gt;
+&lt;p&gt;For each residual block $f$, we have&lt;/p&gt;
+&lt;div&gt;
+$$\begin{align}
+\ln \left\lvert \det J_f(x)\right\rvert &amp; = \ln (\det J_f(x)) \textrm{( $\det J_f$ is always positive)} \\
+&amp; = tr(\ln J_f(x)) \textrm{($\ln \det A = tr(\ln(A))$)} \\
+&amp; = tr(ln\frac{\partial f}{\partial x}) \\
+&amp; = tr(ln\frac{\partial (x + g(x))}{\partial x})\\
+&amp; = tr(ln\ (I + J_g(x))) \textrm{($I$ denotes identity matrix)} \\
+&amp; = tr(\sum_{k=1}^\infty(-1)^{k + 1}\frac{J_g^k}{k}) \textrm{(power series expression of matrix logarithm)} \\
+&amp; = \sum_{k=1}^\infty(-1)^{k + 1}\frac{tr(J_g^k)}{k} \textrm{($tr(A + B) = tr(A) + tr(B)$)} \\
+\end{align}$$
+&lt;/div&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Matrix logarithm and its power series expression:&lt;/strong&gt;
+A logarithm of matrix $M$ is any matrix $X$ such that $e^X = M$. It can be expressed as a power series $$ln(M) = \sum_{k=1}^\infty(-1)^{k + 1}\frac{(M - I)^k}{k}$$ whenever the series converges.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Now the log-determinant term has been rewritten as an infinite sum of traces of matrix powers, which makes it easier to approximate. Even though, there is still a bunch of drawbacks if we want to approximate the term:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Computing $tr(J_g)$ costs $O(d^2)$&lt;/li&gt;
+&lt;li&gt;Computing matrix powers $J_g^k$ requires knowledge of full Jacobian&lt;/li&gt;
+&lt;li&gt;The series is infinite&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;hutchinson-trace-estimator&#34;&gt;Hutchinson trace estimator&lt;/h4&gt;
+&lt;p&gt;Evaluating the trace of matrix powers $J_g^k$ is expensive due to full knowledge of Jacobian matrix and also matrix-matrix multiplications, hence comes the Hutchinson method for trace approximation.&lt;/p&gt;
+&lt;p&gt;Hutchinson trace estimator is a Monte Carlo approach to approximate the trace of matrix powers, for example $J_g^k$ in our case, without fully evaluating them. Specifically, a random vector $v$ is introduced to estimate the trace
+$$tr(A) = \mathrm{E}_{v \sim p(v)}v^{T}Av $$&lt;/p&gt;
+&lt;p&gt;with the constraint that $v$ is drawn from a fixed distribution $p(v)$, satisfying $\mathrm{E}[v] = 0$ and $\mathrm{Var}[v] = I$. Hence it is obvious that the Gaussian $N(0, I)$ is a good choice for $p(v)$. Applying the trace estimator, we have&lt;/p&gt;
+&lt;p&gt;$$ tr(J_g^k) = \mathrm{E}_{v \sim N(0, I)} v^T J_g^k v $$&lt;/p&gt;
+&lt;!-- The heavy computation can now be circumvented because computing $v^T J_g^k v$ only requires matrix-vector multiplication. Furthemore, it can be computed more efficiently in a recursive fashion.
+
+$$J_g^k v = J_g (J_g^{k-1} v)$$ --&gt;
+&lt;p&gt;The matrix power computation can be circumvented by evaluating $v^T J_g^k v$  in a recursive fashion&lt;/p&gt;
+&lt;div&gt;
+$$\begin{align}
+w_0 &amp; = v \\
+w_k &amp; = J_g w_{k - 1}, \forall k \geq 1 \\
+v^T J_g^k v &amp; = v^T w_k \\
+\end{align}$$
+&lt;/div&gt;
+&lt;p&gt;which requires now only matrix-vector multiplication.&lt;/p&gt;
+&lt;p&gt;Furthermore, the term $w_k$ can be evaluated roughly as the same cost as evaluating $g$ using &lt;strong&gt;reverse-mode automatic differentiation&lt;/strong&gt;, alleviating the heavy computation of evaluating $J_g$ explicitly.&lt;/p&gt;
+&lt;p align=&#34;center&#34;&gt;
+  &lt;img src=&#34;https://i.imgur.com/ovaeC6i.png&#34; width=&#34;300px&#34;/&gt;
+&lt;/p&gt;
+&lt;p&gt;Now, the only problem remains is the computation of infinite series, which can be addressed by truncating the series at a finite index $n$&lt;/p&gt;
+&lt;p&gt;$$\ln |\det J_f(x)| \approx \sum_{k=1}^{n}(-1)^{k + 1}\frac{tr(J_g^k)}{k}$$&lt;/p&gt;
+&lt;h2 id=&#34;implementation&#34;&gt;Implementation&lt;/h2&gt;
+&lt;p&gt;Original implementation by the paper&amp;rsquo;s author: (
+&lt;a href=&#34;https://github.com/jhjacobsen/invertible-resnet&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;link&lt;/a&gt;)&lt;/p&gt;
+&lt;p&gt;A TensorFlow implementation by me: (
+&lt;a href=&#34;https://github.com/azraelzhor/tf-invertible-resnet/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;link&lt;/a&gt;)&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;References&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://arxiv.org/abs/1505.05770&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Variational Inference with Normalizing Flows&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://arxiv.org/abs/1811.00995&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Invertible Residual Networks&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://arxiv.org/abs/1908.09257&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Normalizing Flows: An Introduction and Review of Current Methods&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://arxiv.org/abs/1302.5125&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;High-Dimensional Probability Estimation with Deep Density Models&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;http://blog.shakirm.com/2015/09/machine-learning-trick-of-the-day-3-hutchinsons-trick/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Hutchinson&amp;rsquo;s Trick&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://christiancosgrove.com/blog/2018/01/04/spectral-normalization-explained.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Spectral Normalization Explained&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://arxiv.org/abs/1804.04368&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Regularisation of Neural Networks by Enforcing Lipschitz Continuity&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;http://proceedings.mlr.press/v37/hana15.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Large-scale Log-determinant Computation through Stochastic Chebyshev Expansions&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
