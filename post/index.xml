@@ -5,7 +5,7 @@
     <link>https://azraelzhor.github.io/post/</link>
       <atom:link href="https://azraelzhor.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     <description>Posts</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>joocxi@2020</copyright><lastBuildDate>Fri, 20 Mar 2020 00:00:00 +0000</lastBuildDate>
     <image>
       <url>img/map[gravatar:%!s(bool=true) shape:circle]</url>
       <title>Posts</title>
@@ -13,9 +13,248 @@
     </image>
     
     <item>
+      <title>Variational Expectation Maximization for Latent Dirichlet Allocation</title>
+      <link>https://azraelzhor.github.io/post/lda-part-1/</link>
+      <pubDate>Fri, 20 Mar 2020 00:00:00 +0000</pubDate>
+      <guid>https://azraelzhor.github.io/post/lda-part-1/</guid>
+      <description>&lt;p&gt;Text data is everywhere. When having massive amounts of them, a need naturally arises is that we want them to be organized efficiently. One naive way is to organize them based on topics. It means that texts covering the same topics should be put in the same groups. The problem is that we do not know which topic a text document belongs to and manually labeling topics for every document is a very expensive task. Hence, topic modeling comes as a way to automatically discover abstract topics contained in these text documents.&lt;/p&gt;
+&lt;img src=&#34;https://i.imgur.com/sC2oNEc.png&#34; width=&#34;300&#34;/&gt;
+&lt;p align=&#34;center&#34;&gt;Figure _. Text documents&lt;/p&gt;
+&lt;p&gt;One of the most common topic models is Latent Dirichlet Allocation (LDA), was introduced long time ago (D. Blei et al, 2003) but is still powerful now. LDA is a complex, hierarchical latent variable model with some probabilistic assumptions over it. Thus, before diving into detail of LDA, let us review some basic knowledges about &lt;code&gt;probability&lt;/code&gt; and &lt;code&gt;latent variable model&lt;/code&gt;.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: My blog on LDA contains two parts. This is the first part about theoretical understanding of LDA. The  second part involves a basic implementation of LDA, which you can check out here.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;probabilistic-assumptions&#34;&gt;Probabilistic assumptions&lt;/h2&gt;
+&lt;h3 id=&#34;categorical-distribution&#34;&gt;Categorical distribution&lt;/h3&gt;
+&lt;p&gt;A categorical distribution is a &lt;code&gt;discrete&lt;/code&gt; probability distribution which describes the possibility that one random variable belongs to one of $K$ categories. The distribution is parameterized by a $K$-dimensional vector $p$ denoting probabilities assigned to each category.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://i.imgur.com/EDPbqzv.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;For example, assume that we have 4 categories and $p = [0.4, 0.2, 0.3, 0.1]$, then we have
+$$
+p(x=i) = p_i
+$$&lt;/p&gt;
+&lt;h3 id=&#34;dirichlet-distribution&#34;&gt;Dirichlet distribution&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;https://miro.medium.com/max/1400/1*Pepqn_v-WZC9iJXtyA-tQQ.png&#34; alt=&#34;&#34;&gt;
+A Dirichlet distribution is a &lt;code&gt;continuous&lt;/code&gt; probability distribution which describes the possibility of generating $(K-1)$-simplex. It is parameterized by a positive, $K$-dimensional vector $\alpha$.&lt;/p&gt;
+&lt;p&gt;$$
+p(x;\alpha) = \frac{1}{B(\alpha)} \prod_{k=1}^{K}x_k^{\alpha_i - 1}
+$$&lt;/p&gt;
+&lt;p&gt;where $x$ is a $K$-dimensional vector and $B(\cdot)$ denotes Beta function.&lt;/p&gt;
+&lt;h2 id=&#34;latent-variable-model&#34;&gt;Latent variable model&lt;/h2&gt;
+&lt;p&gt;A latent variable model assumes that data, which we can observe, is controlled by some underlying unknown factor we can not observe. This dependency is often parameterized by a known distribution $p(\cdot)$ with its associated parameters known as model parameter. Formally, a simple latent variable model consists of three parts: observed data $x$, latent variable $z$ that controls $x$ and model parameters $\theta$ like the picture below.
+&lt;img src=&#34;https://i.imgur.com/bT71bXf.png&#34; width=&#34;300&#34;/&gt;&lt;/p&gt;
+&lt;p align=&#34;center&#34;&gt;Figure _. A typical latent variable model&lt;/p&gt;
+&lt;p&gt;[TODO - example of latent variable model]
+For an example of latent variable models, imagine that you are an observer at a casino, where people are playing dice game&amp;hellip;&lt;/p&gt;
+&lt;p&gt;Latent variables increases our model&amp;rsquo;s expressiveness (meaning our model can represents more complex data) but there&amp;rsquo;s no such thing as a free lunch. Typically, there are two main problems associated with latent variable models that need to be solved&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The first one is &lt;strong&gt;learning&lt;/strong&gt; in which we try to find the &amp;ldquo;optimal&amp;rdquo; parameters $\color{blue}{\theta^*}$ based on some criterion. One powerful technique for learning is &lt;code&gt;maximum likelihood estimation&lt;/code&gt; preferring to chose the parameters that maximize the likelihood $p(x;\theta)$. Maximum likelihood estimation in latent variable models is difficult. Then comes a method that will be introduced in the next section, named &lt;code&gt;Expectation Maximization&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;!-- When $z$ is discrete, we have
+$$
+p(x; \theta) = \sum_z p(x, z; \theta)
+$$ when $z$ is discrete or
+$$
+p(x; \theta) = \int_z p(x, z; \theta) dz
+$$
+when $z$ is continuous. --&gt;
+&lt;!-- \begin{align}
+&amp; \mathbf{E}_{x \sim p_{data}(x)}{p(x; \theta)} \\
+&amp; = \frac{1}{N} \prod_i^N p(x^{(i)}; \theta) \\
+&amp; = \frac{1}{N} \prod_i^N  \int p(x^{(i)}, z^{(i)}; \theta) dz^{(i)} \\
+&amp; = \frac{1}{N} \prod_i^N \int p(x^{(i)} | z^{(i)}; \theta) p(z^{(i)})  dz^{(i)} \\
+\end{align} --&gt;
+&lt;ul&gt;
+&lt;li&gt;In many cases, latent variables can capture meaningful pattern in the data. Hence, given new data, we are often interested in the value of latent variables. This raises the problem of &lt;strong&gt;inference&lt;/strong&gt; where we want to deduce the posterior $p(x|z;\theta)$.
+$$
+p(x|z;\theta) = \frac{p(x, z ;\theta)}{p(x;\theta)} = \frac{p(x, z ;\theta)}{}
+$$
+A method to approximate the posterior distribution, named &lt;code&gt;Variational Inference&lt;/code&gt;, will be introduced later.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;expectation-maximization-em&#34;&gt;Expectation Maximization (EM)&lt;/h3&gt;
+&lt;p&gt;Introducing latent variables to a statistical model makes its likelihood function non-convex, which is hard to find a maximum likelihood solution. The EM algorithm was introduced to solve the maximum likelihood estimation problem in these kind of statistical models. The algorithm iteratively alternates between building an expected log-likelihood (&lt;code&gt;E step&lt;/code&gt;), which is a convex lower bound to the non-convex log-likelihood, and maximizing it over parameters (&lt;code&gt;M step&lt;/code&gt;).&lt;/p&gt;
+&lt;p&gt;But how does EM construct the expected log-likelihood?
+We have&lt;/p&gt;
+&lt;div&gt;
+\begin{align}
+\log p(x; \theta) &amp; \geq \log p(x;\theta) - KL({\color{blue}{q(z)}}||p(z|x;\theta)) \\
+&amp; = \log p(x;\theta) - (\mathrm{E}_{z\sim \color{blue}{q(z)}}\log {\color{blue}{q(z)}} - \mathrm{E}_{z \sim \color{blue}{q(z)}}\log p(z|x; \theta)) \\
+&amp; = \mathrm{E}_{z\sim \color{blue}{q(z)}}(\log p(x;\theta) + \log p(z|x;\theta)) - \mathrm{E}_{z\sim \color{blue}{q{(z)}}}\log {\color{blue}{q(z)}} \\
+&amp; = \mathrm{E}_{z\sim \color{blue}{q(z)}}\log p(x, z;\theta) - \mathrm{E}_{z\sim \color{blue}{q(z)}}\log {\color{blue}{q(z)}} = L(q, \theta) \tag{1} \\
+\end{align}
+&lt;/div&gt;
+&lt;p&gt;for any choice of $\color{blue}{q(z)}$. It is obvious that $L(q, \theta)$ is a lower bound of $\log p(x;\theta)$ and the equality holds if and only if ${\color{blue}{q(z)}} = p(z|x;\theta)$. EM aims to construct a lower bound that is easy to maximize. By initializing parameter $\theta_{old}$ and choosing $\color{blue}{q(z)} = p(z|x;\theta_{old})$ (&lt;code&gt;E-step&lt;/code&gt;), the lower bound becomes
+$$
+L(\theta) = \mathrm{E}_{z\sim p(z|x;\theta_{old})} \log p(x,z;\theta) - \mathrm{E}_{z\sim {p(z|x;\theta_{old})}}\log {p(z|x;\theta_{old})}
+$$&lt;/p&gt;
+&lt;p&gt;EM then maximizes $L(\theta)$ at each &lt;code&gt;M-step&lt;/code&gt;&lt;/p&gt;
+&lt;div&gt;
+\begin{align}
+\mathop{max}_{\theta} L(\theta) &amp; = \mathop{max}_{\theta} \mathrm{E}_{z\sim p(z|x;\theta_{old})} \log p(x,z;\theta) - \mathrm{E}_{z\sim {p(z|x;\theta_{old})}}\log {p(z|x;\theta_{old})} \\
+&amp; = \mathop{max}_{\theta} \mathrm{E}_{z\sim p(z|x;\theta_{old})} \log p(x,z;\theta) \\
+\end{align}
+&lt;/div&gt;
+&lt;!-- $L(q, \theta)$ is still involved two unknown components which is hard to optimize. EM deals with this problem by initializing parameter $\theta_{old}$ and construct the lower bound by choosing $\color{blue}{q(z)} = p(z|x;\theta_{old})$. The lower bound becomes
+$$
+L(\theta) = \mathrm{E}_{z\sim p(z|x;\theta_{old})} \log p(x,z;\theta) - \mathrm{E}_{z\sim {p(z|x;\theta_{old})}}\log {p(z|x;\theta_{old})}
+$$ --&gt;
+&lt;p&gt;The EM algorithm can be summarized as follows&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Initialize parameter $\theta = \theta^{(0)}$&lt;/li&gt;
+&lt;li&gt;For each loop $t$ start from $0$
+&lt;img src=&#34;https://i.imgur.com/PbhzDrF.png&#34; width=&#34;400&#34;/&gt;
+&lt;ul&gt;
+&lt;li&gt;Estimate the posterior $p(z|x; \color{blue}{\theta^{(t)}})$&lt;/li&gt;
+&lt;li&gt;Maximize the expected log-likelihood $\mathop{max}_{\color{red}{\theta^{(t+1)}}}$&lt;/li&gt;
+&lt;li&gt;If the convergence standard is satisfied, stop&lt;/li&gt;
+&lt;/ul&gt;
+  &lt;!-- * Maximize the expected log-likelihood $\mathop{max}_{\color{red}{\theta^{(t+1)}}}\mathrm{E}_{z\sim p(z|x ; \color{blue}{\theta^{(t)}})}{p(x, z ;{\color{red}{\theta^{(t+1)}}}})$ --&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: It is easy to notice that the EM algorithm can only be applied if the posterior distribution can be computed analytically, given the current parameter $\color{blue}{\theta^{(t)}}$.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;If you want to go into the details of EM, &lt;strong&gt;Gaussian Mixture&lt;/strong&gt; (when $z$ is discrete) and &lt;strong&gt;Probabilistic Principal Component Analysis&lt;/strong&gt; (when $z$ is continuous) are the two perfect cases to study.&lt;/p&gt;
+&lt;h3 id=&#34;variational-inference&#34;&gt;Variational Inference&lt;/h3&gt;
+&lt;!-- The EM is used with the assumption that we can keep track of the posterior. --&gt;
+&lt;p&gt;In many of the cases, the posterior distribution $p(z|x;\theta)$ that we are interested in can not be inferred analytically, or in other words, it is intractable. This leads naturally to the field of &lt;code&gt;approximate inference&lt;/code&gt;, in which we try to approximate the intractable posterior. Variational inference is such a technique in approximate inference which is fast and effective enough for a good approximation of $p(z|x;\theta)$.&lt;/p&gt;
+&lt;p&gt;The idea of variational inference is simple that we reformulate the problem of inference as an optimization problem by&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;First, posit a variational family $\color{blue}{q(z;v)}$ controlled by variational parameter $v$&lt;/li&gt;
+&lt;li&gt;Then, find the optimal $\color{blue}{q(z;v^{*})}$ in this family, which is as &amp;ldquo;close&amp;rdquo; to $p(z|x;\theta)$ as possible&lt;/li&gt;
+&lt;/ul&gt;
+&lt;img src=&#34;https://i.imgur.com/zXCukxg.png&#34; width=&#34;400&#34;/&gt;
+&lt;p align=&#34;center&#34;&gt;Figure _. Mean field approximation&lt;/p&gt;
+&lt;p&gt;Specifically, the goal of variational inference is then to minimize the $KL$ divergence between the variational family and the true posterior: $\mathop{min}_{q}KL({\color{blue}{q(z;v)}}||p(z|x;\theta))$. But how can we minimize such an intractable term?&lt;/p&gt;
+&lt;!-- But how can we minimize a term that can not be evaluated analytically? --&gt;
+&lt;p&gt;Recall from (1) (with the variational distribution $\color{blue}{q(z;v)}$  being chosen as $\color{blue}{q(z)}$) we have the ELBO&lt;/p&gt;
+&lt;div&gt;
+\begin{align}
+&amp; \log p(x;\theta) - KL({\color{blue}{q(z;v)}}||p(z|x;\theta))\\
+&amp; = \mathrm{E}_{z\sim \color{blue}{q(z;v)}}\log p(x, z;\theta) - \mathrm{E}_{z\sim \color{blue}{q(z;v)}}\log \color{blue}{q(z;v)}\\
+\end{align}
+&lt;/div&gt;
+&lt;p&gt;Since $\log p(x;\theta)$ is considered as constant, minimizing the KL divergence is equivalent to maximizing the ELBO. The optimization problem becomes&lt;/p&gt;
+&lt;div&gt;
+$$
+\mathop{max}_{q}\mathrm{E}_{z\sim \color{blue}{q(z;v)}}\log p(x, z;\theta) - \mathrm{E}_{z\sim \color{blue}{q(z;v)}}\log \color{blue}{q(z;v)}
+$$
+&lt;/div&gt;
+&lt;p&gt;which now can be optimized with suitable choice of $\color{blue}{q(z;v)}$.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: Relationship between EM and VI&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h4 id=&#34;mean-field-approximation&#34;&gt;Mean field approximation&lt;/h4&gt;
+&lt;p&gt;[TODO]There are many form of variational inference. The simplest form of variational inference is &lt;code&gt;mean-field approximation&lt;/code&gt;, which makes the strong assumption that all latent variables are mutually independent. The variational distribution can be factorized as
+$$
+q(z;v) = \prod_{k=1}^{K}q(z_k;v_k)
+$$&lt;/p&gt;
+&lt;p&gt;where $z$ consists of $K$ latent variables $(z_1, z_2, &amp;hellip;, z_K)$. Each latent variable $z_k$ now is controlled by its own variational parameter $v_k$.&lt;/p&gt;
+&lt;p&gt;[TODO] $q(z_k;v_k^*) \propto \mathrm{E}_{z_{-k} \sim q_{-k}(z_{-k};{v_{-k}}^{(t)})} \log p(z_k, z_{-k}, x;\theta)$&lt;/p&gt;
+&lt;h4 id=&#34;coordinate-ascent-update&#34;&gt;Coordinate ascent update&lt;/h4&gt;
+&lt;p&gt;The coordinate ascent algorithm can be summarized as follows&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Initialize $v = v^{(0)}$&lt;/li&gt;
+&lt;li&gt;For each loop $t$ start from $0$
+&lt;ul&gt;
+&lt;li&gt;For each loop  $k$ from $1$ to $K$
+&lt;ul&gt;
+&lt;li&gt;Estimate $q(z_k;v_k^*) \propto \mathrm{E}_{z_{-k} \sim q_{-k}(z_{-k};{v_{-k}}^{(t)})} \log p(z_k, z_{-k}, x;\theta)$&lt;/li&gt;
+&lt;li&gt;Set $v_k^{(t+1)} = v_k^*$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Compute the ELBO to check convergence&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;latent-dirichlet-allocation&#34;&gt;Latent Dirichlet Allocation&lt;/h2&gt;
+&lt;p&gt;LDA assumes that each &lt;code&gt;document&lt;/code&gt; is a distribution over &lt;code&gt;topics&lt;/code&gt; and each &lt;code&gt;topic&lt;/code&gt; is considered as a distribution over &lt;code&gt;words&lt;/code&gt;. For instance, suppose that we have $4$ topics and a total of $6$ &lt;code&gt;words&lt;/code&gt;.&lt;/p&gt;
+&lt;img src=&#34;https://i.imgur.com/ek3asj1.png&#34; width=&#34;500&#34;/&gt;
+&lt;p align=&#34;center&#34;&gt;Figure _. The two probabilistic assumptions of LDA&lt;/p&gt;
+&lt;h3 id=&#34;generative-process&#34;&gt;Generative process&lt;/h3&gt;
+&lt;p&gt;LDA is a generative model. Hence, to understand its structure clearly, let us see how it generates documents. Suppose that we have $T$ topics and a vocabulary of $V$ words. Model LDA has 2 parameters $(\alpha, \beta)$ where&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;$\alpha$ denotes the Dirichlet prior that controls topic distribution of each document.&lt;/li&gt;
+&lt;li&gt;$\beta$ is a $2D$ matrix of size $T \times V$ denotes word distribution of  all topics ($\beta_i$ is a word distribution of the &lt;code&gt;i + 1&lt;/code&gt;th topic).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;img src=&#34;https://i.imgur.com/LGAlXEg.png&#34; width=&#34;500&#34;/&gt;
+&lt;p align=&#34;center&#34;&gt;Figure _. How a document is generated in LDA&lt;/p&gt;
+&lt;p&gt;The generative process is then pictured as above. Specifically,&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;For each document with $N_d$ words
+&lt;ul&gt;
+&lt;li&gt;Sample document&amp;rsquo;s topic distribution $\theta \sim Dir(\alpha)$&lt;/li&gt;
+&lt;li&gt;For each word positions $j$ from $1$ to $N_d$
+&lt;ul&gt;
+&lt;li&gt;Sample the topic of the current word $t_j \sim Cat(\theta)$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Sample the current word based on the topic $t_j$ and the word distribution parameters $\beta$, $w_j \sim Cat(\beta_{t_j})$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Warning&lt;/strong&gt;: $\theta$ now is a latent variable. I keep the notation the same as the original paper for consistency.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;the-two-problems-of-lda&#34;&gt;The two problems of LDA&lt;/h3&gt;
+&lt;img src=&#34;https://i.imgur.com/VUMrTKJ.png&#34; width=&#34;400&#34;/&gt;
+&lt;p align=&#34;center&#34;&gt;Figure _. LDA as a probabilistic graphical model&lt;/p&gt;
+&lt;p&gt;LDA is a latent variable model, consisting of: observed data $w$;  model parameters $\alpha, \beta$; and latent variables $z, \theta$; as shown in the figure above. Hence, just like any typical latent variable model, LDA also have two problems needed to be solved.&lt;/p&gt;
+&lt;!--
+$$
+p(w;\alpha, \beta) = \int p(\theta;\alpha) \prod_{i=1}^{N_d} \sum_{t=0}^{T - 1} p(z_i = t|\theta) p(w_i | \beta, z_i=t) d\theta
+$$ --&gt;
+&lt;h4 id=&#34;inference&#34;&gt;Inference&lt;/h4&gt;
+&lt;p&gt;Given a document $d$ has $N$ words ${w_1^{(d)}, &amp;hellip;, w_N^{(d)}}$ and model parameters $\alpha$, $\beta$; infer the posterior distribution $p(z, \theta| w^{(d)}; \alpha, \beta)$.&lt;/p&gt;
+&lt;p&gt;We can then use mean field approximation to approximate $p(z, \theta| w^{(d)}; \alpha, \beta)$ by introducing the mean-field variational distribution $q(z, \theta; \lambda, \phi) = q(\theta;\lambda)\prod_{i=1}^{N}q(z_i;\phi_i)$.
+&lt;img src=&#34;https://i.imgur.com/O5a0mY3.png&#34; width=&#34;250&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;Figure _. The mean-field variational distribution&lt;/p&gt;
+&lt;h4 id=&#34;parameter-estimation&#34;&gt;Parameter estimation&lt;/h4&gt;
+&lt;p&gt;Likelihood function for each document is
+$$
+p(w;\alpha, \beta) = \int p(\theta;\alpha) \prod_{i=1}^{N_d} \sum_{t=0}^{T - 1} p(z_i = t|\theta) p(w_i | \beta, z_i=t) d\theta
+$$&lt;/p&gt;
+&lt;p&gt;Given a collection of $D$ documents, find $\alpha, \beta$ that maximizes the likelihood function over all documents&lt;/p&gt;
+&lt;p&gt;$$
+p(D;\alpha, \beta) = \prod_{d}^{D} \int p(\theta_d;\alpha) \prod_{i=1}^{N_d} \sum_{t=0}^{T - 1} p(z_i = t|\theta_d) p(w_i | \beta, z_i=t) d\theta_d
+$$&lt;/p&gt;
+&lt;p&gt;Since the posterior $p(z, \theta| w^{(d)}; \alpha, \beta)$ can not be computed exactly but can only be approximated (for instance, via variational inference in the previous section), we can not apply the EM algorithm directly to solve the estimation problem. To handle this, an algorithm named variational EM algorithm, which combines EM and mean-field inference, was introduced.&lt;/p&gt;
+&lt;p&gt;The variational EM algorithm for LDA can be summarized as follows&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Initialize parameter $\alpha, \beta$ to $\alpha^{(0)}, \beta^{(0)}$&lt;/li&gt;
+&lt;li&gt;For each loop $t$ start from $0$
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;E step&lt;/strong&gt;:
+&lt;ul&gt;
+&lt;li&gt;For each document $d$, use mean-field approximation to approximate the posterior $p(z^{(d)}, \theta^{(d)}|w^{(d)};{\color{blue}{\alpha^{(t)}, \beta^{(t)}}})$:
+&lt;ul&gt;
+&lt;li&gt;Introduce the mean-field $q(z, \theta; \lambda, \phi) = q(\theta;\lambda)\prod_{i=1}^{N}q(z_i;\phi_i)$&lt;/li&gt;
+&lt;li&gt;Use coordinate ascent update algorithm to yield optimal $\lambda^*, \phi^*$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;M step&lt;/strong&gt;: Maximize the expected log-likelihood
+  &lt;p&gt;$\mathop{max}_{\color{red}{\alpha^{(t+1)}, \beta^{(t+1)}}} \mathrm{E}_{z, \theta \sim q(z, \theta; \lambda^{*}, \phi^{*})} {p(w, z, \theta ;{\color{red}{\alpha^{(t+1)}, \beta^{(t+1)}}}})$&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;If the convergence standard is satisfied, stop&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: Actually, there are many techniques to solve the 2 problems of LDA. In the scope of this blog, we only discuss about Variational EM.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;strong&gt;References&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Latent Dirichlet Allocation (
+&lt;a href=&#34;http://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;pdf&lt;/a&gt;)&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Dive into Faster RCNN</title>
       <link>https://azraelzhor.github.io/post/faster-rcnn/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <pubDate>Sat, 15 Feb 2020 00:00:00 +0000</pubDate>
       <guid>https://azraelzhor.github.io/post/faster-rcnn/</guid>
       <description>&lt;p&gt;Last year, I had a chance to be involved in an Advanced Computer Vision class held by a non-profit organization. During the class, object detection is one of the fields that I found myself interested in the most. This motivated me to write a series of blogs in order to understand better some famous approaches that has been applied in the field. Though, the idea has been postponed until recently :v. The first part of this series is about Faster RCN, one of the state-of-the-art method used for object detection. In this blog post, I will walk you through the detail of Faster RCNN. Hopefully, at the end of this blog, you would figure out the way Faster RCNN works.&lt;/p&gt;
 &lt;h2 id=&#34;outline&#34;&gt;Outline&lt;/h2&gt;
@@ -294,7 +533,7 @@ def class_loss_regr(num_classes, cfg):
     <item>
       <title>Invertible Residual Networks for Generative Modeling</title>
       <link>https://azraelzhor.github.io/post/invertible-residual-networks/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <pubDate>Sun, 19 Jan 2020 00:00:00 +0000</pubDate>
       <guid>https://azraelzhor.github.io/post/invertible-residual-networks/</guid>
       <description>&lt;p&gt;If you have been involving in machine learning for a while, you should have known about residual networks, which are proved to be powerful for image classification. Yet, apart from classification, they can be made invertible by some simple tricks to be used in other machine learning tasks as well. This family of residual networks called &lt;strong&gt;Invertible Residual Networks&lt;/strong&gt; has been proposed  recently by J Behrmann, 2018. In this blog post, I will walk you through the invention of invertible residual networks.&lt;/p&gt;
 &lt;h2 id=&#34;table-of-contents&#34;&gt;Table of Contents&lt;/h2&gt;
@@ -412,8 +651,8 @@ $$\begin{align}
 It is easy to realize that the last equation is literally a variables change formula with transformation $F$. This does make sense because a normalizing flow can also be viewed as a change of variables but with a much more complex invertible transformation. Here, $F$ is clearly invertible as it is a composition of an arbitrary number of invertible functions.
 &lt;p&gt;By designing an appropriate $F$, we can obtain an arbitrarily complex normalized density function at the completion of a normalizing flow. Hence, normalizing flows can be intuitively interpreted as a systematic way to distort the input density function, making it more complex (like in variational inference setting) or simpler (like in density estimation setting). However, in order for normalizing flows to be useful in practice, we need to have two conditions satisfied&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;The determinant of their Jacobian matrices $J_{f_k}$ need to be **easy to compute**, in order to obtain a tractable likelihood.&lt;/li&gt;
-&lt;li&gt;Those transformation functions $f_k$ obviously need to be &lt;strong&gt;invertible&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;The determinant of their Jacobian matrices $J_{f_k}$ need to be &lt;code&gt;easy to compute&lt;/code&gt;, in order to obtain a tractable likelihood.&lt;/li&gt;
+&lt;li&gt;Those transformation functions $f_k$ obviously need to be &lt;code&gt;invertible&lt;/code&gt;.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;In fact, many approaches have been proposed to construct those easy-to-use transformation functions lately. Inspired by normalizing flows, the authors of the paper has also managed to exploit residual networks as transformation functions used for normalizing flows. Thus, before diving into the details, let take a look back at the architecture of residual networks.&lt;/p&gt;
 &lt;p&gt;&lt;a id=&#34;res-block&#34;&gt;&lt;/a&gt;&lt;/p&gt;
@@ -437,10 +676,10 @@ $$&lt;/p&gt;
 &lt;p&gt;In the inverse phase, each block takes $z$ as input and produces $x$ as output. Thus, in order for a block to be invertible, we need to enforce the existence and uniqueness of output $x$ for each input $z$.&lt;/p&gt;
 &lt;p&gt;From $(1)$, we have
 $$x = z - g(x)$$&lt;/p&gt;
-&lt;p&gt;Let define $h(x) = z - g(x)$ to be a function of $x$, where z acts as a constant. The requirement can now be formulated as follows: The equation $x = h(x)$ must have only one root or, to put it in a formal way, &lt;strong&gt;$h(x)$ has a unique fixed point&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;Let define $h(x) = z - g(x)$ to be a function of $x$, where z acts as a constant. The requirement can now be formulated as follows: The equation $x = h(x)$ must have only one root or, to put it in a formal way, &lt;code&gt;$h(x)$ has a unique fixed point&lt;/code&gt;.&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&lt;strong&gt;Fixed point:&lt;/strong&gt;
-Let X be a metric space and let T: X → X be a mapping in X. A &lt;strong&gt;fixed point&lt;/strong&gt; of T is a point in X such that T(x) = x.&lt;/p&gt;
+Let X be a metric space and let T: X → X be a mapping in X. A &lt;code&gt;fixed point&lt;/code&gt; of T is a point in X such that T(x) = x.&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;Fortunately, this requirement can be obtained according to the famous Banach fixed-point theorem.&lt;/p&gt;
 &lt;h3 id=&#34;fixed-point-theorem&#34;&gt;Fixed point theorem&lt;/h3&gt;
@@ -449,7 +688,7 @@ Let X be a metric space and let T: X → X be a mapping in X. A &lt;strong&gt;fi
 &lt;p&gt;&lt;strong&gt;Contraction mapping:&lt;/strong&gt;
 Let $(M, d)$ be a complete metric space. A function $T$: $M$ → $M$ is a contraction mapping if there exists a real number $0 \leq k &amp;lt; 1$ such that:&lt;/p&gt;
 &lt;p&gt;$$\quad d(T(x), T(y)) \leq k d(x, y) , \quad \quad \forall x, y \in M$$&lt;/p&gt;
-&lt;p&gt;The smallest $k$ for which the above inequality holds is called the &lt;strong&gt;Lipschitz constant&lt;/strong&gt; of $f$, denoted by $Lip(T)$&lt;/p&gt;
+&lt;p&gt;The smallest $k$ for which the above inequality holds is called the &lt;code&gt;Lipschitz constant&lt;/code&gt; of $f$, denoted by $Lip(T)$&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;&lt;strong&gt;Banach theorem:&lt;/strong&gt; Let $(M, d)$ be a complete metric space and $T$: $M$ → $M$ be a contraction mapping. Then T has a unique fixed point $x \in M$. Furthermore, if $y \in M$ is arbitrary chosen, then the iterates ${ {x_n}}_{n=0}^\infty$, given by&lt;/p&gt;
 &lt;div&gt;
@@ -481,7 +720,7 @@ $$
   &lt;p align=&#34;center&#34;&gt;Figure 3. Contractive residual mapping&lt;p align=&#34;center&#34;&gt;
 &lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;For nonlinear mappings, &lt;strong&gt;ReLU&lt;/strong&gt;, &lt;strong&gt;ELU&lt;/strong&gt; and &lt;strong&gt;tanh&lt;/strong&gt; are the possible choices for contraction constraint.&lt;/li&gt;
+&lt;li&gt;For nonlinear mappings, &lt;code&gt;ReLU&lt;/code&gt;, &lt;code&gt;ELU&lt;/code&gt; and &lt;code&gt;tanh&lt;/code&gt; are the possible choices for contraction constraint.&lt;/li&gt;
 &lt;li&gt;For linear mappings, implemented as convolutional layers $W_i$, they can be made contractive by satisfying the condition $$\lVert W_i \rVert_2 &amp;lt; 1 \quad \forall W_i$$ where $\lVert a \rVert_2$ denotes the spectral norm of matrix a.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;blockquote&gt;
@@ -516,7 +755,8 @@ $$ --&gt;
 &lt;p&gt;For each residual block $f$, we have&lt;/p&gt;
 &lt;div&gt;
 $$\begin{align}
-\ln \left\lvert \det J_f(x)\right\rvert &amp; = \ln (\det J_f(x)) \textrm{( $\det J_f$ is always positive)} \\
+&amp; \ln \left\lvert \det J_f(x)\right\rvert \\
+&amp; = \ln (\det J_f(x)) \textrm{( $\det J_f$ is always positive)} \\
 &amp; = tr(\ln J_f(x)) \textrm{($\ln \det A = tr(\ln(A))$)} \\
 &amp; = tr(ln\frac{\partial f}{\partial x}) \\
 &amp; = tr(ln\frac{\partial (x + g(x))}{\partial x})\\
@@ -553,7 +793,7 @@ v^T J_g^k v &amp; = v^T w_k \\
 \end{align}$$
 &lt;/div&gt;
 &lt;p&gt;which requires now only matrix-vector multiplication.&lt;/p&gt;
-&lt;p&gt;Furthermore, the term $w_k$ can be evaluated roughly as the same cost as evaluating $g$ using &lt;strong&gt;reverse-mode automatic differentiation&lt;/strong&gt;, alleviating the heavy computation of evaluating $J_g$ explicitly.&lt;/p&gt;
+&lt;p&gt;Furthermore, the term $w_k$ can be evaluated roughly as the same cost as evaluating $g$ using &lt;code&gt;reverse-mode automatic differentiation&lt;/code&gt;, alleviating the heavy computation of evaluating $J_g$ explicitly.&lt;/p&gt;
 &lt;p align=&#34;center&#34;&gt;
   &lt;img src=&#34;https://i.imgur.com/ovaeC6i.png&#34; width=&#34;300px&#34;/&gt;
 &lt;/p&gt;

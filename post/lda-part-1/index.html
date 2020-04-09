@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.7.0">
+
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+  
+  
+
+  <meta name="author" content="Thang Le">
+
+  
+  
+  
+    
+  
+  <meta name="description" content="Text data is everywhere. When having massive amounts of them, a need naturally arises is that we want them to be organized efficiently. One naive way is to organize them based on topics. It means that texts covering the same topics should be put in the same groups. The problem is that we do not know which topic a text document belongs to and manually labeling topics for every document is a very expensive task.">
+
+  
+  <link rel="alternate" hreflang="en-us" href="https://azraelzhor.github.io/post/lda-part-1/">
+
+  
+
+
+  
+  
+  
+  <meta name="theme-color" content="#2962ff">
+  
+
+  
+  
+  
+  <script src="/js/mathjax-config.js"></script>
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-1/css/all.min.css" integrity="sha256-4w9DunooKSr3MFXHXWyFER38WmPdm361bQS/2KUWZbU=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/atelier-sulphurpool-light.min.css" crossorigin="anonymous" title="hl-light">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/atelier-sulphurpool-light.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+      
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.css" integrity="sha256-SHMGCYmST46SoyGgo4YR/9AlK1vf3ff84Aq9yK4hdqM=" crossorigin="anonymous">
+    
+
+    
+
+    
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.1.2/lazysizes.min.js" integrity="sha256-Md1qLToewPeKjfAHU1zyPwOutccPAm5tahnaw7Osw0A=" crossorigin="anonymous" async></script>
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" integrity="" crossorigin="anonymous" async></script>
+      
+    
+      
+
+      
+      
+
+      
+    
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700%7CRoboto:400,400italic,700%7CRoboto+Mono&display=swap">
+  
+
+  
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.css">
+
+  
+
+
+
+
+  
+
+
+  
+
+  <link rel="manifest" href="/index.webmanifest">
+  <link rel="icon" type="image/png" href="/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_32x32_fill_lanczos_center_2.png">
+  <link rel="apple-touch-icon" type="image/png" href="/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_192x192_fill_lanczos_center_2.png">
+
+  <link rel="canonical" href="https://azraelzhor.github.io/post/lda-part-1/">
+
+  
+  
+  
+  
+  
+    
+    
+  
+  
+  <meta property="twitter:card" content="summary">
+  
+  <meta property="twitter:site" content="@joocxi">
+  <meta property="twitter:creator" content="@joocxi">
+  
+  <meta property="og:site_name" content="Thang Le">
+  <meta property="og:url" content="https://azraelzhor.github.io/post/lda-part-1/">
+  <meta property="og:title" content="Variational Expectation Maximization for Latent Dirichlet Allocation | Thang Le">
+  <meta property="og:description" content="Text data is everywhere. When having massive amounts of them, a need naturally arises is that we want them to be organized efficiently. One naive way is to organize them based on topics. It means that texts covering the same topics should be put in the same groups. The problem is that we do not know which topic a text document belongs to and manually labeling topics for every document is a very expensive task."><meta property="og:image" content="img/map[gravatar:%!s(bool=true) shape:circle]">
+  <meta property="twitter:image" content="img/map[gravatar:%!s(bool=true) shape:circle]"><meta property="og:locale" content="en-us">
+  
+    
+      <meta property="article:published_time" content="2020-03-20T00:00:00&#43;00:00">
+    
+    <meta property="article:modified_time" content="2020-03-20T00:00:00&#43;00:00">
+  
+
+  
+
+
+    
+
+
+
+
+
+
+  
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://azraelzhor.github.io/post/lda-part-1/"
+  },
+  "headline": "Variational Expectation Maximization for Latent Dirichlet Allocation",
+  
+  "datePublished": "2020-03-20T00:00:00Z",
+  "dateModified": "2020-03-20T00:00:00Z",
+  
+  "author": {
+    "@type": "Person",
+    "name": "Thang Le"
+  },
+  
+  "publisher": {
+    "@type": "Organization",
+    "name": "Thang Le",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://azraelzhor.github.io/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_192x192_fill_lanczos_center_2.png"
+    }
+  },
+  "description": "Text data is everywhere. When having massive amounts of them, a need naturally arises is that we want them to be organized efficiently. One naive way is to organize them based on topics. It means that texts covering the same topics should be put in the same groups. The problem is that we do not know which topic a text document belongs to and manually labeling topics for every document is a very expensive task."
+}
+</script>
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+
+  <title>Variational Expectation Maximization for Latent Dirichlet Allocation | Thang Le</title>
+
+</head>
+
+<body id="top" data-spy="scroll" data-offset="70" data-target="#TableOfContents" >
+
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+  
+
+
+
+
+
+
+
+<nav class="navbar navbar-expand-lg navbar-light compensate-for-scrollbar" id="navbar-main">
+  <div class="container">
+
+    
+    <div class="d-none d-lg-inline-flex">
+      <a class="navbar-brand" href="/">Thang Le</a>
+    </div>
+    
+
+    
+    <button type="button" class="navbar-toggler" data-toggle="collapse"
+            data-target="#navbar-content" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+    <span><i class="fas fa-bars"></i></span>
+    </button>
+    
+
+    
+    <div class="navbar-brand-mobile-wrapper d-inline-flex d-lg-none">
+      <a class="navbar-brand" href="/">Thang Le</a>
+    </div>
+    
+
+    
+    
+    <div class="navbar-collapse main-menu-item collapse justify-content-start" id="navbar-content">
+
+      
+      <ul class="navbar-nav d-md-inline-flex">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#about"><span>Home</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#posts"><span>Blogs</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#projects"><span>Projects</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#contact"><span>Contact</span></a>
+        </li>
+
+        
+        
+
+      
+
+        
+      </ul>
+    </div>
+
+    <ul class="nav-icons navbar-nav flex-row ml-auto d-flex pl-md-2">
+      
+      <li class="nav-item">
+        <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+      </li>
+      
+
+      
+      <li class="nav-item">
+        <a class="nav-link js-dark-toggle" href="#"><i class="fas fa-moon" aria-hidden="true"></i></a>
+      </li>
+      
+
+      
+
+    </ul>
+
+  </div>
+</nav>
+
+
+  
+<article class="article">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  
+  
+<div class="article-container pt-3">
+  <h1>Variational Expectation Maximization for Latent Dirichlet Allocation</h1>
+
+  
+
+  
+    
+
+
+<div class="article-metadata">
+
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+    
+    Mar 20, 2020
+  </span>
+  
+
+  
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    9 min read
+  </span>
+  
+
+  
+  
+  
+  <span class="middot-divider"></span>
+  <a href="/post/lda-part-1/#disqus_thread"></a>
+  
+
+  
+  
+
+</div>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+</div>
+
+
+
+  <div class="article-container">
+
+    <div class="article-style">
+      <p>Text data is everywhere. When having massive amounts of them, a need naturally arises is that we want them to be organized efficiently. One naive way is to organize them based on topics. It means that texts covering the same topics should be put in the same groups. The problem is that we do not know which topic a text document belongs to and manually labeling topics for every document is a very expensive task. Hence, topic modeling comes as a way to automatically discover abstract topics contained in these text documents.</p>
+<img src="https://i.imgur.com/sC2oNEc.png" width="300"/>
+<p align="center">Figure _. Text documents</p>
+<p>One of the most common topic models is Latent Dirichlet Allocation (LDA), was introduced long time ago (D. Blei et al, 2003) but is still powerful now. LDA is a complex, hierarchical latent variable model with some probabilistic assumptions over it. Thus, before diving into detail of LDA, let us review some basic knowledges about <code>probability</code> and <code>latent variable model</code>.</p>
+<blockquote>
+<p><strong>Note</strong>: My blog on LDA contains two parts. This is the first part about theoretical understanding of LDA. The  second part involves a basic implementation of LDA, which you can check out here.</p>
+</blockquote>
+<h2 id="probabilistic-assumptions">Probabilistic assumptions</h2>
+<h3 id="categorical-distribution">Categorical distribution</h3>
+<p>A categorical distribution is a <code>discrete</code> probability distribution which describes the possibility that one random variable belongs to one of $K$ categories. The distribution is parameterized by a $K$-dimensional vector $p$ denoting probabilities assigned to each category.</p>
+<p><img src="https://i.imgur.com/EDPbqzv.png" alt=""></p>
+<p>For example, assume that we have 4 categories and $p = [0.4, 0.2, 0.3, 0.1]$, then we have
+$$
+p(x=i) = p_i
+$$</p>
+<h3 id="dirichlet-distribution">Dirichlet distribution</h3>
+<p><img src="https://miro.medium.com/max/1400/1*Pepqn_v-WZC9iJXtyA-tQQ.png" alt="">
+A Dirichlet distribution is a <code>continuous</code> probability distribution which describes the possibility of generating $(K-1)$-simplex. It is parameterized by a positive, $K$-dimensional vector $\alpha$.</p>
+<p>$$
+p(x;\alpha) = \frac{1}{B(\alpha)} \prod_{k=1}^{K}x_k^{\alpha_i - 1}
+$$</p>
+<p>where $x$ is a $K$-dimensional vector and $B(\cdot)$ denotes Beta function.</p>
+<h2 id="latent-variable-model">Latent variable model</h2>
+<p>A latent variable model assumes that data, which we can observe, is controlled by some underlying unknown factor we can not observe. This dependency is often parameterized by a known distribution $p(\cdot)$ with its associated parameters known as model parameter. Formally, a simple latent variable model consists of three parts: observed data $x$, latent variable $z$ that controls $x$ and model parameters $\theta$ like the picture below.
+<img src="https://i.imgur.com/bT71bXf.png" width="300"/></p>
+<p align="center">Figure _. A typical latent variable model</p>
+<p>[TODO - example of latent variable model]
+For an example of latent variable models, imagine that you are an observer at a casino, where people are playing dice game&hellip;</p>
+<p>Latent variables increases our model&rsquo;s expressiveness (meaning our model can represents more complex data) but there&rsquo;s no such thing as a free lunch. Typically, there are two main problems associated with latent variable models that need to be solved</p>
+<ul>
+<li>The first one is <strong>learning</strong> in which we try to find the &ldquo;optimal&rdquo; parameters $\color{blue}{\theta^*}$ based on some criterion. One powerful technique for learning is <code>maximum likelihood estimation</code> preferring to chose the parameters that maximize the likelihood $p(x;\theta)$. Maximum likelihood estimation in latent variable models is difficult. Then comes a method that will be introduced in the next section, named <code>Expectation Maximization</code>.</li>
+</ul>
+<!-- When $z$ is discrete, we have
+$$
+p(x; \theta) = \sum_z p(x, z; \theta)
+$$ when $z$ is discrete or
+$$
+p(x; \theta) = \int_z p(x, z; \theta) dz
+$$
+when $z$ is continuous. -->
+<!-- \begin{align}
+& \mathbf{E}_{x \sim p_{data}(x)}{p(x; \theta)} \\
+& = \frac{1}{N} \prod_i^N p(x^{(i)}; \theta) \\
+& = \frac{1}{N} \prod_i^N  \int p(x^{(i)}, z^{(i)}; \theta) dz^{(i)} \\
+& = \frac{1}{N} \prod_i^N \int p(x^{(i)} | z^{(i)}; \theta) p(z^{(i)})  dz^{(i)} \\
+\end{align} -->
+<ul>
+<li>In many cases, latent variables can capture meaningful pattern in the data. Hence, given new data, we are often interested in the value of latent variables. This raises the problem of <strong>inference</strong> where we want to deduce the posterior $p(x|z;\theta)$.
+$$
+p(x|z;\theta) = \frac{p(x, z ;\theta)}{p(x;\theta)} = \frac{p(x, z ;\theta)}{}
+$$
+A method to approximate the posterior distribution, named <code>Variational Inference</code>, will be introduced later.</li>
+</ul>
+<h3 id="expectation-maximization-em">Expectation Maximization (EM)</h3>
+<p>Introducing latent variables to a statistical model makes its likelihood function non-convex, which is hard to find a maximum likelihood solution. The EM algorithm was introduced to solve the maximum likelihood estimation problem in these kind of statistical models. The algorithm iteratively alternates between building an expected log-likelihood (<code>E step</code>), which is a convex lower bound to the non-convex log-likelihood, and maximizing it over parameters (<code>M step</code>).</p>
+<p>But how does EM construct the expected log-likelihood?
+We have</p>
+<div>
+\begin{align}
+\log p(x; \theta) & \geq \log p(x;\theta) - KL({\color{blue}{q(z)}}||p(z|x;\theta)) \\
+& = \log p(x;\theta) - (\mathrm{E}_{z\sim \color{blue}{q(z)}}\log {\color{blue}{q(z)}} - \mathrm{E}_{z \sim \color{blue}{q(z)}}\log p(z|x; \theta)) \\
+& = \mathrm{E}_{z\sim \color{blue}{q(z)}}(\log p(x;\theta) + \log p(z|x;\theta)) - \mathrm{E}_{z\sim \color{blue}{q{(z)}}}\log {\color{blue}{q(z)}} \\
+& = \mathrm{E}_{z\sim \color{blue}{q(z)}}\log p(x, z;\theta) - \mathrm{E}_{z\sim \color{blue}{q(z)}}\log {\color{blue}{q(z)}} = L(q, \theta) \tag{1} \\
+\end{align}
+</div>
+<p>for any choice of $\color{blue}{q(z)}$. It is obvious that $L(q, \theta)$ is a lower bound of $\log p(x;\theta)$ and the equality holds if and only if ${\color{blue}{q(z)}} = p(z|x;\theta)$. EM aims to construct a lower bound that is easy to maximize. By initializing parameter $\theta_{old}$ and choosing $\color{blue}{q(z)} = p(z|x;\theta_{old})$ (<code>E-step</code>), the lower bound becomes
+$$
+L(\theta) = \mathrm{E}_{z\sim p(z|x;\theta_{old})} \log p(x,z;\theta) - \mathrm{E}_{z\sim {p(z|x;\theta_{old})}}\log {p(z|x;\theta_{old})}
+$$</p>
+<p>EM then maximizes $L(\theta)$ at each <code>M-step</code></p>
+<div>
+\begin{align}
+\mathop{max}_{\theta} L(\theta) & = \mathop{max}_{\theta} \mathrm{E}_{z\sim p(z|x;\theta_{old})} \log p(x,z;\theta) - \mathrm{E}_{z\sim {p(z|x;\theta_{old})}}\log {p(z|x;\theta_{old})} \\
+& = \mathop{max}_{\theta} \mathrm{E}_{z\sim p(z|x;\theta_{old})} \log p(x,z;\theta) \\
+\end{align}
+</div>
+<!-- $L(q, \theta)$ is still involved two unknown components which is hard to optimize. EM deals with this problem by initializing parameter $\theta_{old}$ and construct the lower bound by choosing $\color{blue}{q(z)} = p(z|x;\theta_{old})$. The lower bound becomes
+$$
+L(\theta) = \mathrm{E}_{z\sim p(z|x;\theta_{old})} \log p(x,z;\theta) - \mathrm{E}_{z\sim {p(z|x;\theta_{old})}}\log {p(z|x;\theta_{old})}
+$$ -->
+<p>The EM algorithm can be summarized as follows</p>
+<ul>
+<li>Initialize parameter $\theta = \theta^{(0)}$</li>
+<li>For each loop $t$ start from $0$
+<img src="https://i.imgur.com/PbhzDrF.png" width="400"/>
+<ul>
+<li>Estimate the posterior $p(z|x; \color{blue}{\theta^{(t)}})$</li>
+<li>Maximize the expected log-likelihood $\mathop{max}_{\color{red}{\theta^{(t+1)}}}$</li>
+<li>If the convergence standard is satisfied, stop</li>
+</ul>
+  <!-- * Maximize the expected log-likelihood $\mathop{max}_{\color{red}{\theta^{(t+1)}}}\mathrm{E}_{z\sim p(z|x ; \color{blue}{\theta^{(t)}})}{p(x, z ;{\color{red}{\theta^{(t+1)}}}})$ -->
+</li>
+</ul>
+<blockquote>
+<p><strong>Note</strong>: It is easy to notice that the EM algorithm can only be applied if the posterior distribution can be computed analytically, given the current parameter $\color{blue}{\theta^{(t)}}$.</p>
+</blockquote>
+<p>If you want to go into the details of EM, <strong>Gaussian Mixture</strong> (when $z$ is discrete) and <strong>Probabilistic Principal Component Analysis</strong> (when $z$ is continuous) are the two perfect cases to study.</p>
+<h3 id="variational-inference">Variational Inference</h3>
+<!-- The EM is used with the assumption that we can keep track of the posterior. -->
+<p>In many of the cases, the posterior distribution $p(z|x;\theta)$ that we are interested in can not be inferred analytically, or in other words, it is intractable. This leads naturally to the field of <code>approximate inference</code>, in which we try to approximate the intractable posterior. Variational inference is such a technique in approximate inference which is fast and effective enough for a good approximation of $p(z|x;\theta)$.</p>
+<p>The idea of variational inference is simple that we reformulate the problem of inference as an optimization problem by</p>
+<ul>
+<li>First, posit a variational family $\color{blue}{q(z;v)}$ controlled by variational parameter $v$</li>
+<li>Then, find the optimal $\color{blue}{q(z;v^{*})}$ in this family, which is as &ldquo;close&rdquo; to $p(z|x;\theta)$ as possible</li>
+</ul>
+<img src="https://i.imgur.com/zXCukxg.png" width="400"/>
+<p align="center">Figure _. Mean field approximation</p>
+<p>Specifically, the goal of variational inference is then to minimize the $KL$ divergence between the variational family and the true posterior: $\mathop{min}_{q}KL({\color{blue}{q(z;v)}}||p(z|x;\theta))$. But how can we minimize such an intractable term?</p>
+<!-- But how can we minimize a term that can not be evaluated analytically? -->
+<p>Recall from (1) (with the variational distribution $\color{blue}{q(z;v)}$  being chosen as $\color{blue}{q(z)}$) we have the ELBO</p>
+<div>
+\begin{align}
+& \log p(x;\theta) - KL({\color{blue}{q(z;v)}}||p(z|x;\theta))\\
+& = \mathrm{E}_{z\sim \color{blue}{q(z;v)}}\log p(x, z;\theta) - \mathrm{E}_{z\sim \color{blue}{q(z;v)}}\log \color{blue}{q(z;v)}\\
+\end{align}
+</div>
+<p>Since $\log p(x;\theta)$ is considered as constant, minimizing the KL divergence is equivalent to maximizing the ELBO. The optimization problem becomes</p>
+<div>
+$$
+\mathop{max}_{q}\mathrm{E}_{z\sim \color{blue}{q(z;v)}}\log p(x, z;\theta) - \mathrm{E}_{z\sim \color{blue}{q(z;v)}}\log \color{blue}{q(z;v)}
+$$
+</div>
+<p>which now can be optimized with suitable choice of $\color{blue}{q(z;v)}$.</p>
+<blockquote>
+<p><strong>Note</strong>: Relationship between EM and VI</p>
+</blockquote>
+<h4 id="mean-field-approximation">Mean field approximation</h4>
+<p>[TODO]There are many form of variational inference. The simplest form of variational inference is <code>mean-field approximation</code>, which makes the strong assumption that all latent variables are mutually independent. The variational distribution can be factorized as
+$$
+q(z;v) = \prod_{k=1}^{K}q(z_k;v_k)
+$$</p>
+<p>where $z$ consists of $K$ latent variables $(z_1, z_2, &hellip;, z_K)$. Each latent variable $z_k$ now is controlled by its own variational parameter $v_k$.</p>
+<p>[TODO] $q(z_k;v_k^*) \propto \mathrm{E}_{z_{-k} \sim q_{-k}(z_{-k};{v_{-k}}^{(t)})} \log p(z_k, z_{-k}, x;\theta)$</p>
+<h4 id="coordinate-ascent-update">Coordinate ascent update</h4>
+<p>The coordinate ascent algorithm can be summarized as follows</p>
+<ul>
+<li>Initialize $v = v^{(0)}$</li>
+<li>For each loop $t$ start from $0$
+<ul>
+<li>For each loop  $k$ from $1$ to $K$
+<ul>
+<li>Estimate $q(z_k;v_k^*) \propto \mathrm{E}_{z_{-k} \sim q_{-k}(z_{-k};{v_{-k}}^{(t)})} \log p(z_k, z_{-k}, x;\theta)$</li>
+<li>Set $v_k^{(t+1)} = v_k^*$</li>
+</ul>
+</li>
+<li>Compute the ELBO to check convergence</li>
+</ul>
+</li>
+</ul>
+<h2 id="latent-dirichlet-allocation">Latent Dirichlet Allocation</h2>
+<p>LDA assumes that each <code>document</code> is a distribution over <code>topics</code> and each <code>topic</code> is considered as a distribution over <code>words</code>. For instance, suppose that we have $4$ topics and a total of $6$ <code>words</code>.</p>
+<img src="https://i.imgur.com/ek3asj1.png" width="500"/>
+<p align="center">Figure _. The two probabilistic assumptions of LDA</p>
+<h3 id="generative-process">Generative process</h3>
+<p>LDA is a generative model. Hence, to understand its structure clearly, let us see how it generates documents. Suppose that we have $T$ topics and a vocabulary of $V$ words. Model LDA has 2 parameters $(\alpha, \beta)$ where</p>
+<ul>
+<li>$\alpha$ denotes the Dirichlet prior that controls topic distribution of each document.</li>
+<li>$\beta$ is a $2D$ matrix of size $T \times V$ denotes word distribution of  all topics ($\beta_i$ is a word distribution of the <code>i + 1</code>th topic).</li>
+</ul>
+<img src="https://i.imgur.com/LGAlXEg.png" width="500"/>
+<p align="center">Figure _. How a document is generated in LDA</p>
+<p>The generative process is then pictured as above. Specifically,</p>
+<ul>
+<li>For each document with $N_d$ words
+<ul>
+<li>Sample document&rsquo;s topic distribution $\theta \sim Dir(\alpha)$</li>
+<li>For each word positions $j$ from $1$ to $N_d$
+<ul>
+<li>Sample the topic of the current word $t_j \sim Cat(\theta)$</li>
+</ul>
+</li>
+<li>Sample the current word based on the topic $t_j$ and the word distribution parameters $\beta$, $w_j \sim Cat(\beta_{t_j})$</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p><strong>Warning</strong>: $\theta$ now is a latent variable. I keep the notation the same as the original paper for consistency.</p>
+</blockquote>
+<h3 id="the-two-problems-of-lda">The two problems of LDA</h3>
+<img src="https://i.imgur.com/VUMrTKJ.png" width="400"/>
+<p align="center">Figure _. LDA as a probabilistic graphical model</p>
+<p>LDA is a latent variable model, consisting of: observed data $w$;  model parameters $\alpha, \beta$; and latent variables $z, \theta$; as shown in the figure above. Hence, just like any typical latent variable model, LDA also have two problems needed to be solved.</p>
+<!--
+$$
+p(w;\alpha, \beta) = \int p(\theta;\alpha) \prod_{i=1}^{N_d} \sum_{t=0}^{T - 1} p(z_i = t|\theta) p(w_i | \beta, z_i=t) d\theta
+$$ -->
+<h4 id="inference">Inference</h4>
+<p>Given a document $d$ has $N$ words ${w_1^{(d)}, &hellip;, w_N^{(d)}}$ and model parameters $\alpha$, $\beta$; infer the posterior distribution $p(z, \theta| w^{(d)}; \alpha, \beta)$.</p>
+<p>We can then use mean field approximation to approximate $p(z, \theta| w^{(d)}; \alpha, \beta)$ by introducing the mean-field variational distribution $q(z, \theta; \lambda, \phi) = q(\theta;\lambda)\prod_{i=1}^{N}q(z_i;\phi_i)$.
+<img src="https://i.imgur.com/O5a0mY3.png" width="250"/></p>
+<p>Figure _. The mean-field variational distribution</p>
+<h4 id="parameter-estimation">Parameter estimation</h4>
+<p>Likelihood function for each document is
+$$
+p(w;\alpha, \beta) = \int p(\theta;\alpha) \prod_{i=1}^{N_d} \sum_{t=0}^{T - 1} p(z_i = t|\theta) p(w_i | \beta, z_i=t) d\theta
+$$</p>
+<p>Given a collection of $D$ documents, find $\alpha, \beta$ that maximizes the likelihood function over all documents</p>
+<p>$$
+p(D;\alpha, \beta) = \prod_{d}^{D} \int p(\theta_d;\alpha) \prod_{i=1}^{N_d} \sum_{t=0}^{T - 1} p(z_i = t|\theta_d) p(w_i | \beta, z_i=t) d\theta_d
+$$</p>
+<p>Since the posterior $p(z, \theta| w^{(d)}; \alpha, \beta)$ can not be computed exactly but can only be approximated (for instance, via variational inference in the previous section), we can not apply the EM algorithm directly to solve the estimation problem. To handle this, an algorithm named variational EM algorithm, which combines EM and mean-field inference, was introduced.</p>
+<p>The variational EM algorithm for LDA can be summarized as follows</p>
+<ul>
+<li>Initialize parameter $\alpha, \beta$ to $\alpha^{(0)}, \beta^{(0)}$</li>
+<li>For each loop $t$ start from $0$
+<ul>
+<li><strong>E step</strong>:
+<ul>
+<li>For each document $d$, use mean-field approximation to approximate the posterior $p(z^{(d)}, \theta^{(d)}|w^{(d)};{\color{blue}{\alpha^{(t)}, \beta^{(t)}}})$:
+<ul>
+<li>Introduce the mean-field $q(z, \theta; \lambda, \phi) = q(\theta;\lambda)\prod_{i=1}^{N}q(z_i;\phi_i)$</li>
+<li>Use coordinate ascent update algorithm to yield optimal $\lambda^*, \phi^*$</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>M step</strong>: Maximize the expected log-likelihood
+  <p>$\mathop{max}_{\color{red}{\alpha^{(t+1)}, \beta^{(t+1)}}} \mathrm{E}_{z, \theta \sim q(z, \theta; \lambda^{*}, \phi^{*})} {p(w, z, \theta ;{\color{red}{\alpha^{(t+1)}, \beta^{(t+1)}}}})$</p>
+</li>
+<li>If the convergence standard is satisfied, stop</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p><strong>Note</strong>: Actually, there are many techniques to solve the 2 problems of LDA. In the scope of this blog, we only discuss about Variational EM.</p>
+</blockquote>
+<p><strong>References</strong></p>
+<ol>
+<li>Latent Dirichlet Allocation (
+<a href="http://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf" target="_blank" rel="noopener">pdf</a>)</li>
+</ol>
+
+    </div>
+
+    
+
+
+
+
+
+<div class="article-tags">
+  
+  <a class="badge badge-light" href="/tags/lda/">lda</a>
+  
+  <a class="badge badge-light" href="/tags/topic-modeling/">topic modeling</a>
+  
+  <a class="badge badge-light" href="/tags/em/">em</a>
+  
+  <a class="badge badge-light" href="/tags/variational-inference/">variational inference</a>
+  
+</div>
+
+
+
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://twitter.com/intent/tweet?url=https://azraelzhor.github.io/post/lda-part-1/&amp;text=Variational%20Expectation%20Maximization%20for%20Latent%20Dirichlet%20Allocation" target="_blank" rel="noopener" class="share-btn-twitter">
+          <i class="fab fa-twitter"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://www.facebook.com/sharer.php?u=https://azraelzhor.github.io/post/lda-part-1/&amp;t=Variational%20Expectation%20Maximization%20for%20Latent%20Dirichlet%20Allocation" target="_blank" rel="noopener" class="share-btn-facebook">
+          <i class="fab fa-facebook"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="mailto:?subject=Variational%20Expectation%20Maximization%20for%20Latent%20Dirichlet%20Allocation&amp;body=https://azraelzhor.github.io/post/lda-part-1/" target="_blank" rel="noopener" class="share-btn-email">
+          <i class="fas fa-envelope"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://www.linkedin.com/shareArticle?url=https://azraelzhor.github.io/post/lda-part-1/&amp;title=Variational%20Expectation%20Maximization%20for%20Latent%20Dirichlet%20Allocation" target="_blank" rel="noopener" class="share-btn-linkedin">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://web.whatsapp.com/send?text=Variational%20Expectation%20Maximization%20for%20Latent%20Dirichlet%20Allocation%20https://azraelzhor.github.io/post/lda-part-1/" target="_blank" rel="noopener" class="share-btn-whatsapp">
+          <i class="fab fa-whatsapp"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://service.weibo.com/share/share.php?url=https://azraelzhor.github.io/post/lda-part-1/&amp;title=Variational%20Expectation%20Maximization%20for%20Latent%20Dirichlet%20Allocation" target="_blank" rel="noopener" class="share-btn-weibo">
+          <i class="fab fa-weibo"></i>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+  
+    
+  
+  
+  
+  <div class="media author-card content-widget-hr">
+    
+      <img class="avatar mr-3 avatar-circle" src="https://s.gravatar.com/avatar/046350be6588e8b350c18eb14e96f5dc?s=200')" alt="Avatar">
+    
+
+    <div class="media-body">
+      <h5 class="card-title"><a href="https://azraelzhor.github.io/">Thang Le</a></h5>
+      <h6 class="card-subtitle">ML Enthusiast</h6>
+      
+      <ul class="network-icon" aria-hidden="true">
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="/#contact" >
+        <i class="fas fa-envelope"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="https://twitter.com/joocxi" target="_blank" rel="noopener">
+        <i class="fab fa-twitter"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="https://facebook.com/joocxi" target="_blank" rel="noopener">
+        <i class="fab fa-facebook"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="https://github.com/azraelzhor" target="_blank" rel="noopener">
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  
+</ul>
+
+    </div>
+  </div>
+
+
+
+
+<section id="comments">
+  
+    
+
+  
+</section>
+
+
+
+
+<div class="article-widget">
+  
+<div class="post-nav">
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Previous</div>
+    <a href="/post/faster-rcnn/" rel="prev">Dive into Faster RCNN</a>
+  </div>
+  
+</div>
+
+</div>
+
+
+
+  
+  
+
+
+
+  </div>
+</article>
+
+      
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js" integrity="sha256-1zu+3BnLYV9LdiY85uXMzii3bdrkelyp37e0ZyTAQh0=" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js"></script>
+        
+      
+
+    
+
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.js" integrity="sha256-EErZamuLefUnbMBQbsEqu1USa+btR2oIlCpBJbyD4/g=" crossorigin="anonymous"></script>
+    
+
+    
+    
+    <script>const code_highlighting = true;</script>
+    
+
+    
+    
+    <script>const isSiteThemeDark = false;</script>
+    
+
+    
+    
+    
+    
+    
+    
+    <script>
+      const search_config = {"indexURI":"/index.json","minLength":1,"threshold":0.3};
+      const i18n = {"no_results":"No results found","placeholder":"Search...","results":"results found"};
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+    <script id="dsq-count-scr" src="https://.disqus.com/count.js" async></script>
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+    
+    <script src="/js/academic.min.a8d7005002cb4a052fd6d721e83df9ba.js"></script>
+
+    
+
+
+
+
+
+
+  
+  
+  <div class="container">
+    <footer class="site-footer">
+  
+
+  <p class="powered-by">
+    joocxi@2020 &middot; 
+
+    Powered by the
+    <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+    <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+    
+    <span class="float-right" aria-hidden="true">
+      <a href="#" class="back-to-top">
+        <span class="button_icon">
+          <i class="fas fa-chevron-up fa-2x"></i>
+        </span>
+      </a>
+    </span>
+    
+  </p>
+</footer>
+
+  </div>
+  
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

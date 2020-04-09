@@ -3,6 +3,111 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://azraelzhor.github.io/talk/</loc>
+    <lastmod>2020-04-03T18:12:38+07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://azraelzhor.github.io/</loc>
+    <lastmod>2020-04-03T18:12:38+07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://azraelzhor.github.io/talk/vietnamese-data-augmentation/</loc>
+    <lastmod>2020-04-03T18:12:38+07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://azraelzhor.github.io/project/</loc>
+    <lastmod>2020-04-03T17:25:56+07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://azraelzhor.github.io/project/vietnamese-data-augmentation/</loc>
+    <lastmod>2020-04-03T17:25:56+07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://azraelzhor.github.io/project/translating/</loc>
+    <lastmod>2020-04-03T17:25:02+07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://azraelzhor.github.io/talk/latent-dirichlet-allocation/</loc>
+    <lastmod>2020-04-03T16:42:30+07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://azraelzhor.github.io/talk/generative-models/</loc>
+    <lastmod>2020-04-03T16:41:51+07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://azraelzhor.github.io/tags/em/</loc>
+    <lastmod>2020-03-20T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://azraelzhor.github.io/tags/lda/</loc>
+    <lastmod>2020-03-20T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://azraelzhor.github.io/post/</loc>
+    <lastmod>2020-03-20T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://azraelzhor.github.io/tags/</loc>
+    <lastmod>2020-03-20T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://azraelzhor.github.io/tags/topic-modeling/</loc>
+    <lastmod>2020-03-20T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://azraelzhor.github.io/post/lda-part-1/</loc>
+    <lastmod>2020-03-20T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://azraelzhor.github.io/tags/variational-inference/</loc>
+    <lastmod>2020-03-20T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://azraelzhor.github.io/post/faster-rcnn/</loc>
+    <lastmod>2020-02-15T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://azraelzhor.github.io/tags/object-detection/</loc>
+    <lastmod>2020-02-15T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://azraelzhor.github.io/tags/rcnn/</loc>
+    <lastmod>2020-02-15T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://azraelzhor.github.io/tags/generative-model/</loc>
+    <lastmod>2020-01-19T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://azraelzhor.github.io/post/invertible-residual-networks/</loc>
+    <lastmod>2020-01-19T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://azraelzhor.github.io/tags/residual-networks/</loc>
+    <lastmod>2020-01-19T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://azraelzhor.github.io/authors/admin/</loc>
   </url>
   
@@ -15,35 +120,11 @@
   </url>
   
   <url>
-    <loc>https://azraelzhor.github.io/post/faster-rcnn/</loc>
-  </url>
-  
-  <url>
-    <loc>https://azraelzhor.github.io/post/invertible-residual-networks/</loc>
-  </url>
-  
-  <url>
-    <loc>https://azraelzhor.github.io/post/</loc>
-  </url>
-  
-  <url>
     <loc>https://azraelzhor.github.io/publication_types/</loc>
   </url>
   
   <url>
     <loc>https://azraelzhor.github.io/publication/</loc>
-  </url>
-  
-  <url>
-    <loc>https://azraelzhor.github.io/talk/</loc>
-  </url>
-  
-  <url>
-    <loc>https://azraelzhor.github.io/tags/</loc>
-  </url>
-  
-  <url>
-    <loc>https://azraelzhor.github.io/</loc>
   </url>
   
 </urlset>

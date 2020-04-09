@@ -65,10 +65,8 @@
     
       
       
-        
-          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css" crossorigin="anonymous" title="hl-light">
-          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" disabled>
-        
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/atelier-sulphurpool-light.min.css" crossorigin="anonymous" title="hl-light">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/atelier-sulphurpool-light.min.css" crossorigin="anonymous" title="hl-dark" disabled>
       
     
 
@@ -231,6 +229,9 @@
   
   <meta property="twitter:card" content="summary">
   
+  <meta property="twitter:site" content="@joocxi">
+  <meta property="twitter:creator" content="@joocxi">
+  
   <meta property="og:site_name" content="Thang Le">
   <meta property="og:url" content="https://azraelzhor.github.io/post/invertible-residual-networks/">
   <meta property="og:title" content="Invertible Residual Networks for Generative Modeling | Thang Le">
@@ -238,7 +239,9 @@
   <meta property="twitter:image" content="img/map[gravatar:%!s(bool=true) shape:circle]"><meta property="og:locale" content="en-us">
   
     
+      <meta property="article:published_time" content="2020-01-19T00:00:00&#43;00:00">
     
+    <meta property="article:modified_time" content="2020-01-19T00:00:00&#43;00:00">
   
 
   
@@ -266,8 +269,8 @@
   },
   "headline": "Invertible Residual Networks for Generative Modeling",
   
-  "datePublished": "0001-01-01T00:00:00Z",
-  "dateModified": "0001-01-01T00:00:00Z",
+  "datePublished": "2020-01-19T00:00:00Z",
+  "dateModified": "2020-01-19T00:00:00Z",
   
   "author": {
     "@type": "Person",
@@ -428,7 +431,7 @@
         
 
         <li class="nav-item">
-          <a class="nav-link " href="/#posts"><span>Blog</span></a>
+          <a class="nav-link " href="/#posts"><span>Blogs</span></a>
         </li>
 
         
@@ -506,6 +509,10 @@
       
 
       
+      <li class="nav-item">
+        <a class="nav-link js-dark-toggle" href="#"><i class="fas fa-moon" aria-hidden="true"></i></a>
+      </li>
+      
 
       
 
@@ -515,7 +522,8 @@
 </nav>
 
 
-  <article class="article">
+  
+<article class="article">
 
   
 
@@ -555,7 +563,7 @@
     
       
     
-    Jan 1, 0001
+    Jan 19, 2020
   </span>
   
 
@@ -570,6 +578,9 @@
 
   
   
+  
+  <span class="middot-divider"></span>
+  <a href="/post/invertible-residual-networks/#disqus_thread"></a>
   
 
   
@@ -716,8 +727,8 @@ $$\begin{align}
 It is easy to realize that the last equation is literally a variables change formula with transformation $F$. This does make sense because a normalizing flow can also be viewed as a change of variables but with a much more complex invertible transformation. Here, $F$ is clearly invertible as it is a composition of an arbitrary number of invertible functions.
 <p>By designing an appropriate $F$, we can obtain an arbitrarily complex normalized density function at the completion of a normalizing flow. Hence, normalizing flows can be intuitively interpreted as a systematic way to distort the input density function, making it more complex (like in variational inference setting) or simpler (like in density estimation setting). However, in order for normalizing flows to be useful in practice, we need to have two conditions satisfied</p>
 <ul>
-<li>The determinant of their Jacobian matrices $J_{f_k}$ need to be **easy to compute**, in order to obtain a tractable likelihood.</li>
-<li>Those transformation functions $f_k$ obviously need to be <strong>invertible</strong>.</li>
+<li>The determinant of their Jacobian matrices $J_{f_k}$ need to be <code>easy to compute</code>, in order to obtain a tractable likelihood.</li>
+<li>Those transformation functions $f_k$ obviously need to be <code>invertible</code>.</li>
 </ul>
 <p>In fact, many approaches have been proposed to construct those easy-to-use transformation functions lately. Inspired by normalizing flows, the authors of the paper has also managed to exploit residual networks as transformation functions used for normalizing flows. Thus, before diving into the details, let take a look back at the architecture of residual networks.</p>
 <p><a id="res-block"></a></p>
@@ -741,10 +752,10 @@ $$</p>
 <p>In the inverse phase, each block takes $z$ as input and produces $x$ as output. Thus, in order for a block to be invertible, we need to enforce the existence and uniqueness of output $x$ for each input $z$.</p>
 <p>From $(1)$, we have
 $$x = z - g(x)$$</p>
-<p>Let define $h(x) = z - g(x)$ to be a function of $x$, where z acts as a constant. The requirement can now be formulated as follows: The equation $x = h(x)$ must have only one root or, to put it in a formal way, <strong>$h(x)$ has a unique fixed point</strong>.</p>
+<p>Let define $h(x) = z - g(x)$ to be a function of $x$, where z acts as a constant. The requirement can now be formulated as follows: The equation $x = h(x)$ must have only one root or, to put it in a formal way, <code>$h(x)$ has a unique fixed point</code>.</p>
 <blockquote>
 <p><strong>Fixed point:</strong>
-Let X be a metric space and let T: X → X be a mapping in X. A <strong>fixed point</strong> of T is a point in X such that T(x) = x.</p>
+Let X be a metric space and let T: X → X be a mapping in X. A <code>fixed point</code> of T is a point in X such that T(x) = x.</p>
 </blockquote>
 <p>Fortunately, this requirement can be obtained according to the famous Banach fixed-point theorem.</p>
 <h3 id="fixed-point-theorem">Fixed point theorem</h3>
@@ -753,7 +764,7 @@ Let X be a metric space and let T: X → X be a mapping in X. A <strong>fixed po
 <p><strong>Contraction mapping:</strong>
 Let $(M, d)$ be a complete metric space. A function $T$: $M$ → $M$ is a contraction mapping if there exists a real number $0 \leq k &lt; 1$ such that:</p>
 <p>$$\quad d(T(x), T(y)) \leq k d(x, y) , \quad \quad \forall x, y \in M$$</p>
-<p>The smallest $k$ for which the above inequality holds is called the <strong>Lipschitz constant</strong> of $f$, denoted by $Lip(T)$</p>
+<p>The smallest $k$ for which the above inequality holds is called the <code>Lipschitz constant</code> of $f$, denoted by $Lip(T)$</p>
 </blockquote>
 <p><strong>Banach theorem:</strong> Let $(M, d)$ be a complete metric space and $T$: $M$ → $M$ be a contraction mapping. Then T has a unique fixed point $x \in M$. Furthermore, if $y \in M$ is arbitrary chosen, then the iterates ${ {x_n}}_{n=0}^\infty$, given by</p>
 <div>
@@ -785,7 +796,7 @@ $$
   <p align="center">Figure 3. Contractive residual mapping<p align="center">
 </p>
 <ul>
-<li>For nonlinear mappings, <strong>ReLU</strong>, <strong>ELU</strong> and <strong>tanh</strong> are the possible choices for contraction constraint.</li>
+<li>For nonlinear mappings, <code>ReLU</code>, <code>ELU</code> and <code>tanh</code> are the possible choices for contraction constraint.</li>
 <li>For linear mappings, implemented as convolutional layers $W_i$, they can be made contractive by satisfying the condition $$\lVert W_i \rVert_2 &lt; 1 \quad \forall W_i$$ where $\lVert a \rVert_2$ denotes the spectral norm of matrix a.</li>
 </ul>
 <blockquote>
@@ -820,7 +831,8 @@ $$ -->
 <p>For each residual block $f$, we have</p>
 <div>
 $$\begin{align}
-\ln \left\lvert \det J_f(x)\right\rvert & = \ln (\det J_f(x)) \textrm{( $\det J_f$ is always positive)} \\
+& \ln \left\lvert \det J_f(x)\right\rvert \\
+& = \ln (\det J_f(x)) \textrm{( $\det J_f$ is always positive)} \\
 & = tr(\ln J_f(x)) \textrm{($\ln \det A = tr(\ln(A))$)} \\
 & = tr(ln\frac{\partial f}{\partial x}) \\
 & = tr(ln\frac{\partial (x + g(x))}{\partial x})\\
@@ -857,7 +869,7 @@ v^T J_g^k v & = v^T w_k \\
 \end{align}$$
 </div>
 <p>which requires now only matrix-vector multiplication.</p>
-<p>Furthermore, the term $w_k$ can be evaluated roughly as the same cost as evaluating $g$ using <strong>reverse-mode automatic differentiation</strong>, alleviating the heavy computation of evaluating $J_g$ explicitly.</p>
+<p>Furthermore, the term $w_k$ can be evaluated roughly as the same cost as evaluating $g$ using <code>reverse-mode automatic differentiation</code>, alleviating the heavy computation of evaluating $J_g$ explicitly.</p>
 <p align="center">
   <img src="https://i.imgur.com/ovaeC6i.png" width="300px"/>
 </p>
@@ -895,6 +907,14 @@ v^T J_g^k v & = v^T w_k \\
 
 
 
+
+<div class="article-tags">
+  
+  <a class="badge badge-light" href="/tags/generative-model/">generative model</a>
+  
+  <a class="badge badge-light" href="/tags/residual-networks/">residual networks</a>
+  
+</div>
 
 
 
@@ -1094,8 +1114,31 @@ v^T J_g^k v & = v^T w_k \\
 
 
 
+<section id="comments">
+  
+    
+
+  
+</section>
 
 
+
+
+<div class="article-widget">
+  
+<div class="post-nav">
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Next</div>
+    <a href="/post/faster-rcnn/" rel="next">Dive into Faster RCNN</a>
+  </div>
+  
+  
+</div>
+
+</div>
 
 
 
@@ -1191,6 +1234,8 @@ v^T J_g^k v & = v^T w_k \\
 
     
     
+    <script id="dsq-count-scr" src="https://.disqus.com/count.js" async></script>
+    
 
     
     
@@ -1222,7 +1267,7 @@ v^T J_g^k v & = v^T w_k \\
   
 
   <p class="powered-by">
-    
+    joocxi@2020 &middot; 
 
     Powered by the
     <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
