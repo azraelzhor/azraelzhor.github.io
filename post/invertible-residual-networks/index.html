@@ -509,10 +509,6 @@
       
 
       
-      <li class="nav-item">
-        <a class="nav-link js-dark-toggle" href="#"><i class="fas fa-moon" aria-hidden="true"></i></a>
-      </li>
-      
 
       
 
@@ -523,9 +519,54 @@
 
 
   
-<article class="article">
+<div class="container-fluid docs">
+  <div class="row flex-xl-nowrap">
+    <div class="d-none d-xl-block col-xl-2 docs-toc">
+      <ul class="nav toc-top">
+        <li>
+          <a href="#" id="back_to_top" class="docs-toc-title">Contents</a>
+        </li>
+      </ul>
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#the-motivation">The motivation</a>
+      <ul>
+        <li><a href="#density-estimation">Density estimation</a></li>
+        <li><a href="#normalizing-flows">Normalizing Flows</a>
+          <ul>
+            <li><a href="#a-change-of-variables">A change of variables</a></li>
+            <li><a href="#a-normalizing-flow">A normalizing flow</a></li>
+          </ul>
+        </li>
+        <li><a href="#the-awesome-residual-block">The awesome residual block</a></li>
+      </ul>
+    </li>
+    <li><a href="#making-the-nets-invertible">Making the nets invertible</a>
+      <ul>
+        <li><a href="#fixed-point-theorem">Fixed point theorem</a></li>
+        <li><a href="#enforcing-lipschitz-constraint">Enforcing Lipschitz constraint</a></li>
+        <li><a href="#how-to-yield-the-inverse-output">How to yield the inverse output</a></li>
+      </ul>
+    </li>
+    <li><a href="#computing-the-likelihood">Computing the likelihood</a>
+      <ul>
+        <li><a href="#the-log-determinant-term">The log determinant term</a>
+          <ul>
+            <li><a href="#hutchinson-trace-estimator">Hutchinson trace estimator</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#implementation">Implementation</a></li>
+  </ul>
+</nav>
+      
+    </div>
 
-  
+    <main class="col-12 col-md-0 col-xl-10 py-md-3 pl-md-5 docs-content" role="main">
+
+      <article class="article">
+        
 
 
 
@@ -607,69 +648,19 @@
 </div>
 
 
-
-  <div class="article-container">
-
-    <div class="article-style">
-      <p>If you have been involving in machine learning for a while, you should have known about residual networks, which are proved to be powerful for image classification. Yet, apart from classification, they can be made invertible by some simple tricks to be used in other machine learning tasks as well. This family of residual networks called <strong>Invertible Residual Networks</strong> has been proposed  recently by J Behrmann, 2018. In this blog post, I will walk you through the invention of invertible residual networks.</p>
-<h2 id="table-of-contents">Table of Contents</h2>
-<ul>
-<li>
-<a href="#motivation">The motivation</a>
-<ul>
-<li>
-<a href="#den-est">Density estimation</a></li>
-<li>
-<a href="#norm-flows">Normalizing Flows</a>
-<ul>
-<li>
-<a href="#change">A change of variables</a></li>
-<li>
-<a href="#flow">A normalizing flows</a></li>
-</ul>
-</li>
-<li>
-<a href="#res-block">The awesome residual block</a></li>
-</ul>
-</li>
-<li>
-<a href="#ires-net">Making the nets invertible</a>
-<ul>
-<li>
-<a href="#banach">Fixed-point theorem</a></li>
-<li>
-<a href="#lipschitz">Enforcing Lipschitz constraint</a></li>
-<li>
-<a href="#inverse">How to yield the inverse output</a></li>
-</ul>
-</li>
-<li>
-<a href="#log-likelihood">Computing the log likelihood</a>
-<ul>
-<li>
-<a href="#log_matrix">Log determinant</a></li>
-<li>
-<a href="#trace-estimator">Hutchinsons estimator</a></li>
-</ul>
-</li>
-<li>
-<a href="#code">Implementations</a></li>
-</ul>
-<p><a id=motivation></a></p>
+        <div class="article-container">
+          <div class="article-style">
+            <p>If you have been involving in machine learning for a while, you should have known about residual networks, which are proved to be powerful for image classification. Yet, apart from classification, they can be made invertible by some simple tricks to be used in other machine learning tasks as well. This family of residual networks called <strong>Invertible Residual Networks</strong> has been proposed  recently by J Behrmann, 2018. In this blog post, I will walk you through the invention of invertible residual networks.</p>
 <h2 id="the-motivation">The motivation</h2>
 <p>Classification only tells difference between data points. This is clearly not fulfilling for greedy human beings. We want a better understanding of data or, to be more specific, the data distribution itself. This underlying distribution of data is literally what the task of density estimation tries to estimate.</p>
-<p><a id="den-est"></a></p>
 <h3 id="density-estimation">Density estimation</h3>
 <!-- A generative model explains how data is generated. Specifically, its ultimate goal is to estimate the distribution of observed data. -->
-<p>Density estimation can be achieved through maximum likelihood estimation, in which we try to maximize the expected log-likehood</p>
+<p>Density estimation can be achieved through maximum likelihood estimation, in which we try to maximize the expected log-likelihood</p>
 <div>
 $$
 \mathbf{E}_{x \sim p_{data}(x)}{p(x; \theta)}
 $$
 </div>
-<p>$$
-\mathbf{E}_{x \sim p_k(x) }{p(x; \theta)}
-$$</p>
 <p>where $p_{data}(x)$ denotes the empirical distribution of observed data and $p(x; \theta)$ denotes our assumed parametric distribution (simply known as model distribution).</p>
 <p align="center">
   <img src="https://i.imgur.com/eAeqbl8.png" width="300px"/>
@@ -680,16 +671,12 @@ $$</p>
 <!-- as we will see in the following section. -->
 <!-- ![](https://i.imgur.com/ldsPsB6.png) -->
 <p><img src="https://i.imgur.com/JPPZwz3.png" alt=""></p>
-<p><a id="norm-flows"></a></p>
 <h3 id="normalizing-flows">Normalizing Flows</h3>
 <p>Normalizing flows were first introduced to solve the problem of density estimation. Though, it later became popular when introduced to deal with variational inference by [1]. The idea of normalizing flows is very simple that it transforms one distribution to another arbitrarily complex distribution, through a sequence of invertible mapping functions.</p>
-<p><a id="change"></a></p>
 <h4 id="a-change-of-variables">A change of variables</h4>
 <p>But, let&rsquo;s first take a look at a change of variables rule, which forms the basis for normalizing flows.</p>
-<p align="center">
-  <img src="https://i.imgur.com/YYBTSnI.png" width="300px"/>
-  <p align="center">Figure 1. A change of variables<p align="center">
-</p>
+<img src="https://i.imgur.com/YYBTSnI.png" width="300px"/>
+<p align="center">A change of variables</p>
 <p>Given a random variable $x$ with its density function known as $p(x)$, if we map this variable using an invertible mapping $f$, so that $z = f(x)$ and $x = f^{-1}(z) ; \forall x, z,$ then $z$ is still a random variable. Its normalized density function is then defined as follows</p>
 <p>$$
 p(z) = p(x) \left\lvert \det\frac{\partial f^{-1}}{\partial z} \right\rvert = p(x) {\left\lvert \det\frac{\partial f}{\partial x} \right\rvert}^{-1}, \tag{1}
@@ -697,65 +684,61 @@ $$</p>
 <p>where the first equality is due to preservation of total probability of in both domain; and the second equality follows from the inverse function theorem.</p>
 <p>Taking logarithm of each side, we can rewrite $(1)$  as</p>
 <!-- $$\ln p(x) = \ln p(z) + \ln \left\lvert \det J_f(x) \right\rvert$$ -->
-<p>$$\ln p(z) = \ln p(x) - \ln \left\lvert \det J_f(x) \right\rvert$$</p>
+<p>$$
+\ln p(z) = \ln p(x) - \ln \left\lvert \det J_f(x) \right\rvert
+$$</p>
 <p>where $J_f$ denotes the Jacobian matrix of function $f$ evaluated at point $x$.</p>
-<p><a id="flow"></a></p>
-<h4 id="a-normalzing-flow">A normalzing flow</h4>
-<!-- ![](https://i.imgur.com/DVD3pno.png) -->
-<p align="center">
-  <img src="https://i.imgur.com/DVD3pno.png" width="420px"/>
-  <p align="center">Figure 2. A normalizing flow<p align="center">
-</p>
+<h4 id="a-normalizing-flow">A normalizing flow</h4>
+<img src="https://i.imgur.com/DVD3pno.png" width="420px"/>
+<p align="center">A normalizing flow</p>
 <p>We can now form a normalizing flow by chaining together a finite sequence of these variable changes just described above. As an example, let us consider a flow in figure 2, in which we have $$z \equiv z_K = f_K \circ &hellip; \circ f_2  \circ f_1 (x) \equiv F(x)$$</p>
 <p>By consecutively applying variables change formula $(2)$, we get</p>
 <div>
-$$\begin{align}
+$$
+\begin{align}
 \ln p(z) = \ln p(z_K) & = \ln p(z_{K-1}) - \ln \left\lvert \det J_{f_K}(z_{K-1})\right\rvert \\
 & = \ln p(z_{K-2}) - \sum_{k=K-1}^{K}\ln \left\lvert \det J_{f_k}(z_{k-1})\right\rvert \\
 & = \;... \\
 & = \ln p(x) - \sum_{k=1}^{K} \ln \left\lvert \det J_{f_k}(z_{k-1})\right\rvert \\
-\end{align}$$
+\end{align}
+$$
 </div>
 <p>Continuing the derivation we get</p>
 <div>
-$$\begin{align}
+$$
+\begin{align}
 \ln p(z) & = \ln p(x) - \ln \left\lvert \prod_{k=1}^{K} \det J_{f_k}(z_{k-1})\right\rvert \\
 & = \ln p(x) - \ln \left\lvert \det \prod_{k=1}^{K} J_{f_k}(z_{k-1})\right\rvert \ (\because \det(AB) = \det(A)\det(B)) \\
 & = \ln p(x) - \ln \left\lvert \det J_F(x)\right\rvert \ (\textrm{because of derivative chain rule})\\
-\end{align}$$
+\end{align}
+$$
 </div>
-It is easy to realize that the last equation is literally a variables change formula with transformation $F$. This does make sense because a normalizing flow can also be viewed as a change of variables but with a much more complex invertible transformation. Here, $F$ is clearly invertible as it is a composition of an arbitrary number of invertible functions.
-<p>By designing an appropriate $F$, we can obtain an arbitrarily complex normalized density function at the completion of a normalizing flow. Hence, normalizing flows can be intuitively interpreted as a systematic way to distort the input density function, making it more complex (like in variational inference setting) or simpler (like in density estimation setting). However, in order for normalizing flows to be useful in practice, we need to have two conditions satisfied</p>
+<p>It is easy to realize that the last equation is literally a variables change formula with transformation $F$. This does make sense because a normalizing flow can also be viewed as a change of variables but with a much more complex invertible transformation. Here, $F$ is clearly invertible as it is a composition of an arbitrary number of invertible functions.</p>
+<p>By designing an appropriate $F$, we can obtain an arbitrarily complex normalized density function at the completion of a normalizing flow. Hence, normalizing flows can be intuitively interpreted as a systematic way to distort the input density function, making it more complex (like in variational inference setting) or simpler (like in density estimation setting). However, in order for normalizing flows to be useful in practice, we need to have two conditions satisfied:</p>
 <ul>
-<li>The determinant of their Jacobian matrices $J_{f_k}$ need to be <code>easy to compute</code>, in order to obtain a tractable likelihood.</li>
 <li>Those transformation functions $f_k$ obviously need to be <code>invertible</code>.</li>
+<li>The determinant of their Jacobian matrices $J_{f_k}$ need to be <code>easy to compute</code>, in order to obtain a tractable likelihood.</li>
 </ul>
 <p>In fact, many approaches have been proposed to construct those easy-to-use transformation functions lately. Inspired by normalizing flows, the authors of the paper has also managed to exploit residual networks as transformation functions used for normalizing flows. Thus, before diving into the details, let take a look back at the architecture of residual networks.</p>
-<p><a id="res-block"></a></p>
 <h3 id="the-awesome-residual-block">The awesome residual block</h3>
 <p>Residual network is composed of a sequence of residual blocks, with each block can be simplified as this figure below</p>
-<!-- <p align="center">
-  <img src="https://i.imgur.com/WTuOajh.png" width="200px"/>
-  <p align="center">Figure 3. A residual block<p align="center">
-</p> -->
-<p align="center">
-  <img src="https://i.imgur.com/LAnhLeK.png" width="200px"/>
-  <p align="center">Figure 3. A residual block<p align="center">
-</p>
+<img src="https://i.imgur.com/LAnhLeK.png" width="200px"/>
+<p align="center">A residual block</p>
 <p>As we can see, each residual block consists of a residual part denoted by $g$ and an identity part. From mathematical viewpoint, each block can be clearly counted as a function which takes input $x$ and produces $z$ as output. Formally, we have
 $$
 z = f(x) = g(x) + x \tag{1}
 $$</p>
 <p>Back to our main story, it is obvious that the goal is to make use of residual network as a transformation function for normalizing flows. Since residual network can be interpreted as a composition function of multiple residual blocks, making each individual block invertible is <strong>a sufficient condition</strong> for the invertibility of the whole net.</p>
-<p><a id="ires-net"></a></p>
 <h2 id="making-the-nets-invertible">Making the nets invertible</h2>
 <p>In the inverse phase, each block takes $z$ as input and produces $x$ as output. Thus, in order for a block to be invertible, we need to enforce the existence and uniqueness of output $x$ for each input $z$.</p>
 <p>From $(1)$, we have
-$$x = z - g(x)$$</p>
-<p>Let define $h(x) = z - g(x)$ to be a function of $x$, where z acts as a constant. The requirement can now be formulated as follows: The equation $x = h(x)$ must have only one root or, to put it in a formal way, <code>$h(x)$ has a unique fixed point</code>.</p>
+$$
+x = z - g(x)
+$$</p>
+<p>Let define $h(x) = z - g(x)$ to be a function of $x$, where z acts as a constant. The requirement can now be formulated as follows: The equation $x = h(x)$ must have only one root or, to put it in a formal way, <strong>$h(x)$ has a unique fixed point</strong>.</p>
 <blockquote>
 <p><strong>Fixed point:</strong>
-Let X be a metric space and let T: X → X be a mapping in X. A <code>fixed point</code> of T is a point in X such that T(x) = x.</p>
+Let X be a metric space and let T: X → X be a mapping in X. A fixed point of T is a point in X such that T(x) = x.</p>
 </blockquote>
 <p>Fortunately, this requirement can be obtained according to the famous Banach fixed-point theorem.</p>
 <h3 id="fixed-point-theorem">Fixed point theorem</h3>
@@ -764,37 +747,28 @@ Let X be a metric space and let T: X → X be a mapping in X. A <code>fixed poin
 <p><strong>Contraction mapping:</strong>
 Let $(M, d)$ be a complete metric space. A function $T$: $M$ → $M$ is a contraction mapping if there exists a real number $0 \leq k &lt; 1$ such that:</p>
 <p>$$\quad d(T(x), T(y)) \leq k d(x, y) , \quad \quad \forall x, y \in M$$</p>
-<p>The smallest $k$ for which the above inequality holds is called the <code>Lipschitz constant</code> of $f$, denoted by $Lip(T)$</p>
+<p>The smallest $k$ for which the above inequality holds is called the <strong>Lipschitz constant</strong> of $f$, denoted by $Lip(T)$</p>
 </blockquote>
 <p><strong>Banach theorem:</strong> Let $(M, d)$ be a complete metric space and $T$: $M$ → $M$ be a contraction mapping. Then T has a unique fixed point $x \in M$. Furthermore, if $y \in M$ is arbitrary chosen, then the iterates ${ {x_n}}_{n=0}^\infty$, given by</p>
 <div>
-$$\begin{align}
+$$
+\begin{align}
 & x_0 = y \\
 & x_n = T(x_{n-1}), n \geq 1,
-\end{align}$$
+\end{align}
+$$
 </div>
 <p>have the property that $\lim_{n\to\infty} x_n = x$ as illustrated in the figure below.</p>
 <p><img src="https://i.imgur.com/7O3gTWK.png" alt=""></p>
-<p align="center">Figure 1. Banach fixed point theorem<p align="center">
-<!-- > **Banach fixed point theorem**
-> Let $(M, d)$ be a complete metric space and let $T$: $M$ &rightarrow; $M$ be a contraction mapping. Then T has a unique fixed point $x \in M$. Furthermore, if $y \in M$ is arbitrary chosen, then the iterates $\{ {x_n}\}_{n=0}^\infty$, given by
->$$
-x_0 = y$$
->
->$$
-x_n = T(x_{n-1}), n \geq 1,
-$$
->
->have the property that $\lim_{n\to\infty} x_n = x$. -->
-<p>[TODO] - Talk a little bit about Banach theorem</p>
+<p align="center">Fixed point convergence illustration in Banach theorem</p>
 <h3 id="enforcing-lipschitz-constraint">Enforcing Lipschitz constraint</h3>
 <p>Based on the Banach theorem above, our enforcing condition then becomes</p>
-<p>$$Lip(h) &lt; 1 ;\textrm{or}; Lip(g) &lt; 1$$</p>
+<p>$$
+Lip(h) &lt; 1 ;\textrm{or}; Lip(g) &lt; 1
+$$</p>
 <p>Hence $g$ can be implemented as a composition of contractive linear or nonlinear mappings like the figure below.</p>
-<p align="center">
-  <img src="https://i.imgur.com/Suno7Bn.png" width="200px"/>
-  <p align="center">Figure 3. Contractive residual mapping<p align="center">
-</p>
+<img src="https://i.imgur.com/Suno7Bn.png" width="200px"/>
+<p align="center">Contractive residual mapping</p>
 <ul>
 <li>For nonlinear mappings, <code>ReLU</code>, <code>ELU</code> and <code>tanh</code> are the possible choices for contraction constraint.</li>
 <li>For linear mappings, implemented as convolutional layers $W_i$, they can be made contractive by satisfying the condition $$\lVert W_i \rVert_2 &lt; 1 \quad \forall W_i$$ where $\lVert a \rVert_2$ denotes the spectral norm of matrix a.</li>
@@ -805,14 +779,24 @@ The largest singular value of a matrix.</p>
 </blockquote>
 <p>The spectral norm of non-square matrix $W_i$ can be directly estimated using the power iteration algorithm (by Gouk et el. 2018), which yields an underestimate $\tilde \sigma_i \leq \lVert W_i \rVert_2$. The algorithm can be summarized as follows:</p>
 <div>
-$$\begin{align} & \textrm{Initialize} \; x_0 \\ x_k & = W_i^T W_i x_{k - 1}, \; \forall k, 1 \leq k \leq n \\ \tilde \sigma_i & = \frac{\lVert W_i x_n\rVert_2}{\lVert x_n \rVert_2} \\ \end{align}$$
+$$
+\begin{align}
+& \textrm{Initialize} \; x_0 \\
+x_k & = W_i^T W_i x_{k - 1}, \; \forall k, 1 \leq k \leq n \\
+\tilde \sigma_i & = \frac{\lVert W_i x_n\rVert_2}{\lVert x_n \rVert_2} \\
+\end{align}
+$$
 </div>
 <p>We then normalize the parameter $W_i$ by</p>
-<p>$$ \tilde{W_i} = \begin{cases}
-\frac{cW_i}{\tilde \sigma_i}, &amp; \mbox{if} ; \frac{c}{\tilde \sigma_i} &lt; 1 \<br>
-W_i, &amp;\mbox{else}
-\end{cases}$$ where $c$ is the hyperparameter ($c &lt; 1$).</p>
-<p><a id=fixed-point></a></p>
+<div>
+$$
+\tilde{W_i} = \begin{cases}
+\frac{cW_i}{\tilde \sigma_i}, & \mbox{if} \; \frac{c}{\tilde \sigma_i} < 1 \\
+W_i, &\mbox{else}
+\end{cases}
+$$
+</div>
+where $c$ is the hyperparameter ($c < 1$).
 <h3 id="how-to-yield-the-inverse-output">How to yield the inverse output</h3>
 <p>Though the constraint above guarantees invertibility of the residual network, it does not provide any analytical form for the inverse. Fortunately, inverse output of each residual block can be yielded through a simple fixed-point iteration, as described below</p>
 <ul>
@@ -823,6 +807,7 @@ W_i, &amp;\mbox{else}
 <p>So far, we have managed to construct invertible residual networks. We can now make use of them as a transformation for density estimation.</p>
 <!-- ![](https://i.imgur.com/yxrYwrz.png) -->
 <p><img src="https://i.imgur.com/KzZ0MW7.png" alt=""></p>
+<p align="center">invertible residual network as transformation function in normalizing flows</p>
 <!-- $$
 \ln p_x(x) = \ln p_z(z) + \ln |\det J_F(x)|
 $$ -->
@@ -830,16 +815,17 @@ $$ -->
 <h3 id="the-log-determinant-term">The log determinant term</h3>
 <p>For each residual block $f$, we have</p>
 <div>
-$$\begin{align}
-& \ln \left\lvert \det J_f(x)\right\rvert \\
-& = \ln (\det J_f(x)) \textrm{( $\det J_f$ is always positive)} \\
+$$
+\begin{align}
+\ln \left\lvert \det J_f(x)\right\rvert & = \ln (\det J_f(x)) \textrm{( $\det J_f$ is always positive)} \\
 & = tr(\ln J_f(x)) \textrm{($\ln \det A = tr(\ln(A))$)} \\
 & = tr(ln\frac{\partial f}{\partial x}) \\
 & = tr(ln\frac{\partial (x + g(x))}{\partial x})\\
 & = tr(ln\ (I + J_g(x))) \textrm{($I$ denotes identity matrix)} \\
 & = tr(\sum_{k=1}^\infty(-1)^{k + 1}\frac{J_g^k}{k}) \textrm{(power series expression of matrix logarithm)} \\
 & = \sum_{k=1}^\infty(-1)^{k + 1}\frac{tr(J_g^k)}{k} \textrm{($tr(A + B) = tr(A) + tr(B)$)} \\
-\end{align}$$
+\end{align}
+$$
 </div>
 <blockquote>
 <p><strong>Matrix logarithm and its power series expression:</strong>
@@ -856,29 +842,35 @@ A logarithm of matrix $M$ is any matrix $X$ such that $e^X = M$. It can be expre
 <p>Hutchinson trace estimator is a Monte Carlo approach to approximate the trace of matrix powers, for example $J_g^k$ in our case, without fully evaluating them. Specifically, a random vector $v$ is introduced to estimate the trace
 $$tr(A) = \mathrm{E}_{v \sim p(v)}v^{T}Av $$</p>
 <p>with the constraint that $v$ is drawn from a fixed distribution $p(v)$, satisfying $\mathrm{E}[v] = 0$ and $\mathrm{Var}[v] = I$. Hence it is obvious that the Gaussian $N(0, I)$ is a good choice for $p(v)$. Applying the trace estimator, we have</p>
-<p>$$ tr(J_g^k) = \mathrm{E}_{v \sim N(0, I)} v^T J_g^k v $$</p>
-<!-- The heavy computation can now be circumvented because computing $v^T J_g^k v$ only requires matrix-vector multiplication. Furthemore, it can be computed more efficiently in a recursive fashion.
+<p>$$
+tr(J_g^k) = \mathrm{E}_{v \sim N(0, I)} v^T J_g^k v
+$$</p>
+<!-- The heavy computation can now be circumvented because computing $v^T J_g^k v$ only requires matrix-vector multiplication. Furthermore, it can be computed more efficiently in a recursive fashion.
 
 $$J_g^k v = J_g (J_g^{k-1} v)$$ -->
 <p>The matrix power computation can be circumvented by evaluating $v^T J_g^k v$  in a recursive fashion</p>
 <div>
-$$\begin{align}
+$$
+\begin{align}
 w_0 & = v \\
 w_k & = J_g w_{k - 1}, \forall k \geq 1 \\
 v^T J_g^k v & = v^T w_k \\
-\end{align}$$
+\end{align}
+$$
 </div>
-<p>which requires now only matrix-vector multiplication.</p>
-<p>Furthermore, the term $w_k$ can be evaluated roughly as the same cost as evaluating $g$ using <code>reverse-mode automatic differentiation</code>, alleviating the heavy computation of evaluating $J_g$ explicitly.</p>
+which requires now only matrix-vector multiplication.
+<p>Furthermore, the term $w_k$ can be evaluated roughly as the same cost as evaluating $g$ using <strong>reverse-mode automatic differentiation</strong>, alleviating the heavy computation of evaluating $J_g$ explicitly.</p>
 <p align="center">
   <img src="https://i.imgur.com/ovaeC6i.png" width="300px"/>
 </p>
 <p>Now, the only problem remains is the computation of infinite series, which can be addressed by truncating the series at a finite index $n$</p>
-<p>$$\ln |\det J_f(x)| \approx \sum_{k=1}^{n}(-1)^{k + 1}\frac{tr(J_g^k)}{k}$$</p>
+<p>$$
+\ln |\det J_f(x)| \approx \sum_{k=1}^{n}(-1)^{k + 1}\frac{tr(J_g^k)}{k}
+$$</p>
 <h2 id="implementation">Implementation</h2>
-<p>Original implementation by the paper&rsquo;s author: (
+<p>Original implementation by the paper&rsquo;s author(
 <a href="https://github.com/jhjacobsen/invertible-resnet" target="_blank" rel="noopener">link</a>)</p>
-<p>A TensorFlow implementation by me: (
+<p>A TensorFlow implementation by me(
 <a href="https://github.com/azraelzhor/tf-invertible-resnet/" target="_blank" rel="noopener">link</a>)</p>
 <p><strong>References</strong></p>
 <ol>
@@ -900,9 +892,8 @@ v^T J_g^k v & = v^T w_k \\
 <a href="http://proceedings.mlr.press/v37/hana15.pdf" target="_blank" rel="noopener">Large-scale Log-determinant Computation through Stochastic Chebyshev Expansions</a></li>
 </ol>
 
-    </div>
-
-    
+          </div>
+          
 
 
 
@@ -912,7 +903,11 @@ v^T J_g^k v & = v^T w_k \\
   
   <a class="badge badge-light" href="/tags/generative-model/">generative model</a>
   
-  <a class="badge badge-light" href="/tags/residual-networks/">residual networks</a>
+  <a class="badge badge-light" href="/tags/invertible-residual-networks/">invertible residual networks</a>
+  
+  <a class="badge badge-light" href="/tags/normalizing-flows/">normalizing flows</a>
+  
+  <a class="badge badge-light" href="/tags/computer-vision/">computer vision</a>
   
 </div>
 
@@ -1117,6 +1112,27 @@ v^T J_g^k v & = v^T w_k \\
 <section id="comments">
   
     
+<div id="disqus_thread"></div>
+<script>
+  let disqus_config = function () {
+    
+    
+    
+  };
+  (function() {
+    if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+      document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+      return;
+    }
+    var d = document, s = d.createElement('script'); s.async = true;
+    s.src = 'https://' + "joocxi" + '.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
 
   
 </section>
@@ -1146,9 +1162,13 @@ v^T J_g^k v & = v^T w_k \\
   
 
 
+        </div>
+      </article>
 
+    </main>
   </div>
-</article>
+</div>
+
 
       
 
@@ -1234,7 +1254,7 @@ v^T J_g^k v & = v^T w_k \\
 
     
     
-    <script id="dsq-count-scr" src="https://.disqus.com/count.js" async></script>
+    <script id="dsq-count-scr" src="https://joocxi.disqus.com/count.js" async></script>
     
 
     

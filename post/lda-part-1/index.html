@@ -28,7 +28,7 @@
   
     
   
-  <meta name="description" content="Text data is everywhere. When having massive amounts of them, a need naturally arises is that we want them to be organized efficiently. One naive way is to organize them based on topics. It means that texts covering the same topics should be put in the same groups. The problem is that we do not know which topic a text document belongs to and manually labeling topics for every document is a very expensive task.">
+  <meta name="description" content="Text data is everywhere. When having massive amounts of them, a need naturally arises is that we want them to be organized efficiently. A naive way is to organize them based on topics, meaning that text covering the same topics should be put into the same groups. The problem is that we do not know which topics a text document belongs to and manually labeling topics for all of them is very expensive.">
 
   
   <link rel="alternate" hreflang="en-us" href="https://azraelzhor.github.io/post/lda-part-1/">
@@ -234,8 +234,8 @@
   
   <meta property="og:site_name" content="Thang Le">
   <meta property="og:url" content="https://azraelzhor.github.io/post/lda-part-1/">
-  <meta property="og:title" content="Variational Expectation Maximization for Latent Dirichlet Allocation | Thang Le">
-  <meta property="og:description" content="Text data is everywhere. When having massive amounts of them, a need naturally arises is that we want them to be organized efficiently. One naive way is to organize them based on topics. It means that texts covering the same topics should be put in the same groups. The problem is that we do not know which topic a text document belongs to and manually labeling topics for every document is a very expensive task."><meta property="og:image" content="img/map[gravatar:%!s(bool=true) shape:circle]">
+  <meta property="og:title" content="Variational Expectation Maximization for Latent Dirichlet Allocation - Part One | Thang Le">
+  <meta property="og:description" content="Text data is everywhere. When having massive amounts of them, a need naturally arises is that we want them to be organized efficiently. A naive way is to organize them based on topics, meaning that text covering the same topics should be put into the same groups. The problem is that we do not know which topics a text document belongs to and manually labeling topics for all of them is very expensive."><meta property="og:image" content="img/map[gravatar:%!s(bool=true) shape:circle]">
   <meta property="twitter:image" content="img/map[gravatar:%!s(bool=true) shape:circle]"><meta property="og:locale" content="en-us">
   
     
@@ -267,7 +267,7 @@
     "@type": "WebPage",
     "@id": "https://azraelzhor.github.io/post/lda-part-1/"
   },
-  "headline": "Variational Expectation Maximization for Latent Dirichlet Allocation",
+  "headline": "Variational Expectation Maximization for Latent Dirichlet Allocation - Part One",
   
   "datePublished": "2020-03-20T00:00:00Z",
   "dateModified": "2020-03-20T00:00:00Z",
@@ -285,7 +285,7 @@
       "url": "https://azraelzhor.github.io/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_192x192_fill_lanczos_center_2.png"
     }
   },
-  "description": "Text data is everywhere. When having massive amounts of them, a need naturally arises is that we want them to be organized efficiently. One naive way is to organize them based on topics. It means that texts covering the same topics should be put in the same groups. The problem is that we do not know which topic a text document belongs to and manually labeling topics for every document is a very expensive task."
+  "description": "Text data is everywhere. When having massive amounts of them, a need naturally arises is that we want them to be organized efficiently. A naive way is to organize them based on topics, meaning that text covering the same topics should be put into the same groups. The problem is that we do not know which topics a text document belongs to and manually labeling topics for all of them is very expensive."
 }
 </script>
 
@@ -303,7 +303,7 @@
 
 
 
-  <title>Variational Expectation Maximization for Latent Dirichlet Allocation | Thang Le</title>
+  <title>Variational Expectation Maximization for Latent Dirichlet Allocation - Part One | Thang Le</title>
 
 </head>
 
@@ -509,10 +509,6 @@
       
 
       
-      <li class="nav-item">
-        <a class="nav-link js-dark-toggle" href="#"><i class="fas fa-moon" aria-hidden="true"></i></a>
-      </li>
-      
 
       
 
@@ -523,9 +519,49 @@
 
 
   
-<article class="article">
+<div class="container-fluid docs">
+  <div class="row flex-xl-nowrap">
+    <div class="d-none d-xl-block col-xl-2 docs-toc">
+      <ul class="nav toc-top">
+        <li>
+          <a href="#" id="back_to_top" class="docs-toc-title">Contents</a>
+        </li>
+      </ul>
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#latent-variable-model">Latent variable model</a>
+      <ul>
+        <li><a href="#expectation-maximization-em">Expectation Maximization (EM)</a></li>
+        <li><a href="#variational-inference">Variational Inference</a>
+          <ul>
+            <li><a href="#mean-field-approximation">Mean field approximation</a></li>
+            <li><a href="#coordinate-ascent-update">Coordinate ascent update</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#latent-dirichlet-allocation">Latent Dirichlet Allocation</a>
+      <ul>
+        <li><a href="#categorical-distribution">Categorical distribution</a></li>
+        <li><a href="#dirichlet-distribution">Dirichlet distribution</a></li>
+        <li><a href="#generative-process">Generative process</a></li>
+        <li><a href="#the-two-problems-of-lda">The two problems of LDA</a>
+          <ul>
+            <li><a href="#inference">Inference</a></li>
+            <li><a href="#parameter-estimation">Parameter estimation</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+      
+    </div>
 
-  
+    <main class="col-12 col-md-0 col-xl-10 py-md-3 pl-md-5 docs-content" role="main">
+
+      <article class="article">
+        
 
 
 
@@ -544,7 +580,7 @@
   
   
 <div class="article-container pt-3">
-  <h1>Variational Expectation Maximization for Latent Dirichlet Allocation</h1>
+  <h1>Variational Expectation Maximization for Latent Dirichlet Allocation - Part One</h1>
 
   
 
@@ -572,7 +608,7 @@
   
   <span class="middot-divider"></span>
   <span class="article-reading-time">
-    9 min read
+    12 min read
   </span>
   
 
@@ -607,41 +643,26 @@
 </div>
 
 
-
-  <div class="article-container">
-
-    <div class="article-style">
-      <p>Text data is everywhere. When having massive amounts of them, a need naturally arises is that we want them to be organized efficiently. One naive way is to organize them based on topics. It means that texts covering the same topics should be put in the same groups. The problem is that we do not know which topic a text document belongs to and manually labeling topics for every document is a very expensive task. Hence, topic modeling comes as a way to automatically discover abstract topics contained in these text documents.</p>
-<img src="https://i.imgur.com/sC2oNEc.png" width="300"/>
-<p align="center">Figure _. Text documents</p>
-<p>One of the most common topic models is Latent Dirichlet Allocation (LDA), was introduced long time ago (D. Blei et al, 2003) but is still powerful now. LDA is a complex, hierarchical latent variable model with some probabilistic assumptions over it. Thus, before diving into detail of LDA, let us review some basic knowledges about <code>probability</code> and <code>latent variable model</code>.</p>
+        <div class="article-container">
+          <div class="article-style">
+            <p>Text data is everywhere. When having massive amounts of them, a need naturally arises is that we want them to be organized efficiently. A naive way is to organize them based on topics, meaning that text covering the same topics should be put into the same groups. The problem is that we do not know which topics a text document belongs to and manually labeling topics for all of them is very expensive. Hence, topic modeling comes as an efficient way to automatically discover abstract topics contained in these text documents.</p>
+<img src="https://i.imgur.com/lQZ2f5r.png" width="400"/>
+<p>One of the most common topic models is Latent Dirichlet Allocation (LDA), was introduced long time ago (D. Blei et al, 2003) but is still powerful now. LDA is a complex, hierarchical latent variable model with some probabilistic assumptions over it. Thus, before diving into detail of LDA, let us review some knowledges about <code>latent variable model</code> and how to handle some problems associated with it.</p>
 <blockquote>
-<p><strong>Note</strong>: My blog on LDA contains two parts. This is the first part about theoretical understanding of LDA. The  second part involves a basic implementation of LDA, which you can check out here.</p>
+<p><strong>Note:</strong> My blog on LDA contains two parts. This is the first part about theoretical understanding of LDA. The  second part involves a basic implementation of LDA, which you can check out 
+<a href="">here</a>.</p>
 </blockquote>
-<h2 id="probabilistic-assumptions">Probabilistic assumptions</h2>
-<h3 id="categorical-distribution">Categorical distribution</h3>
-<p>A categorical distribution is a <code>discrete</code> probability distribution which describes the possibility that one random variable belongs to one of $K$ categories. The distribution is parameterized by a $K$-dimensional vector $p$ denoting probabilities assigned to each category.</p>
-<p><img src="https://i.imgur.com/EDPbqzv.png" alt=""></p>
-<p>For example, assume that we have 4 categories and $p = [0.4, 0.2, 0.3, 0.1]$, then we have
-$$
-p(x=i) = p_i
-$$</p>
-<h3 id="dirichlet-distribution">Dirichlet distribution</h3>
-<p><img src="https://miro.medium.com/max/1400/1*Pepqn_v-WZC9iJXtyA-tQQ.png" alt="">
-A Dirichlet distribution is a <code>continuous</code> probability distribution which describes the possibility of generating $(K-1)$-simplex. It is parameterized by a positive, $K$-dimensional vector $\alpha$.</p>
-<p>$$
-p(x;\alpha) = \frac{1}{B(\alpha)} \prod_{k=1}^{K}x_k^{\alpha_i - 1}
-$$</p>
-<p>where $x$ is a $K$-dimensional vector and $B(\cdot)$ denotes Beta function.</p>
 <h2 id="latent-variable-model">Latent variable model</h2>
-<p>A latent variable model assumes that data, which we can observe, is controlled by some underlying unknown factor we can not observe. This dependency is often parameterized by a known distribution $p(\cdot)$ with its associated parameters known as model parameter. Formally, a simple latent variable model consists of three parts: observed data $x$, latent variable $z$ that controls $x$ and model parameters $\theta$ like the picture below.
-<img src="https://i.imgur.com/bT71bXf.png" width="300"/></p>
-<p align="center">Figure _. A typical latent variable model</p>
-<p>[TODO - example of latent variable model]
-For an example of latent variable models, imagine that you are an observer at a casino, where people are playing dice game&hellip;</p>
-<p>Latent variables increases our model&rsquo;s expressiveness (meaning our model can represents more complex data) but there&rsquo;s no such thing as a free lunch. Typically, there are two main problems associated with latent variable models that need to be solved</p>
+<p>A latent variable model assumes that data, which we can observe, is controlled by some underlying unknown factor. This dependency is often parameterized by a known distribution along with its associated parameters, known as model parameter. A simple latent variable model consists of three parts: observed data $x$, latent variable $z$ that controls $x$ and model parameter $\theta$ like the picture below.</p>
+<img src="https://i.imgur.com/bT71bXf.png" width="300"/>
+<!-- [TODO - example of latent variable model]
+For an example of latent variable models, imagine that you are an observer at a casino, where people are playing a dice game. The dice dealer rolls the dice at each turn. The dice values range from $1$ to $6$.
+$$
+1, 1, 2, 3, 1, 1, 1, 3
+$$ -->
+<p>Latent variables increases our model&rsquo;s expressiveness (meaning our model can capture more complex data) but there&rsquo;s no such thing as a free lunch. Typically, there are two main problems associated with latent variable models that need to be solved</p>
 <ul>
-<li>The first one is <strong>learning</strong> in which we try to find the &ldquo;optimal&rdquo; parameters $\color{blue}{\theta^*}$ based on some criterion. One powerful technique for learning is <code>maximum likelihood estimation</code> preferring to chose the parameters that maximize the likelihood $p(x;\theta)$. Maximum likelihood estimation in latent variable models is difficult. Then comes a method that will be introduced in the next section, named <code>Expectation Maximization</code>.</li>
+<li>The first one is <strong>learning</strong> in which we try to find the &ldquo;optimal&rdquo; parameters ${\theta^*}$ based on some criterion. One powerful technique for learning is <code>maximum likelihood estimation</code> preferring to chose the parameters that maximize the likelihood $p(x;\theta)$. Though, maximum likelihood estimation in latent variable models is hard. A maximum likelihood method named <code>Expectation Maximization</code> can solve this difficulty for some kind of models. It is also helpful for LDA so we will discuss the method in the next section.</li>
 </ul>
 <!-- When $z$ is discrete, we have
 $$
@@ -658,28 +679,32 @@ when $z$ is continuous. -->
 & = \frac{1}{N} \prod_i^N \int p(x^{(i)} | z^{(i)}; \theta) p(z^{(i)})  dz^{(i)} \\
 \end{align} -->
 <ul>
-<li>In many cases, latent variables can capture meaningful pattern in the data. Hence, given new data, we are often interested in the value of latent variables. This raises the problem of <strong>inference</strong> where we want to deduce the posterior $p(x|z;\theta)$.
+<li>
+<p>In many cases, latent variables can capture meaningful pattern in the data. Hence, given new data, we are often interested in the value of latent variables. This raises the problem of <strong>inference</strong> where we want to deduce the posterior $p(x|z;\theta)$. Though, in many cases the posterior is hard to compute. For example, when $z$ is continuous, we have
 $$
-p(x|z;\theta) = \frac{p(x, z ;\theta)}{p(x;\theta)} = \frac{p(x, z ;\theta)}{}
-$$
-A method to approximate the posterior distribution, named <code>Variational Inference</code>, will be introduced later.</li>
+p(z|x;\theta) = \frac{p(x, z ;\theta)}{p(x;\theta)} = \frac{p(x, z ;\theta)}{\int_z p(x, z;\theta)}
+$$</p>
+<p>The integral in the denominator often makes the posterior intractable. A method to solve this problem, named <code>Variational Inference</code>, will be discussed later.</p>
+</li>
 </ul>
 <h3 id="expectation-maximization-em">Expectation Maximization (EM)</h3>
-<p>Introducing latent variables to a statistical model makes its likelihood function non-convex, which is hard to find a maximum likelihood solution. The EM algorithm was introduced to solve the maximum likelihood estimation problem in these kind of statistical models. The algorithm iteratively alternates between building an expected log-likelihood (<code>E step</code>), which is a convex lower bound to the non-convex log-likelihood, and maximizing it over parameters (<code>M step</code>).</p>
+<p>Introducing latent variables to a statistical model makes its likelihood function non-convex. Thus, it becomes hard to find a maximum likelihood solution. The EM algorithm was introduced to solve the maximum likelihood estimation problem in these kind of statistical models. The algorithm iteratively alternates between building an expected log-likelihood (<code>E step</code>), which is a convex lower bound to the non-convex log-likelihood, and maximizing it over parameters (<code>M step</code>).</p>
 <p>But how does EM construct the expected log-likelihood?
 We have</p>
 <div>
 \begin{align}
-\log p(x; \theta) & \geq \log p(x;\theta) - KL({\color{blue}{q(z)}}||p(z|x;\theta)) \\
-& = \log p(x;\theta) - (\mathrm{E}_{z\sim \color{blue}{q(z)}}\log {\color{blue}{q(z)}} - \mathrm{E}_{z \sim \color{blue}{q(z)}}\log p(z|x; \theta)) \\
-& = \mathrm{E}_{z\sim \color{blue}{q(z)}}(\log p(x;\theta) + \log p(z|x;\theta)) - \mathrm{E}_{z\sim \color{blue}{q{(z)}}}\log {\color{blue}{q(z)}} \\
-& = \mathrm{E}_{z\sim \color{blue}{q(z)}}\log p(x, z;\theta) - \mathrm{E}_{z\sim \color{blue}{q(z)}}\log {\color{blue}{q(z)}} = L(q, \theta) \tag{1} \\
+\log p(x; \theta) & \geq \log p(x;\theta) - KL({{q(z)}}||p(z|x;\theta)) \\
+& = \log p(x;\theta) - (\mathrm{E}_{z\sim q(z)}\log q(z) - \mathrm{E}_{z \sim q(z)}\log p(z|x; \theta)) \\
+& = \mathrm{E}_{z\sim {q(z)}}(\log p(x;\theta) + \log p(z|x;\theta)) - \mathrm{E}_{z\sim q{(z)}}\log {q(z)} \\
+& = \mathrm{E}_{z\sim q(z)}\log p(x, z;\theta) - \mathrm{E}_{z\sim q(z)}\log {q(z)} = L(q, \theta) \tag{1} \\
 \end{align}
 </div>
-<p>for any choice of $\color{blue}{q(z)}$. It is obvious that $L(q, \theta)$ is a lower bound of $\log p(x;\theta)$ and the equality holds if and only if ${\color{blue}{q(z)}} = p(z|x;\theta)$. EM aims to construct a lower bound that is easy to maximize. By initializing parameter $\theta_{old}$ and choosing $\color{blue}{q(z)} = p(z|x;\theta_{old})$ (<code>E-step</code>), the lower bound becomes
+<p>for any choice of $q(z)$. It is obvious that $L(q, \theta)$ is a lower bound of $\log p(x;\theta)$ and the equality holds if and only if $q(z) = p(z|x;\theta)$. EM aims to construct a lower bound that is easy to maximize. By initializing parameter $\theta_{old}$ and choosing $q(z) = p(z|x;\theta_{old})$ at each <code>E-step</code>, the lower bound becomes</p>
+<div>
 $$
 L(\theta) = \mathrm{E}_{z\sim p(z|x;\theta_{old})} \log p(x,z;\theta) - \mathrm{E}_{z\sim {p(z|x;\theta_{old})}}\log {p(z|x;\theta_{old})}
-$$</p>
+$$
+</div>
 <p>EM then maximizes $L(\theta)$ at each <code>M-step</code></p>
 <div>
 \begin{align}
@@ -697,84 +722,127 @@ $$ -->
 <li>For each loop $t$ start from $0$
 <img src="https://i.imgur.com/PbhzDrF.png" width="400"/>
 <ul>
-<li>Estimate the posterior $p(z|x; \color{blue}{\theta^{(t)}})$</li>
-<li>Maximize the expected log-likelihood $\mathop{max}_{\color{red}{\theta^{(t+1)}}}$</li>
+<li>Estimate the posterior $p(z|x; {\theta^{(t)}})$</li>
+<li>Maximize the expected log-likelihood
+  <div>$\mathop{max}_{{\theta^{(t+1)}}} \mathrm{E}_{z\sim p(z|x ;{\theta^{(t)}})} {p(x, z ;{{\theta^{(t+1)}}}})$</div>
+</li>
 <li>If the convergence standard is satisfied, stop</li>
 </ul>
-  <!-- * Maximize the expected log-likelihood $\mathop{max}_{\color{red}{\theta^{(t+1)}}}\mathrm{E}_{z\sim p(z|x ; \color{blue}{\theta^{(t)}})}{p(x, z ;{\color{red}{\theta^{(t+1)}}}})$ -->
 </li>
 </ul>
 <blockquote>
-<p><strong>Note</strong>: It is easy to notice that the EM algorithm can only be applied if the posterior distribution can be computed analytically, given the current parameter $\color{blue}{\theta^{(t)}}$.</p>
+<p><strong>Note</strong>: It is easy to notice that the EM algorithm can only be applied if we can compute (or approximate) the posterior distribution analytically, given the current parameter ${\theta^{(t)}}$.</p>
 </blockquote>
-<p>If you want to go into the details of EM, <strong>Gaussian Mixture</strong> (when $z$ is discrete) and <strong>Probabilistic Principal Component Analysis</strong> (when $z$ is continuous) are the two perfect cases to study.</p>
+<p>If you want to go into the details of EM, <strong>Gaussian Mixture</strong> (when $z$ is discrete) and <strong>Probabilistic Principal Component Analysis</strong> (or Probabilistic PCA in short, when $z$ is continuous) are the two perfect cases to study.</p>
 <h3 id="variational-inference">Variational Inference</h3>
-<!-- The EM is used with the assumption that we can keep track of the posterior. -->
-<p>In many of the cases, the posterior distribution $p(z|x;\theta)$ that we are interested in can not be inferred analytically, or in other words, it is intractable. This leads naturally to the field of <code>approximate inference</code>, in which we try to approximate the intractable posterior. Variational inference is such a technique in approximate inference which is fast and effective enough for a good approximation of $p(z|x;\theta)$.</p>
+<p>In many of the cases, the posterior distribution $p(z|x;\theta)$ we are interested in can not be inferred analytically, or in other words, it is intractable. This leads naturally to the field of <code>approximate inference</code>, in which we try to approximate the intractable posterior. Variational inference is such a technique in approximate inference which is fast and effective enough for a good approximation of $p(z|x;\theta)$.</p>
 <p>The idea of variational inference is simple that we reformulate the problem of inference as an optimization problem by</p>
 <ul>
-<li>First, posit a variational family $\color{blue}{q(z;v)}$ controlled by variational parameter $v$</li>
-<li>Then, find the optimal $\color{blue}{q(z;v^{*})}$ in this family, which is as &ldquo;close&rdquo; to $p(z|x;\theta)$ as possible</li>
+<li>First, posit a variational family ${q(z;v)}$ controlled by variational parameter $v$</li>
+<li>Then, find the optimal ${q(z;v^*)}$ in this family, which is as &ldquo;close&rdquo; to $p(z|x;\theta)$ as possible</li>
 </ul>
 <img src="https://i.imgur.com/zXCukxg.png" width="400"/>
-<p align="center">Figure _. Mean field approximation</p>
-<p>Specifically, the goal of variational inference is then to minimize the $KL$ divergence between the variational family and the true posterior: $\mathop{min}_{q}KL({\color{blue}{q(z;v)}}||p(z|x;\theta))$. But how can we minimize such an intractable term?</p>
+<p align="center">Mean field approximation</p>
+<p>Specifically, the goal of variational inference is then to minimize the $KL$ divergence between the variational family and the true posterior: $\mathop{min}_{q, v}KL({{q(z;v)}}||p(z|x;\theta))$. But how can we minimize such an intractable term?</p>
 <!-- But how can we minimize a term that can not be evaluated analytically? -->
-<p>Recall from (1) (with the variational distribution $\color{blue}{q(z;v)}$  being chosen as $\color{blue}{q(z)}$) we have the ELBO</p>
+<p>Recall from $(1)$ (with the variational distribution ${q(z;v)}$  now being chosen as ${q(z)}$), we have the $ELBO$</p>
 <div>
 \begin{align}
-& \log p(x;\theta) - KL({\color{blue}{q(z;v)}}||p(z|x;\theta))\\
-& = \mathrm{E}_{z\sim \color{blue}{q(z;v)}}\log p(x, z;\theta) - \mathrm{E}_{z\sim \color{blue}{q(z;v)}}\log \color{blue}{q(z;v)}\\
+& \log p(x;\theta) - KL({{q(z;v)}}||p(z|x;\theta))\\
+& = \mathrm{E}_{z\sim {q(z;v)}}\log p(x, z;\theta) - \mathrm{E}_{z\sim {q(z;v)}}\log {q(z;v)}\\
 \end{align}
 </div>
-<p>Since $\log p(x;\theta)$ is considered as constant, minimizing the KL divergence is equivalent to maximizing the ELBO. The optimization problem becomes</p>
+<p>Since $\log p(x;\theta)$ is considered as constant, minimizing the KL divergence is equivalent to maximizing the $ELBO$. The optimization problem becomes</p>
 <div>
 $$
-\mathop{max}_{q}\mathrm{E}_{z\sim \color{blue}{q(z;v)}}\log p(x, z;\theta) - \mathrm{E}_{z\sim \color{blue}{q(z;v)}}\log \color{blue}{q(z;v)}
+\mathop{max}_{q}\mathrm{E}_{z\sim {q(z;v)}}\log p(x, z;\theta) - \mathrm{E}_{z\sim {q(z;v)}}\log {{q(z;v)}} \tag{2}
 $$
 </div>
-<p>which now can be optimized with suitable choice of $\color{blue}{q(z;v)}$.</p>
+<p>which now can be optimized with a suitable choice of ${q(z;v)}$.</p>
 <blockquote>
-<p><strong>Note</strong>: Relationship between EM and VI</p>
+<p><strong>Note</strong>: EM and variational inference both involve maximizing the ELBO of the log-likelihood. However, EM produces a point estimate of the optimal model parameter, meanwhile variational inference results in an approximation of the posterior distribution.</p>
 </blockquote>
 <h4 id="mean-field-approximation">Mean field approximation</h4>
-<p>[TODO]There are many form of variational inference. The simplest form of variational inference is <code>mean-field approximation</code>, which makes the strong assumption that all latent variables are mutually independent. The variational distribution can be factorized as
+<p>Several forms of variational inference has been proposed to design a tractable variational family. The simplest out of them is <code>mean-field approximation</code>, which makes a strong assumption that all latent variables are mutually independent. The variational distribution can then be factorized as
 $$
-q(z;v) = \prod_{k=1}^{K}q(z_k;v_k)
+q(z;v) = \prod_{k=1}^{K}q(z_k;v_k) \tag{3}
 $$</p>
-<p>where $z$ consists of $K$ latent variables $(z_1, z_2, &hellip;, z_K)$. Each latent variable $z_k$ now is controlled by its own variational parameter $v_k$.</p>
-<p>[TODO] $q(z_k;v_k^*) \propto \mathrm{E}_{z_{-k} \sim q_{-k}(z_{-k};{v_{-k}}^{(t)})} \log p(z_k, z_{-k}, x;\theta)$</p>
+<p>where $z$ consists of $K$ latent variables $(z_1, z_2, &hellip;, z_K)$ and each latent variable $z_k$ is controlled by its own variational parameter $v_k$.</p>
+<p>We will not go into detail here, but substituting $(3)$ into $(2)$, taking the derivative with respect to each $q(z_k;v_k)$, then setting the derivative to zero we obtain the coordinate ascent update</p>
+<p>$$
+q^*(z_k;v_k^*) \propto \mathrm{E}_{z_{-k} \sim q_{-k}(z_{-k};{v_{-k}})} \log p(z_k, z_{-k}, x;\theta) \tag{4}
+$$</p>
+<p>where $(\cdot)_{-k}$ denotes all but the $k$th element.</p>
+<p>Note that until now we didn&rsquo;t specify the functional form for each variational factor $q(z_k;v_k)$ yet. Fortunately, the optimal form of each $q(z_k;v_k)$ can be derived from the $RHS$ expression of the coordinate update $(4)$, which is often easy to work with for many models.</p>
+<!-- Note that in $(3)$ we didn't specify the functional form for each optimal variational factor $q(z_k;v_k)$. These optimal function forms can be derived from the $RHS$ of the coordinate update, which is easy for many models. -->
 <h4 id="coordinate-ascent-update">Coordinate ascent update</h4>
-<p>The coordinate ascent algorithm can be summarized as follows</p>
+<p>We can then use the coordinate ascent algorithm to find the optimal mean-field distribution. The algorithm can be summarized as follows</p>
 <ul>
 <li>Initialize $v = v^{(0)}$</li>
 <li>For each loop $t$ start from $0$
 <ul>
 <li>For each loop  $k$ from $1$ to $K$
 <ul>
-<li>Estimate $q(z_k;v_k^*) \propto \mathrm{E}_{z_{-k} \sim q_{-k}(z_{-k};{v_{-k}}^{(t)})} \log p(z_k, z_{-k}, x;\theta)$</li>
-<li>Set $v_k^{(t+1)} = v_k^*$</li>
+<li>Estimate $q^*(z_k;v_k^*) \propto \mathrm{E}_{z_{-k} \sim q_{-k}(z_{-k};{v_{-k}}^{(t)})} \log p(z_k, z_{-k}, x;\theta)$</li>
+<li>Set $q(z_k; v_k^{(t+1)}) = q^*(z_k;v_k^*)$</li>
 </ul>
 </li>
-<li>Compute the ELBO to check convergence</li>
+<li>Compute the $ELBO$ to check convergence</li>
 </ul>
 </li>
 </ul>
+<p>By now we are familiar with the concept of latent variable model. Let us move on to discuss LDA in the next section.</p>
 <h2 id="latent-dirichlet-allocation">Latent Dirichlet Allocation</h2>
-<p>LDA assumes that each <code>document</code> is a distribution over <code>topics</code> and each <code>topic</code> is considered as a distribution over <code>words</code>. For instance, suppose that we have $4$ topics and a total of $6$ <code>words</code>.</p>
+<p>LDA is a latent variable model on observed text data or, to be more specific, a collection of <code>words</code> in each <code>document</code>. The model is built based on the assumptions that each <code>document</code> is a distribution over a predefined number of <code>topics</code>; meanwhile, each <code>topic</code> is considered as a distribution over <code>words</code> in a fixed vocabulary. For example, suppose that we have $4$ <code>topics</code> <em>&lt;economics, animal, science, art&gt;</em> and a total of $6$ <code>words</code> <em>&lt;money, astronomy, investment, rabbit, painting, chemical&gt;</em>. Then our assumptions can be illustrated like this figure below.</p>
+<img src="https://i.imgur.com/tjaOjXs.png" width="600"/>
+<p align="center">The two probabilistic assumptions of LDA</p>
+<p>Also, according to this figure, we can say that the document is $40%$ of <em>economics</em>, $20%$ of <em>animal</em>, $30%$ of <em>science</em> and $10%$ of <em>art</em>. Seem familiar? This is basically the categorical distribution.</p>
+<h3 id="categorical-distribution">Categorical distribution</h3>
+<p>Formally, categorical distribution is a <code>discrete</code> probability distribution, describing the possibility that one discrete random variable belongs to one of $K$ categories. The distribution is parameterized by a $K$-dimensional vector $\theta$ denoting probabilities assigned to each category. It probability mass function is defined as
+$$
+p(x=i) = \theta_i
+$$</p>
+<p>where $x$ is the random variable and $i$ ranges from $1$ to $K$ (representing the $K$ categories).</p>
+<p>In our example above, the document is a categorical distribution over $K = 4$ <code>topics</code>, with its parameter $\theta = [0.4, 0.2, 0.3, 0.1]$. Similarly, each <code>topic</code> is also a categorical distribution over $K = 6$ <code>words</code>.</p>
+<h3 id="dirichlet-distribution">Dirichlet distribution</h3>
+<p>Another distribution which plays an important role in LDA is the Dirichlet distribution (hence the name LDA). Dirichlet distribution is a <code>continuous</code> multivariate probability distribution over a $(K-1)$-simplex, which can be seen as a set of $K$-dimensional vectors $x=[x_1, x_2, &hellip;, x_K]$ such that each $x_k \geq 0$ and $\sum_{k=1}^Kx_k = 1$. For example, the 2-simplex is a triangle in $3D$ space (see figure below).</p>
+<img src="https://i.imgur.com/3wvle5s.png" width="300"/>
+<p align="center">2-simplex in 3D space</p>
+<p>The distribution is parameterized by a positive $K$-dimensional vector $\alpha$, with its probability density function defined as</p>
+<p>$$
+p(x;\alpha) = \frac{1}{B(\alpha)} \prod_{k=1}^{K}x_k^{\alpha_k - 1}
+$$</p>
+<p>where $B(\cdot)$ is the famous 
+<a href="https://en.wikipedia.org/wiki/Beta_function" target="_blank" rel="noopener">beta function</a>. The parameter $\alpha$ governs how the density is distributed on the simplex space. For example, the picture below shows how the distribution is concentrated with different $\alpha$ in the case of 2-simplex (brighter color denoting more dense areas).</p>
+<img src="https://miro.medium.com/max/1400/1*Pepqn_v-WZC9iJXtyA-tQQ.png" width="500"/>
+<p align="center">source: <a href="https://towardsdatascience.com/dirichlet-distribution-a82ab942a879?gi=686effc9deea" target="_blank">Dirichlet distribution blog by Sue Liu</a>
+</p>
+<p>It is noticeable that sample from a Dirichlet distribution is parameter of a categorical distribution. Thus, Dirichlet distribution is also seen as a distribution over categorical distribution. But why we need the Dirichlet distribution? It is because, in the context of Bayesian statistics, we want to control the uncertainty over some parameters rather than just a point estimate of them. To be more specific, given data $x$ with its likelihood function $f(x;\theta)$, we want to infer the full distribution of $\theta$ given $x$, but not an optimal point $\theta^*$. Given a prior $p(\theta)$, the posterior is proportional to the likelihood time the prior
+$$
+p(\theta|x) \propto p(x|\theta)p(\theta)
+$$</p>
+<p>If the posterior has the same functional form with the prior, the prior is said to be a 
+<a href="https://en.wikipedia.org/wiki/Conjugate_prior" target="_blank" rel="noopener">conjugate prior</a> to the likelihood. For example, the Dirichlet distribution is the conjugate prior to the categorical likelihood function. It means that, when the likelihood function is categorical and Dirichlet is chosen as a prior, then the posterior
+$$
+p(\theta|x;\alpha) \propto Cat(x|\theta)Dir(\theta;\alpha)
+$$</p>
+<p>will have the same form as the prior, which is a Dirichlet distribution. Conjugate prior makes it easy to calculate the posterior over parameter of interest $\theta$. Thus, in the case of LDA where the categorical distribution is used to represent the topic distribution of each document and the word distribution of each topic, there is no better choice than Dirichlet distribution as a conjugate prior to control these categorical distributions.</p>
+<!-- LDA assumes that each `document` is a distribution over `topics` and each `topic` is considered as a distribution over `words`. For instance, suppose that we have $4$ topics and a total of $6$ `words`.
+
 <img src="https://i.imgur.com/ek3asj1.png" width="500"/>
-<p align="center">Figure _. The two probabilistic assumptions of LDA</p>
+<p align="center">Figure _. The two probabilistic assumptions of LDA</p> -->
+<p>LDA is also a generative model. Hence, to understand its architecture clearly, we better see how it generates documents.</p>
 <h3 id="generative-process">Generative process</h3>
-<p>LDA is a generative model. Hence, to understand its structure clearly, let us see how it generates documents. Suppose that we have $T$ topics and a vocabulary of $V$ words. Model LDA has 2 parameters $(\alpha, \beta)$ where</p>
+<p>Suppose that we have $T$ topics and a vocabulary of $V$ words. Model LDA has 2 parameters $(\alpha, \beta)$ where</p>
 <ul>
 <li>$\alpha$ denotes the Dirichlet prior that controls topic distribution of each document.</li>
 <li>$\beta$ is a $2D$ matrix of size $T \times V$ denotes word distribution of  all topics ($\beta_i$ is a word distribution of the <code>i + 1</code>th topic).</li>
 </ul>
 <img src="https://i.imgur.com/LGAlXEg.png" width="500"/>
-<p align="center">Figure _. How a document is generated in LDA</p>
-<p>The generative process is then pictured as above. Specifically,</p>
+<p align="center">How a document is generated in LDA</p>
+<p>The generative process can be pictured as above. Specifically,</p>
 <ul>
-<li>For each document with $N_d$ words
+<li>For each document $d$ with $N_d$ words
 <ul>
 <li>Sample document&rsquo;s topic distribution $\theta \sim Dir(\alpha)$</li>
 <li>For each word positions $j$ from $1$ to $N_d$
@@ -787,11 +855,11 @@ $$</p>
 </li>
 </ul>
 <blockquote>
-<p><strong>Warning</strong>: $\theta$ now is a latent variable. I keep the notation the same as the original paper for consistency.</p>
+<p><strong>Warning</strong>: $\theta$ is now a latent variable, not model parameter. I keep the notation the same as the original paper for your ease of reference.</p>
 </blockquote>
 <h3 id="the-two-problems-of-lda">The two problems of LDA</h3>
 <img src="https://i.imgur.com/VUMrTKJ.png" width="400"/>
-<p align="center">Figure _. LDA as a probabilistic graphical model</p>
+<p align="center">LDA as a probabilistic graphical model</p>
 <p>LDA is a latent variable model, consisting of: observed data $w$;  model parameters $\alpha, \beta$; and latent variables $z, \theta$; as shown in the figure above. Hence, just like any typical latent variable model, LDA also have two problems needed to be solved.</p>
 <!--
 $$
@@ -799,59 +867,64 @@ p(w;\alpha, \beta) = \int p(\theta;\alpha) \prod_{i=1}^{N_d} \sum_{t=0}^{T - 1} 
 $$ -->
 <h4 id="inference">Inference</h4>
 <p>Given a document $d$ has $N$ words ${w_1^{(d)}, &hellip;, w_N^{(d)}}$ and model parameters $\alpha$, $\beta$; infer the posterior distribution $p(z, \theta| w^{(d)}; \alpha, \beta)$.</p>
-<p>We can then use mean field approximation to approximate $p(z, \theta| w^{(d)}; \alpha, \beta)$ by introducing the mean-field variational distribution $q(z, \theta; \lambda, \phi) = q(\theta;\lambda)\prod_{i=1}^{N}q(z_i;\phi_i)$.
+<p>We can then use mean-field approximation to approximate $p(z, \theta| w^{(d)}; \alpha, \beta)$, by introducing the mean-field variational distribution $q(z, \theta; \gamma, \phi) = q(\theta;\gamma)\prod_{i=1}^{N}q(z_i;\phi_i)$.
 <img src="https://i.imgur.com/O5a0mY3.png" width="250"/></p>
-<p>Figure _. The mean-field variational distribution</p>
+<p align="center">The mean-field variational distribution</p>
+<p>Deriving the ELBO to yield coordinate ascent update for each variational parameter is mathematically heavy so I will not put the mathematical stuff here. For reference, the derivation could be found in the Appendix of the original paper. Based on the coordinate ascent update, we obtain the optimal form for $q(\theta;\gamma)$ which is a Dirichlet distribution and each $q(z_i;\phi_i)$ which is a categorical distribution. The coordinate ascent algorithm then return the optimal parameters $\gamma^*, \phi^*$.</p>
 <h4 id="parameter-estimation">Parameter estimation</h4>
-<p>Likelihood function for each document is
+<!-- Likelihood function for each document is -->
+<p>In LDA, the problem of parameter estimation is: find $\alpha, \beta$ that maximizes the likelihood function
 $$
 p(w;\alpha, \beta) = \int p(\theta;\alpha) \prod_{i=1}^{N_d} \sum_{t=0}^{T - 1} p(z_i = t|\theta) p(w_i | \beta, z_i=t) d\theta
 $$</p>
-<p>Given a collection of $D$ documents, find $\alpha, \beta$ that maximizes the likelihood function over all documents</p>
-<p>$$
+<!-- Given a collection of $D$ documents, find $\alpha, \beta$ that maximizes the likelihood function over all documents
+
+$$
 p(D;\alpha, \beta) = \prod_{d}^{D} \int p(\theta_d;\alpha) \prod_{i=1}^{N_d} \sum_{t=0}^{T - 1} p(z_i = t|\theta_d) p(w_i | \beta, z_i=t) d\theta_d
-$$</p>
-<p>Since the posterior $p(z, \theta| w^{(d)}; \alpha, \beta)$ can not be computed exactly but can only be approximated (for instance, via variational inference in the previous section), we can not apply the EM algorithm directly to solve the estimation problem. To handle this, an algorithm named variational EM algorithm, which combines EM and mean-field inference, was introduced.</p>
-<p>The variational EM algorithm for LDA can be summarized as follows</p>
+$$ -->
+<p>Since the posterior $p(z, \theta| w^{(d)}; \alpha, \beta)$ can not be computed exactly but can only be approximated (for instance, via variational inference in the previous section), we can not apply the EM algorithm directly to solve the estimation problem. To handle this, an algorithm named <strong>variational EM algorithm</strong>, which combines EM and mean-field inference, was introduced. Variational inference is now used in the E-step to compute the posterior, approximately. The algorithm used for LDA can be summarized as follows</p>
 <ul>
-<li>Initialize parameter $\alpha, \beta$ to $\alpha^{(0)}, \beta^{(0)}$</li>
+<li>Initialize parameters $\alpha, \beta$ to $\alpha^{(0)}, \beta^{(0)}$</li>
 <li>For each loop $t$ start from $0$
 <ul>
 <li><strong>E step</strong>:
 <ul>
-<li>For each document $d$, use mean-field approximation to approximate the posterior $p(z^{(d)}, \theta^{(d)}|w^{(d)};{\color{blue}{\alpha^{(t)}, \beta^{(t)}}})$:
+<li>For each document $d$, use mean-field approximation to approximate the posterior $p(z^{(d)}, \theta^{(d)}|w^{(d)};{{\alpha^{(t)}, \beta^{(t)}}})$:
 <ul>
-<li>Introduce the mean-field $q(z, \theta; \lambda, \phi) = q(\theta;\lambda)\prod_{i=1}^{N}q(z_i;\phi_i)$</li>
-<li>Use coordinate ascent update algorithm to yield optimal $\lambda^*, \phi^*$</li>
+<li>Introduce the mean-field $q(z, \theta; \gamma, \phi) = q(\theta;\gamma)\prod_{i=1}^{N}q(z_i;\phi_i)$</li>
+<li>Use coordinate ascent update algorithm to yield optimal $\gamma^*, \phi^*$</li>
 </ul>
 </li>
 </ul>
 </li>
 <li><strong>M step</strong>: Maximize the expected log-likelihood
-  <p>$\mathop{max}_{\color{red}{\alpha^{(t+1)}, \beta^{(t+1)}}} \mathrm{E}_{z, \theta \sim q(z, \theta; \lambda^{*}, \phi^{*})} {p(w, z, \theta ;{\color{red}{\alpha^{(t+1)}, \beta^{(t+1)}}}})$</p>
+  <div>$\mathop{max}_{{\alpha^{(t+1)}, \beta^{(t+1)}}} \mathrm{E}_{z, \theta \sim q(z, \theta; \gamma^{*}, \phi^{*})} {p(w, z, \theta ;{{\alpha^{(t+1)}, \beta^{(t+1)}}}})$</div>
 </li>
 <li>If the convergence standard is satisfied, stop</li>
 </ul>
 </li>
 </ul>
 <blockquote>
-<p><strong>Note</strong>: Actually, there are many techniques to solve the 2 problems of LDA. In the scope of this blog, we only discuss about Variational EM.</p>
+<p><strong>Note</strong>: Actually, there are many techniques to solve the two problems of LDA. Though, we only discuss about Variational EM in the scope of this blog :v</p>
 </blockquote>
 <p><strong>References</strong></p>
 <ol>
 <li>Latent Dirichlet Allocation (
 <a href="http://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf" target="_blank" rel="noopener">pdf</a>)</li>
+<li>Mean-field variational inference(
+<a href="https://www.cs.cmu.edu/~epxing/Class/10708-17/notes-17/10708-scribe-lecture13.pdf" target="_blank" rel="noopener">pdf</a>)</li>
 </ol>
 
-    </div>
-
-    
+          </div>
+          
 
 
 
 
 
 <div class="article-tags">
+  
+  <a class="badge badge-light" href="/tags/latent-dirichlet-allocation/">latent dirichlet allocation</a>
   
   <a class="badge badge-light" href="/tags/lda/">lda</a>
   
@@ -860,6 +933,8 @@ $$</p>
   <a class="badge badge-light" href="/tags/em/">em</a>
   
   <a class="badge badge-light" href="/tags/variational-inference/">variational inference</a>
+  
+  <a class="badge badge-light" href="/tags/variational-em/">variational em</a>
   
 </div>
 
@@ -876,7 +951,7 @@ $$</p>
       
       
       <li>
-        <a href="https://twitter.com/intent/tweet?url=https://azraelzhor.github.io/post/lda-part-1/&amp;text=Variational%20Expectation%20Maximization%20for%20Latent%20Dirichlet%20Allocation" target="_blank" rel="noopener" class="share-btn-twitter">
+        <a href="https://twitter.com/intent/tweet?url=https://azraelzhor.github.io/post/lda-part-1/&amp;text=Variational%20Expectation%20Maximization%20for%20Latent%20Dirichlet%20Allocation%20-%20Part%20One" target="_blank" rel="noopener" class="share-btn-twitter">
           <i class="fab fa-twitter"></i>
         </a>
       </li>
@@ -889,7 +964,7 @@ $$</p>
       
       
       <li>
-        <a href="https://www.facebook.com/sharer.php?u=https://azraelzhor.github.io/post/lda-part-1/&amp;t=Variational%20Expectation%20Maximization%20for%20Latent%20Dirichlet%20Allocation" target="_blank" rel="noopener" class="share-btn-facebook">
+        <a href="https://www.facebook.com/sharer.php?u=https://azraelzhor.github.io/post/lda-part-1/&amp;t=Variational%20Expectation%20Maximization%20for%20Latent%20Dirichlet%20Allocation%20-%20Part%20One" target="_blank" rel="noopener" class="share-btn-facebook">
           <i class="fab fa-facebook"></i>
         </a>
       </li>
@@ -902,7 +977,7 @@ $$</p>
       
       
       <li>
-        <a href="mailto:?subject=Variational%20Expectation%20Maximization%20for%20Latent%20Dirichlet%20Allocation&amp;body=https://azraelzhor.github.io/post/lda-part-1/" target="_blank" rel="noopener" class="share-btn-email">
+        <a href="mailto:?subject=Variational%20Expectation%20Maximization%20for%20Latent%20Dirichlet%20Allocation%20-%20Part%20One&amp;body=https://azraelzhor.github.io/post/lda-part-1/" target="_blank" rel="noopener" class="share-btn-email">
           <i class="fas fa-envelope"></i>
         </a>
       </li>
@@ -915,7 +990,7 @@ $$</p>
       
       
       <li>
-        <a href="https://www.linkedin.com/shareArticle?url=https://azraelzhor.github.io/post/lda-part-1/&amp;title=Variational%20Expectation%20Maximization%20for%20Latent%20Dirichlet%20Allocation" target="_blank" rel="noopener" class="share-btn-linkedin">
+        <a href="https://www.linkedin.com/shareArticle?url=https://azraelzhor.github.io/post/lda-part-1/&amp;title=Variational%20Expectation%20Maximization%20for%20Latent%20Dirichlet%20Allocation%20-%20Part%20One" target="_blank" rel="noopener" class="share-btn-linkedin">
           <i class="fab fa-linkedin-in"></i>
         </a>
       </li>
@@ -928,7 +1003,7 @@ $$</p>
       
       
       <li>
-        <a href="https://web.whatsapp.com/send?text=Variational%20Expectation%20Maximization%20for%20Latent%20Dirichlet%20Allocation%20https://azraelzhor.github.io/post/lda-part-1/" target="_blank" rel="noopener" class="share-btn-whatsapp">
+        <a href="https://web.whatsapp.com/send?text=Variational%20Expectation%20Maximization%20for%20Latent%20Dirichlet%20Allocation%20-%20Part%20One%20https://azraelzhor.github.io/post/lda-part-1/" target="_blank" rel="noopener" class="share-btn-whatsapp">
           <i class="fab fa-whatsapp"></i>
         </a>
       </li>
@@ -941,7 +1016,7 @@ $$</p>
       
       
       <li>
-        <a href="https://service.weibo.com/share/share.php?url=https://azraelzhor.github.io/post/lda-part-1/&amp;title=Variational%20Expectation%20Maximization%20for%20Latent%20Dirichlet%20Allocation" target="_blank" rel="noopener" class="share-btn-weibo">
+        <a href="https://service.weibo.com/share/share.php?url=https://azraelzhor.github.io/post/lda-part-1/&amp;title=Variational%20Expectation%20Maximization%20for%20Latent%20Dirichlet%20Allocation%20-%20Part%20One" target="_blank" rel="noopener" class="share-btn-weibo">
           <i class="fab fa-weibo"></i>
         </a>
       </li>
@@ -1064,6 +1139,27 @@ $$</p>
 <section id="comments">
   
     
+<div id="disqus_thread"></div>
+<script>
+  let disqus_config = function () {
+    
+    
+    
+  };
+  (function() {
+    if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+      document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+      return;
+    }
+    var d = document, s = d.createElement('script'); s.async = true;
+    s.src = 'https://' + "joocxi" + '.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
 
   
 </section>
@@ -1092,9 +1188,13 @@ $$</p>
   
 
 
+        </div>
+      </article>
 
+    </main>
   </div>
-</article>
+</div>
+
 
       
 
@@ -1180,7 +1280,7 @@ $$</p>
 
     
     
-    <script id="dsq-count-scr" src="https://.disqus.com/count.js" async></script>
+    <script id="dsq-count-scr" src="https://joocxi.disqus.com/count.js" async></script>
     
 
     

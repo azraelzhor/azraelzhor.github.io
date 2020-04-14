@@ -53,41 +53,28 @@
     </item>
     
     <item>
-      <title>Variational Expectation Maximization for Latent Dirichlet Allocation</title>
+      <title>Variational Expectation Maximization for Latent Dirichlet Allocation - Part One</title>
       <link>https://azraelzhor.github.io/post/lda-part-1/</link>
       <pubDate>Fri, 20 Mar 2020 00:00:00 +0000</pubDate>
       <guid>https://azraelzhor.github.io/post/lda-part-1/</guid>
-      <description>&lt;p&gt;Text data is everywhere. When having massive amounts of them, a need naturally arises is that we want them to be organized efficiently. One naive way is to organize them based on topics. It means that texts covering the same topics should be put in the same groups. The problem is that we do not know which topic a text document belongs to and manually labeling topics for every document is a very expensive task. Hence, topic modeling comes as a way to automatically discover abstract topics contained in these text documents.&lt;/p&gt;
-&lt;img src=&#34;https://i.imgur.com/sC2oNEc.png&#34; width=&#34;300&#34;/&gt;
-&lt;p align=&#34;center&#34;&gt;Figure _. Text documents&lt;/p&gt;
-&lt;p&gt;One of the most common topic models is Latent Dirichlet Allocation (LDA), was introduced long time ago (D. Blei et al, 2003) but is still powerful now. LDA is a complex, hierarchical latent variable model with some probabilistic assumptions over it. Thus, before diving into detail of LDA, let us review some basic knowledges about &lt;code&gt;probability&lt;/code&gt; and &lt;code&gt;latent variable model&lt;/code&gt;.&lt;/p&gt;
+      <description>&lt;p&gt;Text data is everywhere. When having massive amounts of them, a need naturally arises is that we want them to be organized efficiently. A naive way is to organize them based on topics, meaning that text covering the same topics should be put into the same groups. The problem is that we do not know which topics a text document belongs to and manually labeling topics for all of them is very expensive. Hence, topic modeling comes as an efficient way to automatically discover abstract topics contained in these text documents.&lt;/p&gt;
+&lt;img src=&#34;https://i.imgur.com/lQZ2f5r.png&#34; width=&#34;400&#34;/&gt;
+&lt;p&gt;One of the most common topic models is Latent Dirichlet Allocation (LDA), was introduced long time ago (D. Blei et al, 2003) but is still powerful now. LDA is a complex, hierarchical latent variable model with some probabilistic assumptions over it. Thus, before diving into detail of LDA, let us review some knowledges about &lt;code&gt;latent variable model&lt;/code&gt; and how to handle some problems associated with it.&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: My blog on LDA contains two parts. This is the first part about theoretical understanding of LDA. The  second part involves a basic implementation of LDA, which you can check out here.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; My blog on LDA contains two parts. This is the first part about theoretical understanding of LDA. The  second part involves a basic implementation of LDA, which you can check out 
+&lt;a href=&#34;&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;h2 id=&#34;probabilistic-assumptions&#34;&gt;Probabilistic assumptions&lt;/h2&gt;
-&lt;h3 id=&#34;categorical-distribution&#34;&gt;Categorical distribution&lt;/h3&gt;
-&lt;p&gt;A categorical distribution is a &lt;code&gt;discrete&lt;/code&gt; probability distribution which describes the possibility that one random variable belongs to one of $K$ categories. The distribution is parameterized by a $K$-dimensional vector $p$ denoting probabilities assigned to each category.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://i.imgur.com/EDPbqzv.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;p&gt;For example, assume that we have 4 categories and $p = [0.4, 0.2, 0.3, 0.1]$, then we have
-$$
-p(x=i) = p_i
-$$&lt;/p&gt;
-&lt;h3 id=&#34;dirichlet-distribution&#34;&gt;Dirichlet distribution&lt;/h3&gt;
-&lt;p&gt;&lt;img src=&#34;https://miro.medium.com/max/1400/1*Pepqn_v-WZC9iJXtyA-tQQ.png&#34; alt=&#34;&#34;&gt;
-A Dirichlet distribution is a &lt;code&gt;continuous&lt;/code&gt; probability distribution which describes the possibility of generating $(K-1)$-simplex. It is parameterized by a positive, $K$-dimensional vector $\alpha$.&lt;/p&gt;
-&lt;p&gt;$$
-p(x;\alpha) = \frac{1}{B(\alpha)} \prod_{k=1}^{K}x_k^{\alpha_i - 1}
-$$&lt;/p&gt;
-&lt;p&gt;where $x$ is a $K$-dimensional vector and $B(\cdot)$ denotes Beta function.&lt;/p&gt;
 &lt;h2 id=&#34;latent-variable-model&#34;&gt;Latent variable model&lt;/h2&gt;
-&lt;p&gt;A latent variable model assumes that data, which we can observe, is controlled by some underlying unknown factor we can not observe. This dependency is often parameterized by a known distribution $p(\cdot)$ with its associated parameters known as model parameter. Formally, a simple latent variable model consists of three parts: observed data $x$, latent variable $z$ that controls $x$ and model parameters $\theta$ like the picture below.
-&lt;img src=&#34;https://i.imgur.com/bT71bXf.png&#34; width=&#34;300&#34;/&gt;&lt;/p&gt;
-&lt;p align=&#34;center&#34;&gt;Figure _. A typical latent variable model&lt;/p&gt;
-&lt;p&gt;[TODO - example of latent variable model]
-For an example of latent variable models, imagine that you are an observer at a casino, where people are playing dice game&amp;hellip;&lt;/p&gt;
-&lt;p&gt;Latent variables increases our model&amp;rsquo;s expressiveness (meaning our model can represents more complex data) but there&amp;rsquo;s no such thing as a free lunch. Typically, there are two main problems associated with latent variable models that need to be solved&lt;/p&gt;
+&lt;p&gt;A latent variable model assumes that data, which we can observe, is controlled by some underlying unknown factor. This dependency is often parameterized by a known distribution along with its associated parameters, known as model parameter. A simple latent variable model consists of three parts: observed data $x$, latent variable $z$ that controls $x$ and model parameter $\theta$ like the picture below.&lt;/p&gt;
+&lt;img src=&#34;https://i.imgur.com/bT71bXf.png&#34; width=&#34;300&#34;/&gt;
+&lt;!-- [TODO - example of latent variable model]
+For an example of latent variable models, imagine that you are an observer at a casino, where people are playing a dice game. The dice dealer rolls the dice at each turn. The dice values range from $1$ to $6$.
+$$
+1, 1, 2, 3, 1, 1, 1, 3
+$$ --&gt;
+&lt;p&gt;Latent variables increases our model&amp;rsquo;s expressiveness (meaning our model can capture more complex data) but there&amp;rsquo;s no such thing as a free lunch. Typically, there are two main problems associated with latent variable models that need to be solved&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;The first one is &lt;strong&gt;learning&lt;/strong&gt; in which we try to find the &amp;ldquo;optimal&amp;rdquo; parameters $\color{blue}{\theta^*}$ based on some criterion. One powerful technique for learning is &lt;code&gt;maximum likelihood estimation&lt;/code&gt; preferring to chose the parameters that maximize the likelihood $p(x;\theta)$. Maximum likelihood estimation in latent variable models is difficult. Then comes a method that will be introduced in the next section, named &lt;code&gt;Expectation Maximization&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;The first one is &lt;strong&gt;learning&lt;/strong&gt; in which we try to find the &amp;ldquo;optimal&amp;rdquo; parameters ${\theta^*}$ based on some criterion. One powerful technique for learning is &lt;code&gt;maximum likelihood estimation&lt;/code&gt; preferring to chose the parameters that maximize the likelihood $p(x;\theta)$. Though, maximum likelihood estimation in latent variable models is hard. A maximum likelihood method named &lt;code&gt;Expectation Maximization&lt;/code&gt; can solve this difficulty for some kind of models. It is also helpful for LDA so we will discuss the method in the next section.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;!-- When $z$ is discrete, we have
 $$
@@ -104,28 +91,32 @@ when $z$ is continuous. --&gt;
 &amp; = \frac{1}{N} \prod_i^N \int p(x^{(i)} | z^{(i)}; \theta) p(z^{(i)})  dz^{(i)} \\
 \end{align} --&gt;
 &lt;ul&gt;
-&lt;li&gt;In many cases, latent variables can capture meaningful pattern in the data. Hence, given new data, we are often interested in the value of latent variables. This raises the problem of &lt;strong&gt;inference&lt;/strong&gt; where we want to deduce the posterior $p(x|z;\theta)$.
+&lt;li&gt;
+&lt;p&gt;In many cases, latent variables can capture meaningful pattern in the data. Hence, given new data, we are often interested in the value of latent variables. This raises the problem of &lt;strong&gt;inference&lt;/strong&gt; where we want to deduce the posterior $p(x|z;\theta)$. Though, in many cases the posterior is hard to compute. For example, when $z$ is continuous, we have
 $$
-p(x|z;\theta) = \frac{p(x, z ;\theta)}{p(x;\theta)} = \frac{p(x, z ;\theta)}{}
-$$
-A method to approximate the posterior distribution, named &lt;code&gt;Variational Inference&lt;/code&gt;, will be introduced later.&lt;/li&gt;
+p(z|x;\theta) = \frac{p(x, z ;\theta)}{p(x;\theta)} = \frac{p(x, z ;\theta)}{\int_z p(x, z;\theta)}
+$$&lt;/p&gt;
+&lt;p&gt;The integral in the denominator often makes the posterior intractable. A method to solve this problem, named &lt;code&gt;Variational Inference&lt;/code&gt;, will be discussed later.&lt;/p&gt;
+&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h3 id=&#34;expectation-maximization-em&#34;&gt;Expectation Maximization (EM)&lt;/h3&gt;
-&lt;p&gt;Introducing latent variables to a statistical model makes its likelihood function non-convex, which is hard to find a maximum likelihood solution. The EM algorithm was introduced to solve the maximum likelihood estimation problem in these kind of statistical models. The algorithm iteratively alternates between building an expected log-likelihood (&lt;code&gt;E step&lt;/code&gt;), which is a convex lower bound to the non-convex log-likelihood, and maximizing it over parameters (&lt;code&gt;M step&lt;/code&gt;).&lt;/p&gt;
+&lt;p&gt;Introducing latent variables to a statistical model makes its likelihood function non-convex. Thus, it becomes hard to find a maximum likelihood solution. The EM algorithm was introduced to solve the maximum likelihood estimation problem in these kind of statistical models. The algorithm iteratively alternates between building an expected log-likelihood (&lt;code&gt;E step&lt;/code&gt;), which is a convex lower bound to the non-convex log-likelihood, and maximizing it over parameters (&lt;code&gt;M step&lt;/code&gt;).&lt;/p&gt;
 &lt;p&gt;But how does EM construct the expected log-likelihood?
 We have&lt;/p&gt;
 &lt;div&gt;
 \begin{align}
-\log p(x; \theta) &amp; \geq \log p(x;\theta) - KL({\color{blue}{q(z)}}||p(z|x;\theta)) \\
-&amp; = \log p(x;\theta) - (\mathrm{E}_{z\sim \color{blue}{q(z)}}\log {\color{blue}{q(z)}} - \mathrm{E}_{z \sim \color{blue}{q(z)}}\log p(z|x; \theta)) \\
-&amp; = \mathrm{E}_{z\sim \color{blue}{q(z)}}(\log p(x;\theta) + \log p(z|x;\theta)) - \mathrm{E}_{z\sim \color{blue}{q{(z)}}}\log {\color{blue}{q(z)}} \\
-&amp; = \mathrm{E}_{z\sim \color{blue}{q(z)}}\log p(x, z;\theta) - \mathrm{E}_{z\sim \color{blue}{q(z)}}\log {\color{blue}{q(z)}} = L(q, \theta) \tag{1} \\
+\log p(x; \theta) &amp; \geq \log p(x;\theta) - KL({{q(z)}}||p(z|x;\theta)) \\
+&amp; = \log p(x;\theta) - (\mathrm{E}_{z\sim q(z)}\log q(z) - \mathrm{E}_{z \sim q(z)}\log p(z|x; \theta)) \\
+&amp; = \mathrm{E}_{z\sim {q(z)}}(\log p(x;\theta) + \log p(z|x;\theta)) - \mathrm{E}_{z\sim q{(z)}}\log {q(z)} \\
+&amp; = \mathrm{E}_{z\sim q(z)}\log p(x, z;\theta) - \mathrm{E}_{z\sim q(z)}\log {q(z)} = L(q, \theta) \tag{1} \\
 \end{align}
 &lt;/div&gt;
-&lt;p&gt;for any choice of $\color{blue}{q(z)}$. It is obvious that $L(q, \theta)$ is a lower bound of $\log p(x;\theta)$ and the equality holds if and only if ${\color{blue}{q(z)}} = p(z|x;\theta)$. EM aims to construct a lower bound that is easy to maximize. By initializing parameter $\theta_{old}$ and choosing $\color{blue}{q(z)} = p(z|x;\theta_{old})$ (&lt;code&gt;E-step&lt;/code&gt;), the lower bound becomes
+&lt;p&gt;for any choice of $q(z)$. It is obvious that $L(q, \theta)$ is a lower bound of $\log p(x;\theta)$ and the equality holds if and only if $q(z) = p(z|x;\theta)$. EM aims to construct a lower bound that is easy to maximize. By initializing parameter $\theta_{old}$ and choosing $q(z) = p(z|x;\theta_{old})$ at each &lt;code&gt;E-step&lt;/code&gt;, the lower bound becomes&lt;/p&gt;
+&lt;div&gt;
 $$
 L(\theta) = \mathrm{E}_{z\sim p(z|x;\theta_{old})} \log p(x,z;\theta) - \mathrm{E}_{z\sim {p(z|x;\theta_{old})}}\log {p(z|x;\theta_{old})}
-$$&lt;/p&gt;
+$$
+&lt;/div&gt;
 &lt;p&gt;EM then maximizes $L(\theta)$ at each &lt;code&gt;M-step&lt;/code&gt;&lt;/p&gt;
 &lt;div&gt;
 \begin{align}
@@ -143,84 +134,127 @@ $$ --&gt;
 &lt;li&gt;For each loop $t$ start from $0$
 &lt;img src=&#34;https://i.imgur.com/PbhzDrF.png&#34; width=&#34;400&#34;/&gt;
 &lt;ul&gt;
-&lt;li&gt;Estimate the posterior $p(z|x; \color{blue}{\theta^{(t)}})$&lt;/li&gt;
-&lt;li&gt;Maximize the expected log-likelihood $\mathop{max}_{\color{red}{\theta^{(t+1)}}}$&lt;/li&gt;
+&lt;li&gt;Estimate the posterior $p(z|x; {\theta^{(t)}})$&lt;/li&gt;
+&lt;li&gt;Maximize the expected log-likelihood
+  &lt;div&gt;$\mathop{max}_{{\theta^{(t+1)}}} \mathrm{E}_{z\sim p(z|x ;{\theta^{(t)}})} {p(x, z ;{{\theta^{(t+1)}}}})$&lt;/div&gt;
+&lt;/li&gt;
 &lt;li&gt;If the convergence standard is satisfied, stop&lt;/li&gt;
 &lt;/ul&gt;
-  &lt;!-- * Maximize the expected log-likelihood $\mathop{max}_{\color{red}{\theta^{(t+1)}}}\mathrm{E}_{z\sim p(z|x ; \color{blue}{\theta^{(t)}})}{p(x, z ;{\color{red}{\theta^{(t+1)}}}})$ --&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: It is easy to notice that the EM algorithm can only be applied if the posterior distribution can be computed analytically, given the current parameter $\color{blue}{\theta^{(t)}}$.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: It is easy to notice that the EM algorithm can only be applied if we can compute (or approximate) the posterior distribution analytically, given the current parameter ${\theta^{(t)}}$.&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;If you want to go into the details of EM, &lt;strong&gt;Gaussian Mixture&lt;/strong&gt; (when $z$ is discrete) and &lt;strong&gt;Probabilistic Principal Component Analysis&lt;/strong&gt; (when $z$ is continuous) are the two perfect cases to study.&lt;/p&gt;
+&lt;p&gt;If you want to go into the details of EM, &lt;strong&gt;Gaussian Mixture&lt;/strong&gt; (when $z$ is discrete) and &lt;strong&gt;Probabilistic Principal Component Analysis&lt;/strong&gt; (or Probabilistic PCA in short, when $z$ is continuous) are the two perfect cases to study.&lt;/p&gt;
 &lt;h3 id=&#34;variational-inference&#34;&gt;Variational Inference&lt;/h3&gt;
-&lt;!-- The EM is used with the assumption that we can keep track of the posterior. --&gt;
-&lt;p&gt;In many of the cases, the posterior distribution $p(z|x;\theta)$ that we are interested in can not be inferred analytically, or in other words, it is intractable. This leads naturally to the field of &lt;code&gt;approximate inference&lt;/code&gt;, in which we try to approximate the intractable posterior. Variational inference is such a technique in approximate inference which is fast and effective enough for a good approximation of $p(z|x;\theta)$.&lt;/p&gt;
+&lt;p&gt;In many of the cases, the posterior distribution $p(z|x;\theta)$ we are interested in can not be inferred analytically, or in other words, it is intractable. This leads naturally to the field of &lt;code&gt;approximate inference&lt;/code&gt;, in which we try to approximate the intractable posterior. Variational inference is such a technique in approximate inference which is fast and effective enough for a good approximation of $p(z|x;\theta)$.&lt;/p&gt;
 &lt;p&gt;The idea of variational inference is simple that we reformulate the problem of inference as an optimization problem by&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;First, posit a variational family $\color{blue}{q(z;v)}$ controlled by variational parameter $v$&lt;/li&gt;
-&lt;li&gt;Then, find the optimal $\color{blue}{q(z;v^{*})}$ in this family, which is as &amp;ldquo;close&amp;rdquo; to $p(z|x;\theta)$ as possible&lt;/li&gt;
+&lt;li&gt;First, posit a variational family ${q(z;v)}$ controlled by variational parameter $v$&lt;/li&gt;
+&lt;li&gt;Then, find the optimal ${q(z;v^*)}$ in this family, which is as &amp;ldquo;close&amp;rdquo; to $p(z|x;\theta)$ as possible&lt;/li&gt;
 &lt;/ul&gt;
 &lt;img src=&#34;https://i.imgur.com/zXCukxg.png&#34; width=&#34;400&#34;/&gt;
-&lt;p align=&#34;center&#34;&gt;Figure _. Mean field approximation&lt;/p&gt;
-&lt;p&gt;Specifically, the goal of variational inference is then to minimize the $KL$ divergence between the variational family and the true posterior: $\mathop{min}_{q}KL({\color{blue}{q(z;v)}}||p(z|x;\theta))$. But how can we minimize such an intractable term?&lt;/p&gt;
+&lt;p align=&#34;center&#34;&gt;Mean field approximation&lt;/p&gt;
+&lt;p&gt;Specifically, the goal of variational inference is then to minimize the $KL$ divergence between the variational family and the true posterior: $\mathop{min}_{q, v}KL({{q(z;v)}}||p(z|x;\theta))$. But how can we minimize such an intractable term?&lt;/p&gt;
 &lt;!-- But how can we minimize a term that can not be evaluated analytically? --&gt;
-&lt;p&gt;Recall from (1) (with the variational distribution $\color{blue}{q(z;v)}$  being chosen as $\color{blue}{q(z)}$) we have the ELBO&lt;/p&gt;
+&lt;p&gt;Recall from $(1)$ (with the variational distribution ${q(z;v)}$  now being chosen as ${q(z)}$), we have the $ELBO$&lt;/p&gt;
 &lt;div&gt;
 \begin{align}
-&amp; \log p(x;\theta) - KL({\color{blue}{q(z;v)}}||p(z|x;\theta))\\
-&amp; = \mathrm{E}_{z\sim \color{blue}{q(z;v)}}\log p(x, z;\theta) - \mathrm{E}_{z\sim \color{blue}{q(z;v)}}\log \color{blue}{q(z;v)}\\
+&amp; \log p(x;\theta) - KL({{q(z;v)}}||p(z|x;\theta))\\
+&amp; = \mathrm{E}_{z\sim {q(z;v)}}\log p(x, z;\theta) - \mathrm{E}_{z\sim {q(z;v)}}\log {q(z;v)}\\
 \end{align}
 &lt;/div&gt;
-&lt;p&gt;Since $\log p(x;\theta)$ is considered as constant, minimizing the KL divergence is equivalent to maximizing the ELBO. The optimization problem becomes&lt;/p&gt;
+&lt;p&gt;Since $\log p(x;\theta)$ is considered as constant, minimizing the KL divergence is equivalent to maximizing the $ELBO$. The optimization problem becomes&lt;/p&gt;
 &lt;div&gt;
 $$
-\mathop{max}_{q}\mathrm{E}_{z\sim \color{blue}{q(z;v)}}\log p(x, z;\theta) - \mathrm{E}_{z\sim \color{blue}{q(z;v)}}\log \color{blue}{q(z;v)}
+\mathop{max}_{q}\mathrm{E}_{z\sim {q(z;v)}}\log p(x, z;\theta) - \mathrm{E}_{z\sim {q(z;v)}}\log {{q(z;v)}} \tag{2}
 $$
 &lt;/div&gt;
-&lt;p&gt;which now can be optimized with suitable choice of $\color{blue}{q(z;v)}$.&lt;/p&gt;
+&lt;p&gt;which now can be optimized with a suitable choice of ${q(z;v)}$.&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: Relationship between EM and VI&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: EM and variational inference both involve maximizing the ELBO of the log-likelihood. However, EM produces a point estimate of the optimal model parameter, meanwhile variational inference results in an approximation of the posterior distribution.&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h4 id=&#34;mean-field-approximation&#34;&gt;Mean field approximation&lt;/h4&gt;
-&lt;p&gt;[TODO]There are many form of variational inference. The simplest form of variational inference is &lt;code&gt;mean-field approximation&lt;/code&gt;, which makes the strong assumption that all latent variables are mutually independent. The variational distribution can be factorized as
+&lt;p&gt;Several forms of variational inference has been proposed to design a tractable variational family. The simplest out of them is &lt;code&gt;mean-field approximation&lt;/code&gt;, which makes a strong assumption that all latent variables are mutually independent. The variational distribution can then be factorized as
 $$
-q(z;v) = \prod_{k=1}^{K}q(z_k;v_k)
+q(z;v) = \prod_{k=1}^{K}q(z_k;v_k) \tag{3}
 $$&lt;/p&gt;
-&lt;p&gt;where $z$ consists of $K$ latent variables $(z_1, z_2, &amp;hellip;, z_K)$. Each latent variable $z_k$ now is controlled by its own variational parameter $v_k$.&lt;/p&gt;
-&lt;p&gt;[TODO] $q(z_k;v_k^*) \propto \mathrm{E}_{z_{-k} \sim q_{-k}(z_{-k};{v_{-k}}^{(t)})} \log p(z_k, z_{-k}, x;\theta)$&lt;/p&gt;
+&lt;p&gt;where $z$ consists of $K$ latent variables $(z_1, z_2, &amp;hellip;, z_K)$ and each latent variable $z_k$ is controlled by its own variational parameter $v_k$.&lt;/p&gt;
+&lt;p&gt;We will not go into detail here, but substituting $(3)$ into $(2)$, taking the derivative with respect to each $q(z_k;v_k)$, then setting the derivative to zero we obtain the coordinate ascent update&lt;/p&gt;
+&lt;p&gt;$$
+q^*(z_k;v_k^*) \propto \mathrm{E}_{z_{-k} \sim q_{-k}(z_{-k};{v_{-k}})} \log p(z_k, z_{-k}, x;\theta) \tag{4}
+$$&lt;/p&gt;
+&lt;p&gt;where $(\cdot)_{-k}$ denotes all but the $k$th element.&lt;/p&gt;
+&lt;p&gt;Note that until now we didn&amp;rsquo;t specify the functional form for each variational factor $q(z_k;v_k)$ yet. Fortunately, the optimal form of each $q(z_k;v_k)$ can be derived from the $RHS$ expression of the coordinate update $(4)$, which is often easy to work with for many models.&lt;/p&gt;
+&lt;!-- Note that in $(3)$ we didn&#39;t specify the functional form for each optimal variational factor $q(z_k;v_k)$. These optimal function forms can be derived from the $RHS$ of the coordinate update, which is easy for many models. --&gt;
 &lt;h4 id=&#34;coordinate-ascent-update&#34;&gt;Coordinate ascent update&lt;/h4&gt;
-&lt;p&gt;The coordinate ascent algorithm can be summarized as follows&lt;/p&gt;
+&lt;p&gt;We can then use the coordinate ascent algorithm to find the optimal mean-field distribution. The algorithm can be summarized as follows&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Initialize $v = v^{(0)}$&lt;/li&gt;
 &lt;li&gt;For each loop $t$ start from $0$
 &lt;ul&gt;
 &lt;li&gt;For each loop  $k$ from $1$ to $K$
 &lt;ul&gt;
-&lt;li&gt;Estimate $q(z_k;v_k^*) \propto \mathrm{E}_{z_{-k} \sim q_{-k}(z_{-k};{v_{-k}}^{(t)})} \log p(z_k, z_{-k}, x;\theta)$&lt;/li&gt;
-&lt;li&gt;Set $v_k^{(t+1)} = v_k^*$&lt;/li&gt;
+&lt;li&gt;Estimate $q^*(z_k;v_k^*) \propto \mathrm{E}_{z_{-k} \sim q_{-k}(z_{-k};{v_{-k}}^{(t)})} \log p(z_k, z_{-k}, x;\theta)$&lt;/li&gt;
+&lt;li&gt;Set $q(z_k; v_k^{(t+1)}) = q^*(z_k;v_k^*)$&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
-&lt;li&gt;Compute the ELBO to check convergence&lt;/li&gt;
+&lt;li&gt;Compute the $ELBO$ to check convergence&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
+&lt;p&gt;By now we are familiar with the concept of latent variable model. Let us move on to discuss LDA in the next section.&lt;/p&gt;
 &lt;h2 id=&#34;latent-dirichlet-allocation&#34;&gt;Latent Dirichlet Allocation&lt;/h2&gt;
-&lt;p&gt;LDA assumes that each &lt;code&gt;document&lt;/code&gt; is a distribution over &lt;code&gt;topics&lt;/code&gt; and each &lt;code&gt;topic&lt;/code&gt; is considered as a distribution over &lt;code&gt;words&lt;/code&gt;. For instance, suppose that we have $4$ topics and a total of $6$ &lt;code&gt;words&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;LDA is a latent variable model on observed text data or, to be more specific, a collection of &lt;code&gt;words&lt;/code&gt; in each &lt;code&gt;document&lt;/code&gt;. The model is built based on the assumptions that each &lt;code&gt;document&lt;/code&gt; is a distribution over a predefined number of &lt;code&gt;topics&lt;/code&gt;; meanwhile, each &lt;code&gt;topic&lt;/code&gt; is considered as a distribution over &lt;code&gt;words&lt;/code&gt; in a fixed vocabulary. For example, suppose that we have $4$ &lt;code&gt;topics&lt;/code&gt; &lt;em&gt;&amp;lt;economics, animal, science, art&amp;gt;&lt;/em&gt; and a total of $6$ &lt;code&gt;words&lt;/code&gt; &lt;em&gt;&amp;lt;money, astronomy, investment, rabbit, painting, chemical&amp;gt;&lt;/em&gt;. Then our assumptions can be illustrated like this figure below.&lt;/p&gt;
+&lt;img src=&#34;https://i.imgur.com/tjaOjXs.png&#34; width=&#34;600&#34;/&gt;
+&lt;p align=&#34;center&#34;&gt;The two probabilistic assumptions of LDA&lt;/p&gt;
+&lt;p&gt;Also, according to this figure, we can say that the document is $40%$ of &lt;em&gt;economics&lt;/em&gt;, $20%$ of &lt;em&gt;animal&lt;/em&gt;, $30%$ of &lt;em&gt;science&lt;/em&gt; and $10%$ of &lt;em&gt;art&lt;/em&gt;. Seem familiar? This is basically the categorical distribution.&lt;/p&gt;
+&lt;h3 id=&#34;categorical-distribution&#34;&gt;Categorical distribution&lt;/h3&gt;
+&lt;p&gt;Formally, categorical distribution is a &lt;code&gt;discrete&lt;/code&gt; probability distribution, describing the possibility that one discrete random variable belongs to one of $K$ categories. The distribution is parameterized by a $K$-dimensional vector $\theta$ denoting probabilities assigned to each category. It probability mass function is defined as
+$$
+p(x=i) = \theta_i
+$$&lt;/p&gt;
+&lt;p&gt;where $x$ is the random variable and $i$ ranges from $1$ to $K$ (representing the $K$ categories).&lt;/p&gt;
+&lt;p&gt;In our example above, the document is a categorical distribution over $K = 4$ &lt;code&gt;topics&lt;/code&gt;, with its parameter $\theta = [0.4, 0.2, 0.3, 0.1]$. Similarly, each &lt;code&gt;topic&lt;/code&gt; is also a categorical distribution over $K = 6$ &lt;code&gt;words&lt;/code&gt;.&lt;/p&gt;
+&lt;h3 id=&#34;dirichlet-distribution&#34;&gt;Dirichlet distribution&lt;/h3&gt;
+&lt;p&gt;Another distribution which plays an important role in LDA is the Dirichlet distribution (hence the name LDA). Dirichlet distribution is a &lt;code&gt;continuous&lt;/code&gt; multivariate probability distribution over a $(K-1)$-simplex, which can be seen as a set of $K$-dimensional vectors $x=[x_1, x_2, &amp;hellip;, x_K]$ such that each $x_k \geq 0$ and $\sum_{k=1}^Kx_k = 1$. For example, the 2-simplex is a triangle in $3D$ space (see figure below).&lt;/p&gt;
+&lt;img src=&#34;https://i.imgur.com/3wvle5s.png&#34; width=&#34;300&#34;/&gt;
+&lt;p align=&#34;center&#34;&gt;2-simplex in 3D space&lt;/p&gt;
+&lt;p&gt;The distribution is parameterized by a positive $K$-dimensional vector $\alpha$, with its probability density function defined as&lt;/p&gt;
+&lt;p&gt;$$
+p(x;\alpha) = \frac{1}{B(\alpha)} \prod_{k=1}^{K}x_k^{\alpha_k - 1}
+$$&lt;/p&gt;
+&lt;p&gt;where $B(\cdot)$ is the famous 
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Beta_function&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;beta function&lt;/a&gt;. The parameter $\alpha$ governs how the density is distributed on the simplex space. For example, the picture below shows how the distribution is concentrated with different $\alpha$ in the case of 2-simplex (brighter color denoting more dense areas).&lt;/p&gt;
+&lt;img src=&#34;https://miro.medium.com/max/1400/1*Pepqn_v-WZC9iJXtyA-tQQ.png&#34; width=&#34;500&#34;/&gt;
+&lt;p align=&#34;center&#34;&gt;source: &lt;a href=&#34;https://towardsdatascience.com/dirichlet-distribution-a82ab942a879?gi=686effc9deea&#34; target=&#34;_blank&#34;&gt;Dirichlet distribution blog by Sue Liu&lt;/a&gt;
+&lt;/p&gt;
+&lt;p&gt;It is noticeable that sample from a Dirichlet distribution is parameter of a categorical distribution. Thus, Dirichlet distribution is also seen as a distribution over categorical distribution. But why we need the Dirichlet distribution? It is because, in the context of Bayesian statistics, we want to control the uncertainty over some parameters rather than just a point estimate of them. To be more specific, given data $x$ with its likelihood function $f(x;\theta)$, we want to infer the full distribution of $\theta$ given $x$, but not an optimal point $\theta^*$. Given a prior $p(\theta)$, the posterior is proportional to the likelihood time the prior
+$$
+p(\theta|x) \propto p(x|\theta)p(\theta)
+$$&lt;/p&gt;
+&lt;p&gt;If the posterior has the same functional form with the prior, the prior is said to be a 
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Conjugate_prior&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;conjugate prior&lt;/a&gt; to the likelihood. For example, the Dirichlet distribution is the conjugate prior to the categorical likelihood function. It means that, when the likelihood function is categorical and Dirichlet is chosen as a prior, then the posterior
+$$
+p(\theta|x;\alpha) \propto Cat(x|\theta)Dir(\theta;\alpha)
+$$&lt;/p&gt;
+&lt;p&gt;will have the same form as the prior, which is a Dirichlet distribution. Conjugate prior makes it easy to calculate the posterior over parameter of interest $\theta$. Thus, in the case of LDA where the categorical distribution is used to represent the topic distribution of each document and the word distribution of each topic, there is no better choice than Dirichlet distribution as a conjugate prior to control these categorical distributions.&lt;/p&gt;
+&lt;!-- LDA assumes that each `document` is a distribution over `topics` and each `topic` is considered as a distribution over `words`. For instance, suppose that we have $4$ topics and a total of $6$ `words`.
+
 &lt;img src=&#34;https://i.imgur.com/ek3asj1.png&#34; width=&#34;500&#34;/&gt;
-&lt;p align=&#34;center&#34;&gt;Figure _. The two probabilistic assumptions of LDA&lt;/p&gt;
+&lt;p align=&#34;center&#34;&gt;Figure _. The two probabilistic assumptions of LDA&lt;/p&gt; --&gt;
+&lt;p&gt;LDA is also a generative model. Hence, to understand its architecture clearly, we better see how it generates documents.&lt;/p&gt;
 &lt;h3 id=&#34;generative-process&#34;&gt;Generative process&lt;/h3&gt;
-&lt;p&gt;LDA is a generative model. Hence, to understand its structure clearly, let us see how it generates documents. Suppose that we have $T$ topics and a vocabulary of $V$ words. Model LDA has 2 parameters $(\alpha, \beta)$ where&lt;/p&gt;
+&lt;p&gt;Suppose that we have $T$ topics and a vocabulary of $V$ words. Model LDA has 2 parameters $(\alpha, \beta)$ where&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;$\alpha$ denotes the Dirichlet prior that controls topic distribution of each document.&lt;/li&gt;
 &lt;li&gt;$\beta$ is a $2D$ matrix of size $T \times V$ denotes word distribution of  all topics ($\beta_i$ is a word distribution of the &lt;code&gt;i + 1&lt;/code&gt;th topic).&lt;/li&gt;
 &lt;/ul&gt;
 &lt;img src=&#34;https://i.imgur.com/LGAlXEg.png&#34; width=&#34;500&#34;/&gt;
-&lt;p align=&#34;center&#34;&gt;Figure _. How a document is generated in LDA&lt;/p&gt;
-&lt;p&gt;The generative process is then pictured as above. Specifically,&lt;/p&gt;
+&lt;p align=&#34;center&#34;&gt;How a document is generated in LDA&lt;/p&gt;
+&lt;p&gt;The generative process can be pictured as above. Specifically,&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;For each document with $N_d$ words
+&lt;li&gt;For each document $d$ with $N_d$ words
 &lt;ul&gt;
 &lt;li&gt;Sample document&amp;rsquo;s topic distribution $\theta \sim Dir(\alpha)$&lt;/li&gt;
 &lt;li&gt;For each word positions $j$ from $1$ to $N_d$
@@ -233,11 +267,11 @@ $$&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;Warning&lt;/strong&gt;: $\theta$ now is a latent variable. I keep the notation the same as the original paper for consistency.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Warning&lt;/strong&gt;: $\theta$ is now a latent variable, not model parameter. I keep the notation the same as the original paper for your ease of reference.&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h3 id=&#34;the-two-problems-of-lda&#34;&gt;The two problems of LDA&lt;/h3&gt;
 &lt;img src=&#34;https://i.imgur.com/VUMrTKJ.png&#34; width=&#34;400&#34;/&gt;
-&lt;p align=&#34;center&#34;&gt;Figure _. LDA as a probabilistic graphical model&lt;/p&gt;
+&lt;p align=&#34;center&#34;&gt;LDA as a probabilistic graphical model&lt;/p&gt;
 &lt;p&gt;LDA is a latent variable model, consisting of: observed data $w$;  model parameters $\alpha, \beta$; and latent variables $z, \theta$; as shown in the figure above. Hence, just like any typical latent variable model, LDA also have two problems needed to be solved.&lt;/p&gt;
 &lt;!--
 $$
@@ -245,48 +279,52 @@ p(w;\alpha, \beta) = \int p(\theta;\alpha) \prod_{i=1}^{N_d} \sum_{t=0}^{T - 1} 
 $$ --&gt;
 &lt;h4 id=&#34;inference&#34;&gt;Inference&lt;/h4&gt;
 &lt;p&gt;Given a document $d$ has $N$ words ${w_1^{(d)}, &amp;hellip;, w_N^{(d)}}$ and model parameters $\alpha$, $\beta$; infer the posterior distribution $p(z, \theta| w^{(d)}; \alpha, \beta)$.&lt;/p&gt;
-&lt;p&gt;We can then use mean field approximation to approximate $p(z, \theta| w^{(d)}; \alpha, \beta)$ by introducing the mean-field variational distribution $q(z, \theta; \lambda, \phi) = q(\theta;\lambda)\prod_{i=1}^{N}q(z_i;\phi_i)$.
+&lt;p&gt;We can then use mean-field approximation to approximate $p(z, \theta| w^{(d)}; \alpha, \beta)$, by introducing the mean-field variational distribution $q(z, \theta; \gamma, \phi) = q(\theta;\gamma)\prod_{i=1}^{N}q(z_i;\phi_i)$.
 &lt;img src=&#34;https://i.imgur.com/O5a0mY3.png&#34; width=&#34;250&#34;/&gt;&lt;/p&gt;
-&lt;p&gt;Figure _. The mean-field variational distribution&lt;/p&gt;
+&lt;p align=&#34;center&#34;&gt;The mean-field variational distribution&lt;/p&gt;
+&lt;p&gt;Deriving the ELBO to yield coordinate ascent update for each variational parameter is mathematically heavy so I will not put the mathematical stuff here. For reference, the derivation could be found in the Appendix of the original paper. Based on the coordinate ascent update, we obtain the optimal form for $q(\theta;\gamma)$ which is a Dirichlet distribution and each $q(z_i;\phi_i)$ which is a categorical distribution. The coordinate ascent algorithm then return the optimal parameters $\gamma^*, \phi^*$.&lt;/p&gt;
 &lt;h4 id=&#34;parameter-estimation&#34;&gt;Parameter estimation&lt;/h4&gt;
-&lt;p&gt;Likelihood function for each document is
+&lt;!-- Likelihood function for each document is --&gt;
+&lt;p&gt;In LDA, the problem of parameter estimation is: find $\alpha, \beta$ that maximizes the likelihood function
 $$
 p(w;\alpha, \beta) = \int p(\theta;\alpha) \prod_{i=1}^{N_d} \sum_{t=0}^{T - 1} p(z_i = t|\theta) p(w_i | \beta, z_i=t) d\theta
 $$&lt;/p&gt;
-&lt;p&gt;Given a collection of $D$ documents, find $\alpha, \beta$ that maximizes the likelihood function over all documents&lt;/p&gt;
-&lt;p&gt;$$
+&lt;!-- Given a collection of $D$ documents, find $\alpha, \beta$ that maximizes the likelihood function over all documents
+
+$$
 p(D;\alpha, \beta) = \prod_{d}^{D} \int p(\theta_d;\alpha) \prod_{i=1}^{N_d} \sum_{t=0}^{T - 1} p(z_i = t|\theta_d) p(w_i | \beta, z_i=t) d\theta_d
-$$&lt;/p&gt;
-&lt;p&gt;Since the posterior $p(z, \theta| w^{(d)}; \alpha, \beta)$ can not be computed exactly but can only be approximated (for instance, via variational inference in the previous section), we can not apply the EM algorithm directly to solve the estimation problem. To handle this, an algorithm named variational EM algorithm, which combines EM and mean-field inference, was introduced.&lt;/p&gt;
-&lt;p&gt;The variational EM algorithm for LDA can be summarized as follows&lt;/p&gt;
+$$ --&gt;
+&lt;p&gt;Since the posterior $p(z, \theta| w^{(d)}; \alpha, \beta)$ can not be computed exactly but can only be approximated (for instance, via variational inference in the previous section), we can not apply the EM algorithm directly to solve the estimation problem. To handle this, an algorithm named &lt;strong&gt;variational EM algorithm&lt;/strong&gt;, which combines EM and mean-field inference, was introduced. Variational inference is now used in the E-step to compute the posterior, approximately. The algorithm used for LDA can be summarized as follows&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;Initialize parameter $\alpha, \beta$ to $\alpha^{(0)}, \beta^{(0)}$&lt;/li&gt;
+&lt;li&gt;Initialize parameters $\alpha, \beta$ to $\alpha^{(0)}, \beta^{(0)}$&lt;/li&gt;
 &lt;li&gt;For each loop $t$ start from $0$
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;E step&lt;/strong&gt;:
 &lt;ul&gt;
-&lt;li&gt;For each document $d$, use mean-field approximation to approximate the posterior $p(z^{(d)}, \theta^{(d)}|w^{(d)};{\color{blue}{\alpha^{(t)}, \beta^{(t)}}})$:
+&lt;li&gt;For each document $d$, use mean-field approximation to approximate the posterior $p(z^{(d)}, \theta^{(d)}|w^{(d)};{{\alpha^{(t)}, \beta^{(t)}}})$:
 &lt;ul&gt;
-&lt;li&gt;Introduce the mean-field $q(z, \theta; \lambda, \phi) = q(\theta;\lambda)\prod_{i=1}^{N}q(z_i;\phi_i)$&lt;/li&gt;
-&lt;li&gt;Use coordinate ascent update algorithm to yield optimal $\lambda^*, \phi^*$&lt;/li&gt;
+&lt;li&gt;Introduce the mean-field $q(z, \theta; \gamma, \phi) = q(\theta;\gamma)\prod_{i=1}^{N}q(z_i;\phi_i)$&lt;/li&gt;
+&lt;li&gt;Use coordinate ascent update algorithm to yield optimal $\gamma^*, \phi^*$&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;M step&lt;/strong&gt;: Maximize the expected log-likelihood
-  &lt;p&gt;$\mathop{max}_{\color{red}{\alpha^{(t+1)}, \beta^{(t+1)}}} \mathrm{E}_{z, \theta \sim q(z, \theta; \lambda^{*}, \phi^{*})} {p(w, z, \theta ;{\color{red}{\alpha^{(t+1)}, \beta^{(t+1)}}}})$&lt;/p&gt;
+  &lt;div&gt;$\mathop{max}_{{\alpha^{(t+1)}, \beta^{(t+1)}}} \mathrm{E}_{z, \theta \sim q(z, \theta; \gamma^{*}, \phi^{*})} {p(w, z, \theta ;{{\alpha^{(t+1)}, \beta^{(t+1)}}}})$&lt;/div&gt;
 &lt;/li&gt;
 &lt;li&gt;If the convergence standard is satisfied, stop&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: Actually, there are many techniques to solve the 2 problems of LDA. In the scope of this blog, we only discuss about Variational EM.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: Actually, there are many techniques to solve the two problems of LDA. Though, we only discuss about Variational EM in the scope of this blog :v&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;&lt;strong&gt;References&lt;/strong&gt;&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;Latent Dirichlet Allocation (
 &lt;a href=&#34;http://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;pdf&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;Mean-field variational inference(
+&lt;a href=&#34;https://www.cs.cmu.edu/~epxing/Class/10708-17/notes-17/10708-scribe-lecture13.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;pdf&lt;/a&gt;)&lt;/li&gt;
 &lt;/ol&gt;
 </description>
     </item>
@@ -296,122 +334,71 @@ $$&lt;/p&gt;
       <link>https://azraelzhor.github.io/post/faster-rcnn/</link>
       <pubDate>Sat, 15 Feb 2020 00:00:00 +0000</pubDate>
       <guid>https://azraelzhor.github.io/post/faster-rcnn/</guid>
-      <description>&lt;p&gt;Last year, I had a chance to be involved in an Advanced Computer Vision class held by a non-profit organization. During the class, object detection is one of the fields that I found myself interested in the most. This motivated me to write a series of blogs in order to understand better some famous approaches that has been applied in the field. Though, the idea has been postponed until recently :v. The first part of this series is about Faster RCN, one of the state-of-the-art method used for object detection. In this blog post, I will walk you through the detail of Faster RCNN. Hopefully, at the end of this blog, you would figure out the way Faster RCNN works.&lt;/p&gt;
-&lt;h2 id=&#34;outline&#34;&gt;Outline&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;a href=&#34;#intro&#34;&gt;Object detection&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;a href=&#34;#faster-rcnn&#34;&gt;Faster RCNN&lt;/a&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;a href=&#34;&#34;&gt;VGG Shared Network&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;a href=&#34;&#34;&gt;Region Proposal Network&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;a href=&#34;&#34;&gt;Region-based CNN&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;a href=&#34;#loss-function&#34;&gt;Loss Function&lt;/a&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;a href=&#34;&#34;&gt;Regression Loss&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;a href=&#34;&#34;&gt;Classification Loss&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;a href=&#34;#training&#34;&gt;Training&lt;/a&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;a href=&#34;&#34;&gt;Augment data&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;a href=&#34;&#34;&gt;Create anchor generator&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;a href=&#34;#detection&#34;&gt;Detection&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;a-little-bit-of-object-detection&#34;&gt;A little bit of object detection&lt;/h2&gt;
-&lt;p&gt;In object detection, we received an image with bounding boxes indicating a various type of objects. There are many approaches these days.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://i.imgur.com/agk4axh.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a id=&#34;faster-rcnn&#34;&gt;&lt;/a&gt;&lt;/p&gt;
+      <description>&lt;p&gt;Last year, I had a chance to be involved in an Advanced Computer Vision class held by a non-profit organization. During the class, object detection is one of the fields that I found myself interested. This motivated me to write a series of blogs in order to understand better some famous approaches that has been applied in the field. Though, the idea has been postponed until now :v. The first part of this series is about Faster RCN, one of the state-of-the-art methods used for object detection. In this blog post, I will walk you through the details of Faster RCNN. Hopefully, at the end of this blog, you would figure out the way Faster RCNN works.&lt;/p&gt;
+&lt;h2 id=&#34;a-little-warm-up&#34;&gt;A little warm-up&lt;/h2&gt;
+&lt;p&gt;In object detection, we receive an image as input and localize bounding boxes, indicating various types of objects, as output.&lt;/p&gt;
+&lt;img src=&#34;https://i.imgur.com/agk4axh.png&#34; width=&#34;600&#34;/&gt;
+&lt;p align=&#34;center&#34;&gt;
+source: &lt;a href=&#34;https://highstonecorp.com/post/object-detection.html&#34; target=&#34;_blank&#34;&gt;https://highstonecorp.com/post/object-detection.html&lt;/a&gt;
+&lt;/p&gt;
+&lt;p&gt;So what are bounding boxes? A bounding box is just a rectangle in the image. Its coordinates is defined as a tuple of $(x, y, w, h)$, where $(x, y)$ is the coordinate of the bounding box&amp;rsquo;s center and $w, h$ is its width, height, respectively. A bounding box is said to be best-fit an object if it is the smallest rectangle that fully encloses the object like the figure below.&lt;/p&gt;
+&lt;img src=&#34;https://i.imgur.com/wj5Zreo.png&#34; width=&#34;400&#34;/&gt;
+&lt;p&gt;Hence, we should label best-fit bounding box for the best quality of supervised data. In the next part, we will discuss Faster RCNN in detail.&lt;/p&gt;
 &lt;h2 id=&#34;faster-rcnn-architecture&#34;&gt;Faster RCNN architecture&lt;/h2&gt;
-&lt;p&gt;Faster RCNN is the last detection model in the RCNN trilogy (RCNN - Fast RCNN - Faster RCNN), which relies on proposed regions to detect objects. Though, unlike its predecessors  which use selective search to find out the best regions, Faster RCNN makes use of neural network and &amp;ldquo;learn&amp;rdquo; to propose regions directly. These proposed regions then is fed into another neural network to be refined once again.&lt;/p&gt;
+&lt;p&gt;Faster RCNN, published in 2015, is the last of the RCNN trilogy (RCNN - Fast RCNN - Faster RCNN), which relies on proposed regions to detect objects. Though, unlike its predecessors  which use &lt;code&gt;selective search&lt;/code&gt; to find out the best regions, Faster RCNN makes use of neural network and &amp;ldquo;learn&amp;rdquo; to propose regions directly. These proposed regions is then fed into another neural network to be refined once again.&lt;/p&gt;
 &lt;!-- This is the main reason that makes Faster RCNN faster and better than its predecessors. --&gt;
-&lt;p&gt;First, let take a look at the overall architecture of Faster RCNN. It comprises of $2$ modules&lt;/p&gt;
+&lt;p&gt;Let us take a look at the overall architecture of Faster RCNN. The model comprises of $2$ modules&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;The region proposal module takes feature map from a feature network and proposes regions&lt;/li&gt;
-&lt;li&gt;The Fast RCNN detector module takes those regions to predict the classes that the object belongs to.&lt;/li&gt;
+&lt;li&gt;The &lt;code&gt;region proposal module&lt;/code&gt; takes feature map from a feature network and proposes regions.&lt;/li&gt;
+&lt;li&gt;The &lt;code&gt;Fast RCNN detector module&lt;/code&gt; takes those regions to predict the classes that the object belongs to.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;img src=&#34;https://i.imgur.com/Zsu3nEn.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;p&gt;The feature network, which is VGG in the context of this blog, is shared between both model.&lt;/p&gt;
-&lt;p&gt;To easily keep track of the story, let&amp;rsquo;s follow a specific example in which we are given an image of shape $300\times400\times3$.&lt;/p&gt;
+&lt;p&gt;Note that the feature network, which is VGG in the context of this blog, is shared between both modules. Also, to easily keep track of the story, let us follow a specific case in which we are given an image of shape $320\times400\times3$.&lt;/p&gt;
 &lt;h3 id=&#34;feature-shared-network&#34;&gt;Feature Shared Network&lt;/h3&gt;
-&lt;p&gt;[TODO]Pretrained models&lt;/p&gt;
-&lt;p&gt;We use VGG as a feature network. The VGG receives an input image and produce a feature map with reduced sizes. The size of the feature map is determined by the net structure. For example, in case we use VGG, the feature map&amp;rsquo;s shape is $18 \times 25 \times 512$.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://i.imgur.com/dut8uoM.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;The original paper uses ZF-net and VGG-net as feature network. Though, we only discuss VGG in the scope of this blog. The VGG receives an input image and produce a feature map with reduced spatial size. This size is determined by the net structure. In case the of VGG, the image spatial size is reduced $16$ times at the output layer. Hence, in our example, the feature map&amp;rsquo;s shape  is $320/16 \times400/16\times512$, or $20 \times 25 \times 512$. The number $512$ is due to the number of filters in the last layer of VGG.&lt;/p&gt;
+&lt;img src=&#34;https://i.imgur.com/k1KMWGJ.png&#34; width=&#34;400&#34;/&gt;
+&lt;p&gt;The feature map is then used for both &lt;code&gt;region proposal network&lt;/code&gt; and &lt;code&gt;region-based convolutional neural network&lt;/code&gt;, which will be discussed later.&lt;/p&gt;
 &lt;h3 id=&#34;region-proposal-network-rpn&#34;&gt;Region Proposal Network (RPN)&lt;/h3&gt;
-&lt;p&gt;The goal of RPN is to propose regions that highly contain object. In order to do that, RPN does&lt;/p&gt;
+&lt;p&gt;The goal of RPN is to propose regions that highly contain object. In order to do that, given the feature map, RPN does&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;generate a predefined number of fixed-size anchors&lt;/li&gt;
+&lt;li&gt;generate a predefined number of fixed-size anchors based on the feature map&lt;/li&gt;
 &lt;li&gt;predict the objectness of each of these anchors&lt;/li&gt;
 &lt;li&gt;refine their coordinates&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h4 id=&#34;predefined-anchors&#34;&gt;Predefined anchors&lt;/h4&gt;
 &lt;!-- RPN accepts VGG feature map as input. --&gt;
-&lt;p&gt;For each pixel spatial location on the VGG feature map, we generate a predefined number of fixed size anchors. The shape of these anchor boxes are determined by a combination of predefined scales and edge ratios. In our example, if we use $3$ scales $64$, $128$, $256$ and $3$ edge ratios $1:1$, $1:2$, $2:1$, there will be $3*3=9$ type of anchors at each pixel location and a total of $18 * 25 * 9 = 4050$ anchors to be generated as a result.
-&lt;img src=&#34;https://i.imgur.com/BxG5M0Z.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Specifically, for each pixel spatial location on the VGG feature map, we generate a predefined number of fixed size anchors. The shape of these anchor boxes are determined by a combination of predefined scales and edge ratios. In our example, if we use $3$ scales $64$, $128$, $256$ and $3$ edge ratios $1:1$, $1:2$, $2:1$, there will be $3*3=9$ type of anchors at each pixel location. A total of $20 * 25 * 9 = 4500$ anchors will be generated as a result.
+&lt;img src=&#34;https://i.imgur.com/lr07We4.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
 &lt;p&gt;It is important to note that even though anchor boxes are created based on the feature map&amp;rsquo;s spatial location, they reference to the original input image, in which anchor boxes generated from the same feature map pixel location are centered at the same point on the original input, as illustrated in this figure below.
 &lt;img src=&#34;https://i.imgur.com/BNTidcL.png&#34; width=&#34;400&#34;/&gt;&lt;/p&gt;
-&lt;!-- ![](https://i.imgur.com/3D1N77A.png) --&gt;
-&lt;!-- ![](https://i.imgur.com/scAnbm9.png) --&gt;
 &lt;h4 id=&#34;rpn-architecture&#34;&gt;RPN architecture&lt;/h4&gt;
-&lt;!-- It consists of 3 convolution layers: one convolutional layer with 512 filters of size 3x3 followed by two sibling 1x1 convolutional layers - one with $K$ filters acting as a classifier and the other with $4K$ filters acting as a regressor. --&gt;
-&lt;p&gt;The RPN is then designed to predict objectness of each anchor (classification) and its coordinates (regression). It consists of $3$ layers: one convolutional layer with $512$ filters of size $3 \times 3$ followed by two sibling $1 \times 1$ convolutional layers. These two sibling layers - one with $K$ filters and the other with $4K$ filters - allow for classification and regression, respectively.&lt;/p&gt;
-&lt;p&gt;&lt;img                    src=&#34;https://i.imgur.com/o1pTYG2.png&#34; width=&#34;500&#34;
-/&gt;&lt;/p&gt;
-&lt;p&gt;In our example, after passing the VGG feature map through RPN, it produces a classification output with shape of $18 \times 25 \times K$ and a regression output with shape of $18 \times 25 \times 4K$, where $K$ denotes the number of generated anchors at each feature map location.&lt;/p&gt;
-&lt;!-- ![](https://i.imgur.com/o1pTYG2.png) --&gt;
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def rpn(base_layers, num_anchors):
-    x = Conv2D(512, (3, 3), padding=&#39;same&#39;, activation=&#39;relu&#39;, kernel_initializer=&#39;normal&#39;, name=&#39;rpn_conv1&#39;)(base_layers)
-
-    x_class = Conv2D(num_anchors, (1, 1), activation=&#39;sigmoid&#39;, kernel_initializer=&#39;uniform&#39;, name=&#39;rpn_out_class&#39;)(x)
-    x_regr = Conv2D(num_anchors * 4, (1, 1), activation=&#39;linear&#39;, kernel_initializer=&#39;zero&#39;, name=&#39;rpn_out_regress&#39;)(x)
-
-    return [x_class, x_regr, base_layers]
-&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The RPN is then designed to predict objectness of each anchor (classification) and refine its coordinates (regression). It consists of $3$ layers: one convolutional layer with $512$ filters of size $3 \times 3$ followed by two sibling $1 \times 1$ convolutional layers. These two sibling layers - one with $K$ filters and the other with $4K$ filters - allow for classification and regression, respectively. $K$ is determined as the number of generated anchors at each feature map location.&lt;/p&gt;
+&lt;img src=&#34;https://i.imgur.com/iE8KSck.png&#34; width=&#34;500&#34;/&gt;
+&lt;p&gt;In our example when $K = 9$, after passing the VGG feature map through RPN, it produces a classification output with shape of $20 \times 25 \times 9$ and a regression output with shape of $20 \times 25 \times 36$. The total predictions of RPN will then have the shape of $20\times25\times45$, like the figure above.&lt;/p&gt;
 &lt;h4 id=&#34;create-labeled-data-for-training-rpn&#34;&gt;Create labeled data for training RPN&lt;/h4&gt;
-&lt;p&gt;Now, we need labeled data to train the RPN.&lt;/p&gt;
 &lt;h5 id=&#34;label-for-classification&#34;&gt;Label for classification&lt;/h5&gt;
-&lt;p&gt;For training classification task, each anchor box is labeled as&lt;/p&gt;
+&lt;p&gt;Now, we need labeled data to train the RPN. For training classification task, each anchor box is labeled as&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;positive - containing object&lt;/li&gt;
-&lt;li&gt;negative - background&lt;/li&gt;
-&lt;li&gt;ignored - being ignored when training&lt;/li&gt;
+&lt;li&gt;positive if it contains object&lt;/li&gt;
+&lt;li&gt;negative if it is background&lt;/li&gt;
+&lt;li&gt;ignored if we want it to be ignored when training&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;based on the overlap with its nearest ground-truth bounding box.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://i.imgur.com/3m5ITZD.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;p&gt;We use IoU to measure these overlaps. Let $p$ denotes the IoU between current anchor box and its nearest ground-truth bounding box. The rule is detailed as follows&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://i.imgur.com/3m5ITZD.png&#34; alt=&#34;&#34;&gt;
+To be more specific, we use the famous IoU (Intersection over Union) to measure the overlap. Let $p$ denotes the IoU between current anchor box and its nearest ground-truth bounding box. Then, we need to decide two thresholds $p_{neg}$, $p_{pos}$ for labelling. The labelling rule is then detailed as follows&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;If $p &amp;gt; \text{max_rpn}$, label it positive&lt;/li&gt;
-&lt;li&gt;If $p &amp;lt; \text{min_rpn}$, label it negative&lt;/li&gt;
-&lt;li&gt;If $\text{min_rpn} &amp;lt; p &amp;lt; \text{max_rpn}$, ignore it when training&lt;/li&gt;
+&lt;li&gt;If $p \geq p_{pos}$, label the bounding box as positive&lt;/li&gt;
+&lt;li&gt;If $p \leq p_{neg}$, label it as negative&lt;/li&gt;
+&lt;li&gt;If $p_{neg} &amp;lt; p &amp;lt; p_{pos}$, ignore it when training&lt;/li&gt;
 &lt;/ul&gt;
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# overlaps for RPN
-cfg.rpn_min_overlap = 0.3
-cfg.rpn_max_overlap = 0.7
-&lt;/code&gt;&lt;/pre&gt;
 &lt;h5 id=&#34;label-for-regression&#34;&gt;Label for regression&lt;/h5&gt;
-&lt;p&gt;The anchor box refinement is modeled as a regression problem, in which we predict the delta $(\color{red}{t_x, t_y, t_w, t_h})$ for each anchor box. This delta denotes the change needed to refine our predefined anchor boxes, as illustrated in this figure below&lt;/p&gt;
-&lt;!-- ![](https://i.imgur.com/x7kGAvI.png) --&gt;
+&lt;p&gt;The anchor box refinement is modeled as a regression problem, in which we predict the delta $({\color{red}{t_x, t_y, t_w, t_h}})$ for each anchor box. This delta denotes the change needed to refine our predefined anchor boxes, as illustrated in this figure below&lt;/p&gt;
 &lt;img src=&#34;https://i.imgur.com/7h3T6TK.png&#34; width=&#34;400&#34;/&gt;
 &lt;p&gt;Formally, we have&lt;/p&gt;
 &lt;div&gt;
 $$\begin{align}
-\color{blue}{x} &amp; = x_a + \color{red}{t_x}*w_a \\
-\color{blue}{y} &amp; = y_a + \color{red}{t_y}*h_a \\
+\color{blue}{x} &amp; = x_a + {\color{red}{t_x}}*w_a \\
+\color{blue}{y} &amp; = y_a + {\color{red}{t_y}}*h_a \\
 \color{blue}{w} &amp; = w_a * e^{\color{red}{t_w}} \\
 \color{blue}{h} &amp; = h_a * e^{\color{red}{t_h}}
 \end{align}
@@ -420,72 +407,59 @@ $$
 &lt;p&gt;or&lt;/p&gt;
 &lt;div&gt;
 $$\begin{align}
-\color{red}{t_x} &amp; = (\color{blue}{x} - x_a) / w_a \\
-\color{red}{t_y} &amp; = (\color{blue}{y} - y_a) / h_a \\
-\color{red}{t_w} &amp; = log(\color{blue}{w}/w_a) \\
-\color{red}{t_h} &amp; = log(\color{blue}{h}/h_a)
+\color{red}{t_x} &amp; = ({\color{blue}{x}} - x_a) / w_a \\
+\color{red}{t_y} &amp; = ({\color{blue}{y}} - y_a) / h_a \\
+\color{red}{t_w} &amp; = log({\color{blue}{w}}/w_a) \\
+\color{red}{t_h} &amp; = log({\color{blue}{h}}/h_a)
 \end{align}
 $$
 &lt;/div&gt;
-&lt;p&gt;where $(x_a, y_a, w_a, h_a)$ denotes the anchor box&amp;rsquo;s coordinates and $(\color{blue}{x, y, w, h})$ denotes the refined box&amp;rsquo;s coordinates.&lt;/p&gt;
-&lt;p&gt;To create data for anchor regression training, we calculate the &amp;ldquo;ground-truth&amp;rdquo; delta $(\color{red}{t_x^*, t_y^*, t_w^*, t_h^*})$ based on each anchor box&amp;rsquo;s coordinates $(x_a, y_a, w_a, h_a)$ and its nearest ground-truth bounding box&amp;rsquo;s coordinates $(\color{blue}{x^*, y^*, w^*, h^*})$.&lt;/p&gt;
+&lt;p&gt;where $(x_a, y_a, w_a, h_a)$ denotes the anchor box&amp;rsquo;s coordinates and $({\color{blue}{x, y, w, h}})$ denotes the refined box&amp;rsquo;s coordinates.&lt;/p&gt;
+&lt;p&gt;To create data for anchor regression training, we calculate the &amp;ldquo;ground-truth&amp;rdquo; delta $({\color{red}{t_x^*, t_y^*, t_w^*, t_h^*}})$ based on each anchor box&amp;rsquo;s coordinates $(x_a, y_a, w_a, h_a)$ and its nearest ground-truth bounding box&amp;rsquo;s coordinates $({\color{blue}{x^*, y^*, w^*, h^*}})$.&lt;/p&gt;
 &lt;div&gt;
-$$\begin{align}
-\color{red}{t_x^*} &amp; = (\color{blue}{x^*} - x_a) / w_a \\
-\color{red}{t_y^*} &amp; = (\color{blue}{y^*} - y_a) / h_a \\
-\color{red}{t_w^*} &amp; = log(\color{blue}{w^*}/w_a) \\
-\color{red}{t_h^*} &amp; = log(\color{blue}{h^*}/h_a)
+$$
+\begin{align}
+\color{red}{t_x^*} &amp; = ({\color{blue}{x^*}} - x_a) / w_a \\
+\color{red}{t_y^*} &amp; = ({\color{blue}{y^*}} - y_a) / h_a \\
+\color{red}{t_w^*} &amp; = log({\color{blue}{w^*}}/w_a) \\
+\color{red}{t_h^*} &amp; = log({\color{blue}{h^*}}/h_a)
 \end{align}
 $$
 &lt;/div&gt;
-&lt;p&gt;Among those generated anchor boxes, the positive anchors are probably outnumbered by the negative ones. Thus, to avoid imbalanced classification, we only use some anchor boxes for training. Specifically, only $256$ anchor boxes is chosen for training the RPN.&lt;/p&gt;
-&lt;p&gt;For example, with $4050$ anchor boxes generated, assume that we have $4000$ anchor boxes labeled as &amp;ldquo;positive&amp;rdquo;, $50$ anchor boxes labeled as &amp;ldquo;negative&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;Among those generated anchor boxes, the positive anchors are probably outnumbered by the negative ones. Thus, to avoid imbalanced classification, only a specific number of anchor boxes is used for training. In our example, among $4500$ anchor boxes generated, assume that we have $500$ &amp;ldquo;positive&amp;rdquo; anchor boxes, $2000$ &amp;ldquo;negative&amp;rdquo; anchor boxes and $2000$ &amp;ldquo;ignored&amp;rdquo; anchor boxes. Then, we only chose $256$ anchor boxes for training the RPN, including $128$ boxes of each type (&amp;ldquo;positive&amp;rdquo; and &amp;ldquo;negative&amp;rdquo;).&lt;/p&gt;
 &lt;h4 id=&#34;rpn-losses&#34;&gt;RPN losses&lt;/h4&gt;
-&lt;h5 id=&#34;1-regression-loss&#34;&gt;1. Regression Loss&lt;/h5&gt;
+&lt;h5 id=&#34;regression-loss&#34;&gt;Regression Loss&lt;/h5&gt;
 &lt;p&gt;The smooth L1 loss is used for regression training. Its formulation is as below&lt;/p&gt;
-&lt;p&gt;$$smooth_{L1}(x) =
+&lt;div&gt;
+$$smooth_{L1}(x) =
 \begin{cases}
-0.5x^2 &amp;amp; \mbox{if} ;  \lvert x \rvert &amp;lt; 1, \&lt;br&gt;
-\lvert x \rvert - 0.5 &amp;amp; \mbox{otherwise}.
+0.5x^2 &amp; \mbox{if} \;  \lvert x \rvert &lt; 1, \\
+\lvert x \rvert - 0.5 &amp; \mbox{otherwise}.
 \end{cases}
-$$&lt;/p&gt;
-&lt;p&gt;where $x$ denotes the difference between prediction and ground truth $t  - \color{blue}{t^*}$.&lt;/p&gt;
+$$
+&lt;/div&gt;
+where $x$ denotes the difference between prediction and ground truth $t  - {\color{blue}{t^*}}$.
 &lt;img src=&#34;https://i.imgur.com/HKcpwC2.png&#34; width=&#34;300&#34;/&gt;
+&lt;p align=&#34;center&#34;&gt;
+source: &lt;a href=&#34;https://arxiv.org/pdf/1711.06753.pdf&#34; target=&#34;_blank&#34;&gt; figure 3 in https://arxiv.org/pdf/1711.06753.pdf &lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;The reason smooth L1 loss is preferred to L1 and L2 loss is because it can handle the problem of these two losses. Being quadratic for small values ($\lvert x \rvert &amp;lt; 1$) and linear for large values ($\lvert x \rvert \geq 1$), smooth L1 loss is now less sensitive to outliers than L2 loss and also does not suffer from the problem of L1 loss, which is not differentiable around zero.&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# regression loss for rpn
-def rpn_loss_regr(cfg):
-    def rpn_loss_regr_fixed_num(y_true, y_pred):
-        x = y_true[:, :, :, 4 * cfg.num_anchors:] - y_pred
-        x_abs = K.abs(x)
-        x_bool = K.cast(K.less_equal(x_abs, 1.0), tf.float32)
-
-        return cfg.lambda_rpn_regr * K.sum(
-            y_true[:, :, :, :4 * cfg.num_anchors] * (x_bool * (0.5 * x * x) + (1 - x_bool) * (x_abs - 0.5))) / K.sum(cfg.epsilon + y_true[:, :, :, :4 * cfg.num_anchors])
-
-    return rpn_loss_regr_fixed_num
-&lt;/code&gt;&lt;/pre&gt;
-&lt;h5 id=&#34;2-classification-loss&#34;&gt;2. Classification Loss&lt;/h5&gt;
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def rpn_loss_cls(cfg):
-    def rpn_loss_cls_fixed_num(y_true, y_pred):
-        return cfg.lambda_rpn_class * K.sum(y_true[:, :, :, :cfg.num_anchors] * K.binary_crossentropy(y_pred[:, :, :, :], y_true[:, :, :, cfg.num_anchors:])) / K.sum(cfg.epsilon + y_true[:, :, :, :cfg.num_anchors])
-
-    return rpn_loss_cls_fixed_num
-&lt;/code&gt;&lt;/pre&gt;
+&lt;h5 id=&#34;classification-loss&#34;&gt;Classification Loss&lt;/h5&gt;
+&lt;p&gt;For RPN binary classification, the binary cross-entropy loss is used.&lt;/p&gt;
 &lt;h4 id=&#34;use-rpn-to-propose-regions&#34;&gt;Use RPN to propose regions&lt;/h4&gt;
-&lt;h5 id=&#34;rpn-prediction&#34;&gt;RPN prediction&lt;/h5&gt;
-&lt;img src=&#34;https://i.imgur.com/uNnQDrw.png&#34; width=&#34;400&#34;/&gt;
 &lt;p&gt;After training, we use RPN to predict the bounding box coordinates at each feature map location.&lt;/p&gt;
+&lt;img src=&#34;https://i.imgur.com/uNnQDrw.png&#34; width=&#34;400&#34;/&gt;
 &lt;!-- $$\begin{align}
 \color{blue}{x} &amp; = x_a + \color{red}{t_x}*w_a \\
 \color{blue}{y} &amp; = y_a + \color{red}{t_y}*h_a \\
 \color{blue}{w} &amp; = w_a * e^{\color{red}{t_w}} \\
 \color{blue}{h} &amp; = h_a * e^\color{red}{t_h}
 \end{align}$$ --&gt;
-&lt;p&gt;In our example, there is $4050$ anchor boxes in total. Assume that the RPN predict $3000$ positive bounding boxes - meaning that they are containing object.&lt;/p&gt;
+&lt;p&gt;Assume that the RPN predict $1000$ positive bounding boxes out of $4500$ anchor boxes. There are a lot of proposals. Hence, it is very likely that there are many bounding boxes referring to the same object, among those are predicted by RPN. This leads to redundant proposals, which can be eliminated by an algorithm known as &lt;code&gt;non max suppression&lt;/code&gt;.&lt;/p&gt;
 &lt;h5 id=&#34;non-max-suppression&#34;&gt;Non-max suppression&lt;/h5&gt;
 &lt;img src=&#34;https://i.imgur.com/dn7grUV.png&#34; width=&#34;400&#34;/&gt;
-&lt;p&gt;It is very likely that there are many bounding boxes, among those are predicted by RPN, referring to the same object. This leads to redundant proposals, which can be eliminated by an algorithm known as non max suppression. The idea of non max suppression is to filter out all but the box with highest confidence score for each highly-overlapped bounding box cluster, making sure that a particular object is identified only once.&lt;/p&gt;
-&lt;p&gt;The algorithm can be summarized as follows:&lt;/p&gt;
+&lt;p&gt;The idea of non max suppression is to filter out all but the box with highest confidence score for each highly-overlapped bounding box cluster (like the figure above), making sure that a particular object is identified only once.&lt;/p&gt;
+&lt;p&gt;The algorithm can be summarized as follows&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Given a list of proposals along with their confidence score, and a predefined overlap threshold
 &lt;ul&gt;
@@ -502,69 +476,44 @@ def rpn_loss_regr(cfg):
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
-&lt;img src=&#34;https://i.imgur.com/Mh1L9XC.png&#34; width=&#34;400&#34;/&gt;
+&lt;p&gt;After non max suppression, we obtain some &amp;ldquo;good&amp;rdquo; bounding boxes in the input image. These boxes correspond with scaled regions in the VGG feature map. Then, these feature map patches are extracted as proposed regions, as shown in the figure below&lt;/p&gt;
+&lt;img src=&#34;https://i.imgur.com/qWj647y.png&#34; width=&#34;500&#34;/&gt;
 &lt;h3 id=&#34;region-based-convolutional-neural-network&#34;&gt;Region-based Convolutional Neural Network&lt;/h3&gt;
-&lt;p&gt;Now we have feature map patches as regions ready for the next phase. Now one notable problem arises here is that those proposed regions are not in the same shape, which makes it difficult for neural network training. This is where we need RoI pooling layer to help construct fixed-size feature maps from those arbitrary-size regions.&lt;/p&gt;
+&lt;p&gt;Now we have proposed regions ready for the next phase. One notable problem arises here is that these proposed regions are not in the same shape, which make it difficult for neural network training. This is where we need RoI pooling layer to help construct fixed-size feature maps from these arbitrary-size regions.&lt;/p&gt;
 &lt;h4 id=&#34;roi-pooling&#34;&gt;RoI Pooling&lt;/h4&gt;
-&lt;p&gt;To understand RoI pooling, let begin with a 2D example.&lt;/p&gt;
-&lt;h5 id=&#34;a-2d-example&#34;&gt;A 2D example&lt;/h5&gt;
-&lt;!--  Given an input slice of arbitrary size, --&gt;
-&lt;p&gt;No matter what the shape of the input slice is, a $2 \times 2$ RoI pooling layer always transform the input to the output of size $2 \times 2$ by&lt;/p&gt;
+&lt;p&gt;To understand RoI pooling, let begin with a 2D example. No matter what the shape of the input slice is, a $2 \times 2$ RoI pooling layer always transform the input to the output of size $2 \times 2$ by&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Split the input into a $2 \times 2$ matrix of roughly equal regions&lt;/li&gt;
 &lt;li&gt;Do max pooling on each region&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;like this figure below (given input of shape $4 \times 4$ or $5 \times 5$).&lt;/p&gt;
-&lt;!-- ![](https://i.imgur.com/oSbRTQf.png) --&gt;
 &lt;img src=&#34;https://i.imgur.com/0Z6wlit.png&#34; width=&#34;400&#34;/&gt;
 &lt;h5 id=&#34;roi-used-in-faster-rcnn&#34;&gt;RoI used in Faster RCNN&lt;/h5&gt;
-&lt;img src=&#34;https://i.imgur.com/Clu7DyN.png&#34; width=&#34;400&#34;/&gt;
+&lt;p&gt;In Faster RCNN, we apply RoI pooling to a 3D proposed regions to obtain fixed-size regions. In our example, if $7\times7$ RoI pooling is used, those fixed-size regions have the shape of $7\times7\times512$.&lt;br&gt;
+&lt;img src=&#34;https://i.imgur.com/YxF0Tt8.png&#34; width=&#34;400&#34;/&gt;&lt;/p&gt;
 &lt;h4 id=&#34;detection-network&#34;&gt;Detection Network&lt;/h4&gt;
-&lt;!-- Those fixed-size feature maps from RoI pooling are subsequently fed into the final classifier. --&gt;
 &lt;p&gt;Those fixed-size feature maps from RoI pooling are then flattened and subsequently fed into a fully connected network for final detection. The net consists of $2$ fully connected layers of $4096$ neurons, followed by other $2$ sibling fully connected layers - one has $N$ neurons for classifying proposals and the other has $4*(N - 1)$ neurons for bounding box regression, where $N$ denotes the number of classes, including the background. Note that when a bounding box is classified as background, regression is unneeded. Hence, it makes sense that we only need $4*(N - 1)$ neurons for regression in total.&lt;/p&gt;
-&lt;img src=&#34;https://i.imgur.com/o05O9LM.png&#34; width=&#34;500&#34;/&gt;
+&lt;img src=&#34;https://i.imgur.com/tHjHMWg.png&#34; width=&#34;500&#34;/&gt;
 &lt;p&gt;In our example, each $7\times7\times512$ feature map is fed to the detection net to produce the classification output has size of $4$, and the regression output has size of $12$.&lt;/p&gt;
-&lt;h4 id=&#34;labeled-data-for-fcnn&#34;&gt;Labeled data for FCNN&lt;/h4&gt;
-&lt;!-- After non max suppresion step, we get
-For each proposed region, the RPN predict  --&gt;
+&lt;h4 id=&#34;labeled-data-for-rcnn&#34;&gt;Labeled data for RCNN&lt;/h4&gt;
 &lt;h5 id=&#34;label-for-classification-1&#34;&gt;Label for classification&lt;/h5&gt;
-&lt;p&gt;Similar to the RPN, we make use of IoU metric to label data. Let $p$ denotes the overlap between a refined anchor box produced by RPN and its nearest ground-truth anchor box. For each anchor box we label as follows&lt;/p&gt;
+&lt;p&gt;Similar to the RPN, we make use of IoU metric to label data. Let $r$ now denotes the overlap between a refined anchor box produced by RPN and its nearest ground-truth anchor box. For each anchor box we label as follows&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;if $p &amp;lt; \text{min_cls}$, ignore it when training.&lt;/li&gt;
-&lt;li&gt;if $\text{min_cls} \leq p &amp;lt; \text{max_cls}$, label it as background.&lt;/li&gt;
-&lt;li&gt;if $p \geq \text{max_cls}$, label it as the class to which its nearest ground-truth box belongs.&lt;/li&gt;
+&lt;li&gt;if $r \leq r_{min}$, label the proposed anchor box as background.&lt;/li&gt;
+&lt;li&gt;if $r_{min} &amp;lt; r &amp;lt; r_{max}$, ignore it when training.&lt;/li&gt;
+&lt;li&gt;if $r \geq r_{max}$, label it as the class to which its nearest ground-truth box belongs.&lt;/li&gt;
 &lt;/ul&gt;
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;cfg.classifier_min_overlap = 0.1
-cfg.classifier_max_overlap = 0.5
-&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;where $r_{min}$ and $r_{max}$ are the two predefined thresholds.&lt;/p&gt;
 &lt;h5 id=&#34;label-for-bounding-box-regression&#34;&gt;Label for bounding box regression&lt;/h5&gt;
 &lt;p&gt;For regression, we also calculate the &amp;ldquo;ground-truth&amp;rdquo; deltas $(\color{red}{t_x^*, t_y^*, t_w^*, t_h^*})$ in the same fashion as those in RPN, but now based on each refined anchor box&amp;rsquo;s coordinates from the RPN $(x_r, y_r, w_r, h_r)$ and its nearest ground-truth bounding box&amp;rsquo;s coordinates $(\color{blue}{x^*, y^*, w^*, h^*})$.&lt;/p&gt;
-&lt;!-- &lt;a id=&#34;loss-function&#34;&gt;&lt;/a&gt; --&gt;
 &lt;h4 id=&#34;rcnn-losses&#34;&gt;RCNN losses&lt;/h4&gt;
-&lt;h5 id=&#34;1-regression-loss-1&#34;&gt;1. Regression Loss&lt;/h5&gt;
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# regresssion loss for detection network
-def class_loss_regr(num_classes, cfg):
-    def class_loss_regr_fixed_num(y_true, y_pred):
-        x = y_true[:, :, 4*num_classes:] - y_pred
-        x_abs = K.abs(x)
-        x_bool = K.cast(K.less_equal(x_abs, 1.0), &#39;float32&#39;)
-        return cfg.lambda_cls_regr * K.sum(y_true[:, :, :4*num_classes] * (x_bool * (0.5 * x * x) + (1 - x_bool) * (x_abs - 0.5))) / K.sum(cfg.epsilon + y_true[:, :, :4*num_classes])
-    return class_loss_regr_fixed_num
-&lt;/code&gt;&lt;/pre&gt;
-&lt;h5 id=&#34;2-classification-loss-1&#34;&gt;2. Classification Loss&lt;/h5&gt;
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def class_loss_cls(cfg):
-    def class_loss_cls_fixed_num(y_true, y_pred):
-        return cfg.lambda_cls_class * K.mean(categorical_crossentropy(y_true[0, :, :], y_pred[0, :, :]))
-    return class_loss_cls_fixed_num
-&lt;/code&gt;&lt;/pre&gt;
-&lt;!-- &lt;a id=&#34;training&#34;&gt;&lt;/a&gt;
-## Training
-
-&lt;a id=&#34;detection&#34;&gt;&lt;/a&gt;
-## Detection --&gt;
+&lt;p&gt;RCNN also uses smooth  L1 loss for regression and categorical cross-entropy loss for classification.&lt;/p&gt;
+&lt;p&gt;Now, we are done walking through Faster RCNN. Its entire architecture can be pictured as follows&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://i.imgur.com/ZcaFqbz.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;[TODO - introduce Colab links]&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;References&lt;/strong&gt;&lt;/p&gt;
 &lt;ol&gt;
-&lt;li&gt;Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks (
+&lt;li&gt;Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks, 2015. (
 &lt;a href=&#34;https://arxiv.org/abs/1506.01497&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;arxiv&lt;/a&gt;)&lt;/li&gt;
 &lt;/ol&gt;
 </description>
@@ -576,64 +525,16 @@ def class_loss_regr(num_classes, cfg):
       <pubDate>Sun, 19 Jan 2020 00:00:00 +0000</pubDate>
       <guid>https://azraelzhor.github.io/post/invertible-residual-networks/</guid>
       <description>&lt;p&gt;If you have been involving in machine learning for a while, you should have known about residual networks, which are proved to be powerful for image classification. Yet, apart from classification, they can be made invertible by some simple tricks to be used in other machine learning tasks as well. This family of residual networks called &lt;strong&gt;Invertible Residual Networks&lt;/strong&gt; has been proposed  recently by J Behrmann, 2018. In this blog post, I will walk you through the invention of invertible residual networks.&lt;/p&gt;
-&lt;h2 id=&#34;table-of-contents&#34;&gt;Table of Contents&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;a href=&#34;#motivation&#34;&gt;The motivation&lt;/a&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;a href=&#34;#den-est&#34;&gt;Density estimation&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;a href=&#34;#norm-flows&#34;&gt;Normalizing Flows&lt;/a&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;a href=&#34;#change&#34;&gt;A change of variables&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;a href=&#34;#flow&#34;&gt;A normalizing flows&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;a href=&#34;#res-block&#34;&gt;The awesome residual block&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;a href=&#34;#ires-net&#34;&gt;Making the nets invertible&lt;/a&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;a href=&#34;#banach&#34;&gt;Fixed-point theorem&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;a href=&#34;#lipschitz&#34;&gt;Enforcing Lipschitz constraint&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;a href=&#34;#inverse&#34;&gt;How to yield the inverse output&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;a href=&#34;#log-likelihood&#34;&gt;Computing the log likelihood&lt;/a&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;a href=&#34;#log_matrix&#34;&gt;Log determinant&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;a href=&#34;#trace-estimator&#34;&gt;Hutchinsons estimator&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;a href=&#34;#code&#34;&gt;Implementations&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;a id=motivation&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;h2 id=&#34;the-motivation&#34;&gt;The motivation&lt;/h2&gt;
 &lt;p&gt;Classification only tells difference between data points. This is clearly not fulfilling for greedy human beings. We want a better understanding of data or, to be more specific, the data distribution itself. This underlying distribution of data is literally what the task of density estimation tries to estimate.&lt;/p&gt;
-&lt;p&gt;&lt;a id=&#34;den-est&#34;&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;h3 id=&#34;density-estimation&#34;&gt;Density estimation&lt;/h3&gt;
 &lt;!-- A generative model explains how data is generated. Specifically, its ultimate goal is to estimate the distribution of observed data. --&gt;
-&lt;p&gt;Density estimation can be achieved through maximum likelihood estimation, in which we try to maximize the expected log-likehood&lt;/p&gt;
+&lt;p&gt;Density estimation can be achieved through maximum likelihood estimation, in which we try to maximize the expected log-likelihood&lt;/p&gt;
 &lt;div&gt;
 $$
 \mathbf{E}_{x \sim p_{data}(x)}{p(x; \theta)}
 $$
 &lt;/div&gt;
-&lt;p&gt;$$
-\mathbf{E}_{x \sim p_k(x) }{p(x; \theta)}
-$$&lt;/p&gt;
 &lt;p&gt;where $p_{data}(x)$ denotes the empirical distribution of observed data and $p(x; \theta)$ denotes our assumed parametric distribution (simply known as model distribution).&lt;/p&gt;
 &lt;p align=&#34;center&#34;&gt;
   &lt;img src=&#34;https://i.imgur.com/eAeqbl8.png&#34; width=&#34;300px&#34;/&gt;
@@ -644,16 +545,12 @@ $$&lt;/p&gt;
 &lt;!-- as we will see in the following section. --&gt;
 &lt;!-- ![](https://i.imgur.com/ldsPsB6.png) --&gt;
 &lt;p&gt;&lt;img src=&#34;https://i.imgur.com/JPPZwz3.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a id=&#34;norm-flows&#34;&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;h3 id=&#34;normalizing-flows&#34;&gt;Normalizing Flows&lt;/h3&gt;
 &lt;p&gt;Normalizing flows were first introduced to solve the problem of density estimation. Though, it later became popular when introduced to deal with variational inference by [1]. The idea of normalizing flows is very simple that it transforms one distribution to another arbitrarily complex distribution, through a sequence of invertible mapping functions.&lt;/p&gt;
-&lt;p&gt;&lt;a id=&#34;change&#34;&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;h4 id=&#34;a-change-of-variables&#34;&gt;A change of variables&lt;/h4&gt;
 &lt;p&gt;But, let&amp;rsquo;s first take a look at a change of variables rule, which forms the basis for normalizing flows.&lt;/p&gt;
-&lt;p align=&#34;center&#34;&gt;
-  &lt;img src=&#34;https://i.imgur.com/YYBTSnI.png&#34; width=&#34;300px&#34;/&gt;
-  &lt;p align=&#34;center&#34;&gt;Figure 1. A change of variables&lt;p align=&#34;center&#34;&gt;
-&lt;/p&gt;
+&lt;img src=&#34;https://i.imgur.com/YYBTSnI.png&#34; width=&#34;300px&#34;/&gt;
+&lt;p align=&#34;center&#34;&gt;A change of variables&lt;/p&gt;
 &lt;p&gt;Given a random variable $x$ with its density function known as $p(x)$, if we map this variable using an invertible mapping $f$, so that $z = f(x)$ and $x = f^{-1}(z) ; \forall x, z,$ then $z$ is still a random variable. Its normalized density function is then defined as follows&lt;/p&gt;
 &lt;p&gt;$$
 p(z) = p(x) \left\lvert \det\frac{\partial f^{-1}}{\partial z} \right\rvert = p(x) {\left\lvert \det\frac{\partial f}{\partial x} \right\rvert}^{-1}, \tag{1}
@@ -661,65 +558,61 @@ $$&lt;/p&gt;
 &lt;p&gt;where the first equality is due to preservation of total probability of in both domain; and the second equality follows from the inverse function theorem.&lt;/p&gt;
 &lt;p&gt;Taking logarithm of each side, we can rewrite $(1)$  as&lt;/p&gt;
 &lt;!-- $$\ln p(x) = \ln p(z) + \ln \left\lvert \det J_f(x) \right\rvert$$ --&gt;
-&lt;p&gt;$$\ln p(z) = \ln p(x) - \ln \left\lvert \det J_f(x) \right\rvert$$&lt;/p&gt;
+&lt;p&gt;$$
+\ln p(z) = \ln p(x) - \ln \left\lvert \det J_f(x) \right\rvert
+$$&lt;/p&gt;
 &lt;p&gt;where $J_f$ denotes the Jacobian matrix of function $f$ evaluated at point $x$.&lt;/p&gt;
-&lt;p&gt;&lt;a id=&#34;flow&#34;&gt;&lt;/a&gt;&lt;/p&gt;
-&lt;h4 id=&#34;a-normalzing-flow&#34;&gt;A normalzing flow&lt;/h4&gt;
-&lt;!-- ![](https://i.imgur.com/DVD3pno.png) --&gt;
-&lt;p align=&#34;center&#34;&gt;
-  &lt;img src=&#34;https://i.imgur.com/DVD3pno.png&#34; width=&#34;420px&#34;/&gt;
-  &lt;p align=&#34;center&#34;&gt;Figure 2. A normalizing flow&lt;p align=&#34;center&#34;&gt;
-&lt;/p&gt;
+&lt;h4 id=&#34;a-normalizing-flow&#34;&gt;A normalizing flow&lt;/h4&gt;
+&lt;img src=&#34;https://i.imgur.com/DVD3pno.png&#34; width=&#34;420px&#34;/&gt;
+&lt;p align=&#34;center&#34;&gt;A normalizing flow&lt;/p&gt;
 &lt;p&gt;We can now form a normalizing flow by chaining together a finite sequence of these variable changes just described above. As an example, let us consider a flow in figure 2, in which we have $$z \equiv z_K = f_K \circ &amp;hellip; \circ f_2  \circ f_1 (x) \equiv F(x)$$&lt;/p&gt;
 &lt;p&gt;By consecutively applying variables change formula $(2)$, we get&lt;/p&gt;
 &lt;div&gt;
-$$\begin{align}
+$$
+\begin{align}
 \ln p(z) = \ln p(z_K) &amp; = \ln p(z_{K-1}) - \ln \left\lvert \det J_{f_K}(z_{K-1})\right\rvert \\
 &amp; = \ln p(z_{K-2}) - \sum_{k=K-1}^{K}\ln \left\lvert \det J_{f_k}(z_{k-1})\right\rvert \\
 &amp; = \;... \\
 &amp; = \ln p(x) - \sum_{k=1}^{K} \ln \left\lvert \det J_{f_k}(z_{k-1})\right\rvert \\
-\end{align}$$
+\end{align}
+$$
 &lt;/div&gt;
 &lt;p&gt;Continuing the derivation we get&lt;/p&gt;
 &lt;div&gt;
-$$\begin{align}
+$$
+\begin{align}
 \ln p(z) &amp; = \ln p(x) - \ln \left\lvert \prod_{k=1}^{K} \det J_{f_k}(z_{k-1})\right\rvert \\
 &amp; = \ln p(x) - \ln \left\lvert \det \prod_{k=1}^{K} J_{f_k}(z_{k-1})\right\rvert \ (\because \det(AB) = \det(A)\det(B)) \\
 &amp; = \ln p(x) - \ln \left\lvert \det J_F(x)\right\rvert \ (\textrm{because of derivative chain rule})\\
-\end{align}$$
+\end{align}
+$$
 &lt;/div&gt;
-It is easy to realize that the last equation is literally a variables change formula with transformation $F$. This does make sense because a normalizing flow can also be viewed as a change of variables but with a much more complex invertible transformation. Here, $F$ is clearly invertible as it is a composition of an arbitrary number of invertible functions.
-&lt;p&gt;By designing an appropriate $F$, we can obtain an arbitrarily complex normalized density function at the completion of a normalizing flow. Hence, normalizing flows can be intuitively interpreted as a systematic way to distort the input density function, making it more complex (like in variational inference setting) or simpler (like in density estimation setting). However, in order for normalizing flows to be useful in practice, we need to have two conditions satisfied&lt;/p&gt;
+&lt;p&gt;It is easy to realize that the last equation is literally a variables change formula with transformation $F$. This does make sense because a normalizing flow can also be viewed as a change of variables but with a much more complex invertible transformation. Here, $F$ is clearly invertible as it is a composition of an arbitrary number of invertible functions.&lt;/p&gt;
+&lt;p&gt;By designing an appropriate $F$, we can obtain an arbitrarily complex normalized density function at the completion of a normalizing flow. Hence, normalizing flows can be intuitively interpreted as a systematic way to distort the input density function, making it more complex (like in variational inference setting) or simpler (like in density estimation setting). However, in order for normalizing flows to be useful in practice, we need to have two conditions satisfied:&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;The determinant of their Jacobian matrices $J_{f_k}$ need to be &lt;code&gt;easy to compute&lt;/code&gt;, in order to obtain a tractable likelihood.&lt;/li&gt;
 &lt;li&gt;Those transformation functions $f_k$ obviously need to be &lt;code&gt;invertible&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;The determinant of their Jacobian matrices $J_{f_k}$ need to be &lt;code&gt;easy to compute&lt;/code&gt;, in order to obtain a tractable likelihood.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;In fact, many approaches have been proposed to construct those easy-to-use transformation functions lately. Inspired by normalizing flows, the authors of the paper has also managed to exploit residual networks as transformation functions used for normalizing flows. Thus, before diving into the details, let take a look back at the architecture of residual networks.&lt;/p&gt;
-&lt;p&gt;&lt;a id=&#34;res-block&#34;&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;h3 id=&#34;the-awesome-residual-block&#34;&gt;The awesome residual block&lt;/h3&gt;
 &lt;p&gt;Residual network is composed of a sequence of residual blocks, with each block can be simplified as this figure below&lt;/p&gt;
-&lt;!-- &lt;p align=&#34;center&#34;&gt;
-  &lt;img src=&#34;https://i.imgur.com/WTuOajh.png&#34; width=&#34;200px&#34;/&gt;
-  &lt;p align=&#34;center&#34;&gt;Figure 3. A residual block&lt;p align=&#34;center&#34;&gt;
-&lt;/p&gt; --&gt;
-&lt;p align=&#34;center&#34;&gt;
-  &lt;img src=&#34;https://i.imgur.com/LAnhLeK.png&#34; width=&#34;200px&#34;/&gt;
-  &lt;p align=&#34;center&#34;&gt;Figure 3. A residual block&lt;p align=&#34;center&#34;&gt;
-&lt;/p&gt;
+&lt;img src=&#34;https://i.imgur.com/LAnhLeK.png&#34; width=&#34;200px&#34;/&gt;
+&lt;p align=&#34;center&#34;&gt;A residual block&lt;/p&gt;
 &lt;p&gt;As we can see, each residual block consists of a residual part denoted by $g$ and an identity part. From mathematical viewpoint, each block can be clearly counted as a function which takes input $x$ and produces $z$ as output. Formally, we have
 $$
 z = f(x) = g(x) + x \tag{1}
 $$&lt;/p&gt;
 &lt;p&gt;Back to our main story, it is obvious that the goal is to make use of residual network as a transformation function for normalizing flows. Since residual network can be interpreted as a composition function of multiple residual blocks, making each individual block invertible is &lt;strong&gt;a sufficient condition&lt;/strong&gt; for the invertibility of the whole net.&lt;/p&gt;
-&lt;p&gt;&lt;a id=&#34;ires-net&#34;&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;h2 id=&#34;making-the-nets-invertible&#34;&gt;Making the nets invertible&lt;/h2&gt;
 &lt;p&gt;In the inverse phase, each block takes $z$ as input and produces $x$ as output. Thus, in order for a block to be invertible, we need to enforce the existence and uniqueness of output $x$ for each input $z$.&lt;/p&gt;
 &lt;p&gt;From $(1)$, we have
-$$x = z - g(x)$$&lt;/p&gt;
-&lt;p&gt;Let define $h(x) = z - g(x)$ to be a function of $x$, where z acts as a constant. The requirement can now be formulated as follows: The equation $x = h(x)$ must have only one root or, to put it in a formal way, &lt;code&gt;$h(x)$ has a unique fixed point&lt;/code&gt;.&lt;/p&gt;
+$$
+x = z - g(x)
+$$&lt;/p&gt;
+&lt;p&gt;Let define $h(x) = z - g(x)$ to be a function of $x$, where z acts as a constant. The requirement can now be formulated as follows: The equation $x = h(x)$ must have only one root or, to put it in a formal way, &lt;strong&gt;$h(x)$ has a unique fixed point&lt;/strong&gt;.&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&lt;strong&gt;Fixed point:&lt;/strong&gt;
-Let X be a metric space and let T: X → X be a mapping in X. A &lt;code&gt;fixed point&lt;/code&gt; of T is a point in X such that T(x) = x.&lt;/p&gt;
+Let X be a metric space and let T: X → X be a mapping in X. A fixed point of T is a point in X such that T(x) = x.&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;Fortunately, this requirement can be obtained according to the famous Banach fixed-point theorem.&lt;/p&gt;
 &lt;h3 id=&#34;fixed-point-theorem&#34;&gt;Fixed point theorem&lt;/h3&gt;
@@ -728,37 +621,28 @@ Let X be a metric space and let T: X → X be a mapping in X. A &lt;code&gt;fixe
 &lt;p&gt;&lt;strong&gt;Contraction mapping:&lt;/strong&gt;
 Let $(M, d)$ be a complete metric space. A function $T$: $M$ → $M$ is a contraction mapping if there exists a real number $0 \leq k &amp;lt; 1$ such that:&lt;/p&gt;
 &lt;p&gt;$$\quad d(T(x), T(y)) \leq k d(x, y) , \quad \quad \forall x, y \in M$$&lt;/p&gt;
-&lt;p&gt;The smallest $k$ for which the above inequality holds is called the &lt;code&gt;Lipschitz constant&lt;/code&gt; of $f$, denoted by $Lip(T)$&lt;/p&gt;
+&lt;p&gt;The smallest $k$ for which the above inequality holds is called the &lt;strong&gt;Lipschitz constant&lt;/strong&gt; of $f$, denoted by $Lip(T)$&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;&lt;strong&gt;Banach theorem:&lt;/strong&gt; Let $(M, d)$ be a complete metric space and $T$: $M$ → $M$ be a contraction mapping. Then T has a unique fixed point $x \in M$. Furthermore, if $y \in M$ is arbitrary chosen, then the iterates ${ {x_n}}_{n=0}^\infty$, given by&lt;/p&gt;
 &lt;div&gt;
-$$\begin{align}
+$$
+\begin{align}
 &amp; x_0 = y \\
 &amp; x_n = T(x_{n-1}), n \geq 1,
-\end{align}$$
+\end{align}
+$$
 &lt;/div&gt;
 &lt;p&gt;have the property that $\lim_{n\to\infty} x_n = x$ as illustrated in the figure below.&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://i.imgur.com/7O3gTWK.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;p align=&#34;center&#34;&gt;Figure 1. Banach fixed point theorem&lt;p align=&#34;center&#34;&gt;
-&lt;!-- &gt; **Banach fixed point theorem**
-&gt; Let $(M, d)$ be a complete metric space and let $T$: $M$ &amp;rightarrow; $M$ be a contraction mapping. Then T has a unique fixed point $x \in M$. Furthermore, if $y \in M$ is arbitrary chosen, then the iterates $\{ {x_n}\}_{n=0}^\infty$, given by
-&gt;$$
-x_0 = y$$
-&gt;
-&gt;$$
-x_n = T(x_{n-1}), n \geq 1,
-$$
-&gt;
-&gt;have the property that $\lim_{n\to\infty} x_n = x$. --&gt;
-&lt;p&gt;[TODO] - Talk a little bit about Banach theorem&lt;/p&gt;
+&lt;p align=&#34;center&#34;&gt;Fixed point convergence illustration in Banach theorem&lt;/p&gt;
 &lt;h3 id=&#34;enforcing-lipschitz-constraint&#34;&gt;Enforcing Lipschitz constraint&lt;/h3&gt;
 &lt;p&gt;Based on the Banach theorem above, our enforcing condition then becomes&lt;/p&gt;
-&lt;p&gt;$$Lip(h) &amp;lt; 1 ;\textrm{or}; Lip(g) &amp;lt; 1$$&lt;/p&gt;
+&lt;p&gt;$$
+Lip(h) &amp;lt; 1 ;\textrm{or}; Lip(g) &amp;lt; 1
+$$&lt;/p&gt;
 &lt;p&gt;Hence $g$ can be implemented as a composition of contractive linear or nonlinear mappings like the figure below.&lt;/p&gt;
-&lt;p align=&#34;center&#34;&gt;
-  &lt;img src=&#34;https://i.imgur.com/Suno7Bn.png&#34; width=&#34;200px&#34;/&gt;
-  &lt;p align=&#34;center&#34;&gt;Figure 3. Contractive residual mapping&lt;p align=&#34;center&#34;&gt;
-&lt;/p&gt;
+&lt;img src=&#34;https://i.imgur.com/Suno7Bn.png&#34; width=&#34;200px&#34;/&gt;
+&lt;p align=&#34;center&#34;&gt;Contractive residual mapping&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;For nonlinear mappings, &lt;code&gt;ReLU&lt;/code&gt;, &lt;code&gt;ELU&lt;/code&gt; and &lt;code&gt;tanh&lt;/code&gt; are the possible choices for contraction constraint.&lt;/li&gt;
 &lt;li&gt;For linear mappings, implemented as convolutional layers $W_i$, they can be made contractive by satisfying the condition $$\lVert W_i \rVert_2 &amp;lt; 1 \quad \forall W_i$$ where $\lVert a \rVert_2$ denotes the spectral norm of matrix a.&lt;/li&gt;
@@ -769,14 +653,24 @@ The largest singular value of a matrix.&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;The spectral norm of non-square matrix $W_i$ can be directly estimated using the power iteration algorithm (by Gouk et el. 2018), which yields an underestimate $\tilde \sigma_i \leq \lVert W_i \rVert_2$. The algorithm can be summarized as follows:&lt;/p&gt;
 &lt;div&gt;
-$$\begin{align} &amp; \textrm{Initialize} \; x_0 \\ x_k &amp; = W_i^T W_i x_{k - 1}, \; \forall k, 1 \leq k \leq n \\ \tilde \sigma_i &amp; = \frac{\lVert W_i x_n\rVert_2}{\lVert x_n \rVert_2} \\ \end{align}$$
+$$
+\begin{align}
+&amp; \textrm{Initialize} \; x_0 \\
+x_k &amp; = W_i^T W_i x_{k - 1}, \; \forall k, 1 \leq k \leq n \\
+\tilde \sigma_i &amp; = \frac{\lVert W_i x_n\rVert_2}{\lVert x_n \rVert_2} \\
+\end{align}
+$$
 &lt;/div&gt;
 &lt;p&gt;We then normalize the parameter $W_i$ by&lt;/p&gt;
-&lt;p&gt;$$ \tilde{W_i} = \begin{cases}
-\frac{cW_i}{\tilde \sigma_i}, &amp;amp; \mbox{if} ; \frac{c}{\tilde \sigma_i} &amp;lt; 1 \&lt;br&gt;
-W_i, &amp;amp;\mbox{else}
-\end{cases}$$ where $c$ is the hyperparameter ($c &amp;lt; 1$).&lt;/p&gt;
-&lt;p&gt;&lt;a id=fixed-point&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;div&gt;
+$$
+\tilde{W_i} = \begin{cases}
+\frac{cW_i}{\tilde \sigma_i}, &amp; \mbox{if} \; \frac{c}{\tilde \sigma_i} &lt; 1 \\
+W_i, &amp;\mbox{else}
+\end{cases}
+$$
+&lt;/div&gt;
+where $c$ is the hyperparameter ($c &lt; 1$).
 &lt;h3 id=&#34;how-to-yield-the-inverse-output&#34;&gt;How to yield the inverse output&lt;/h3&gt;
 &lt;p&gt;Though the constraint above guarantees invertibility of the residual network, it does not provide any analytical form for the inverse. Fortunately, inverse output of each residual block can be yielded through a simple fixed-point iteration, as described below&lt;/p&gt;
 &lt;ul&gt;
@@ -787,6 +681,7 @@ W_i, &amp;amp;\mbox{else}
 &lt;p&gt;So far, we have managed to construct invertible residual networks. We can now make use of them as a transformation for density estimation.&lt;/p&gt;
 &lt;!-- ![](https://i.imgur.com/yxrYwrz.png) --&gt;
 &lt;p&gt;&lt;img src=&#34;https://i.imgur.com/KzZ0MW7.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p align=&#34;center&#34;&gt;invertible residual network as transformation function in normalizing flows&lt;/p&gt;
 &lt;!-- $$
 \ln p_x(x) = \ln p_z(z) + \ln |\det J_F(x)|
 $$ --&gt;
@@ -794,16 +689,17 @@ $$ --&gt;
 &lt;h3 id=&#34;the-log-determinant-term&#34;&gt;The log determinant term&lt;/h3&gt;
 &lt;p&gt;For each residual block $f$, we have&lt;/p&gt;
 &lt;div&gt;
-$$\begin{align}
-&amp; \ln \left\lvert \det J_f(x)\right\rvert \\
-&amp; = \ln (\det J_f(x)) \textrm{( $\det J_f$ is always positive)} \\
+$$
+\begin{align}
+\ln \left\lvert \det J_f(x)\right\rvert &amp; = \ln (\det J_f(x)) \textrm{( $\det J_f$ is always positive)} \\
 &amp; = tr(\ln J_f(x)) \textrm{($\ln \det A = tr(\ln(A))$)} \\
 &amp; = tr(ln\frac{\partial f}{\partial x}) \\
 &amp; = tr(ln\frac{\partial (x + g(x))}{\partial x})\\
 &amp; = tr(ln\ (I + J_g(x))) \textrm{($I$ denotes identity matrix)} \\
 &amp; = tr(\sum_{k=1}^\infty(-1)^{k + 1}\frac{J_g^k}{k}) \textrm{(power series expression of matrix logarithm)} \\
 &amp; = \sum_{k=1}^\infty(-1)^{k + 1}\frac{tr(J_g^k)}{k} \textrm{($tr(A + B) = tr(A) + tr(B)$)} \\
-\end{align}$$
+\end{align}
+$$
 &lt;/div&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&lt;strong&gt;Matrix logarithm and its power series expression:&lt;/strong&gt;
@@ -820,29 +716,35 @@ A logarithm of matrix $M$ is any matrix $X$ such that $e^X = M$. It can be expre
 &lt;p&gt;Hutchinson trace estimator is a Monte Carlo approach to approximate the trace of matrix powers, for example $J_g^k$ in our case, without fully evaluating them. Specifically, a random vector $v$ is introduced to estimate the trace
 $$tr(A) = \mathrm{E}_{v \sim p(v)}v^{T}Av $$&lt;/p&gt;
 &lt;p&gt;with the constraint that $v$ is drawn from a fixed distribution $p(v)$, satisfying $\mathrm{E}[v] = 0$ and $\mathrm{Var}[v] = I$. Hence it is obvious that the Gaussian $N(0, I)$ is a good choice for $p(v)$. Applying the trace estimator, we have&lt;/p&gt;
-&lt;p&gt;$$ tr(J_g^k) = \mathrm{E}_{v \sim N(0, I)} v^T J_g^k v $$&lt;/p&gt;
-&lt;!-- The heavy computation can now be circumvented because computing $v^T J_g^k v$ only requires matrix-vector multiplication. Furthemore, it can be computed more efficiently in a recursive fashion.
+&lt;p&gt;$$
+tr(J_g^k) = \mathrm{E}_{v \sim N(0, I)} v^T J_g^k v
+$$&lt;/p&gt;
+&lt;!-- The heavy computation can now be circumvented because computing $v^T J_g^k v$ only requires matrix-vector multiplication. Furthermore, it can be computed more efficiently in a recursive fashion.
 
 $$J_g^k v = J_g (J_g^{k-1} v)$$ --&gt;
 &lt;p&gt;The matrix power computation can be circumvented by evaluating $v^T J_g^k v$  in a recursive fashion&lt;/p&gt;
 &lt;div&gt;
-$$\begin{align}
+$$
+\begin{align}
 w_0 &amp; = v \\
 w_k &amp; = J_g w_{k - 1}, \forall k \geq 1 \\
 v^T J_g^k v &amp; = v^T w_k \\
-\end{align}$$
+\end{align}
+$$
 &lt;/div&gt;
-&lt;p&gt;which requires now only matrix-vector multiplication.&lt;/p&gt;
-&lt;p&gt;Furthermore, the term $w_k$ can be evaluated roughly as the same cost as evaluating $g$ using &lt;code&gt;reverse-mode automatic differentiation&lt;/code&gt;, alleviating the heavy computation of evaluating $J_g$ explicitly.&lt;/p&gt;
+which requires now only matrix-vector multiplication.
+&lt;p&gt;Furthermore, the term $w_k$ can be evaluated roughly as the same cost as evaluating $g$ using &lt;strong&gt;reverse-mode automatic differentiation&lt;/strong&gt;, alleviating the heavy computation of evaluating $J_g$ explicitly.&lt;/p&gt;
 &lt;p align=&#34;center&#34;&gt;
   &lt;img src=&#34;https://i.imgur.com/ovaeC6i.png&#34; width=&#34;300px&#34;/&gt;
 &lt;/p&gt;
 &lt;p&gt;Now, the only problem remains is the computation of infinite series, which can be addressed by truncating the series at a finite index $n$&lt;/p&gt;
-&lt;p&gt;$$\ln |\det J_f(x)| \approx \sum_{k=1}^{n}(-1)^{k + 1}\frac{tr(J_g^k)}{k}$$&lt;/p&gt;
+&lt;p&gt;$$
+\ln |\det J_f(x)| \approx \sum_{k=1}^{n}(-1)^{k + 1}\frac{tr(J_g^k)}{k}
+$$&lt;/p&gt;
 &lt;h2 id=&#34;implementation&#34;&gt;Implementation&lt;/h2&gt;
-&lt;p&gt;Original implementation by the paper&amp;rsquo;s author: (
+&lt;p&gt;Original implementation by the paper&amp;rsquo;s author(
 &lt;a href=&#34;https://github.com/jhjacobsen/invertible-resnet&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;link&lt;/a&gt;)&lt;/p&gt;
-&lt;p&gt;A TensorFlow implementation by me: (
+&lt;p&gt;A TensorFlow implementation by me(
 &lt;a href=&#34;https://github.com/azraelzhor/tf-invertible-resnet/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;link&lt;/a&gt;)&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;References&lt;/strong&gt;&lt;/p&gt;
 &lt;ol&gt;

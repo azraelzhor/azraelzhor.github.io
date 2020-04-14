@@ -28,7 +28,7 @@
   
     
   
-  <meta name="description" content="Last year, I had a chance to be involved in an Advanced Computer Vision class held by a non-profit organization. During the class, object detection is one of the fields that I found myself interested in the most. This motivated me to write a series of blogs in order to understand better some famous approaches that has been applied in the field. Though, the idea has been postponed until recently :v.">
+  <meta name="description" content="Last year, I had a chance to be involved in an Advanced Computer Vision class held by a non-profit organization. During the class, object detection is one of the fields that I found myself interested. This motivated me to write a series of blogs in order to understand better some famous approaches that has been applied in the field. Though, the idea has been postponed until now :v. The first part of this series is about Faster RCN, one of the state-of-the-art methods used for object detection.">
 
   
   <link rel="alternate" hreflang="en-us" href="https://azraelzhor.github.io/post/faster-rcnn/">
@@ -235,7 +235,7 @@
   <meta property="og:site_name" content="Thang Le">
   <meta property="og:url" content="https://azraelzhor.github.io/post/faster-rcnn/">
   <meta property="og:title" content="Dive into Faster RCNN | Thang Le">
-  <meta property="og:description" content="Last year, I had a chance to be involved in an Advanced Computer Vision class held by a non-profit organization. During the class, object detection is one of the fields that I found myself interested in the most. This motivated me to write a series of blogs in order to understand better some famous approaches that has been applied in the field. Though, the idea has been postponed until recently :v."><meta property="og:image" content="img/map[gravatar:%!s(bool=true) shape:circle]">
+  <meta property="og:description" content="Last year, I had a chance to be involved in an Advanced Computer Vision class held by a non-profit organization. During the class, object detection is one of the fields that I found myself interested. This motivated me to write a series of blogs in order to understand better some famous approaches that has been applied in the field. Though, the idea has been postponed until now :v. The first part of this series is about Faster RCN, one of the state-of-the-art methods used for object detection."><meta property="og:image" content="img/map[gravatar:%!s(bool=true) shape:circle]">
   <meta property="twitter:image" content="img/map[gravatar:%!s(bool=true) shape:circle]"><meta property="og:locale" content="en-us">
   
     
@@ -285,7 +285,7 @@
       "url": "https://azraelzhor.github.io/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_192x192_fill_lanczos_center_2.png"
     }
   },
-  "description": "Last year, I had a chance to be involved in an Advanced Computer Vision class held by a non-profit organization. During the class, object detection is one of the fields that I found myself interested in the most. This motivated me to write a series of blogs in order to understand better some famous approaches that has been applied in the field. Though, the idea has been postponed until recently :v."
+  "description": "Last year, I had a chance to be involved in an Advanced Computer Vision class held by a non-profit organization. During the class, object detection is one of the fields that I found myself interested. This motivated me to write a series of blogs in order to understand better some famous approaches that has been applied in the field. Though, the idea has been postponed until now :v. The first part of this series is about Faster RCN, one of the state-of-the-art methods used for object detection."
 }
 </script>
 
@@ -509,10 +509,6 @@
       
 
       
-      <li class="nav-item">
-        <a class="nav-link js-dark-toggle" href="#"><i class="fas fa-moon" aria-hidden="true"></i></a>
-      </li>
-      
 
       
 
@@ -523,9 +519,48 @@
 
 
   
-<article class="article">
+<div class="container-fluid docs">
+  <div class="row flex-xl-nowrap">
+    <div class="d-none d-xl-block col-xl-2 docs-toc">
+      <ul class="nav toc-top">
+        <li>
+          <a href="#" id="back_to_top" class="docs-toc-title">Contents</a>
+        </li>
+      </ul>
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#a-little-warm-up">A little warm-up</a></li>
+    <li><a href="#faster-rcnn-architecture">Faster RCNN architecture</a>
+      <ul>
+        <li><a href="#feature-shared-network">Feature Shared Network</a></li>
+        <li><a href="#region-proposal-network-rpn">Region Proposal Network (RPN)</a>
+          <ul>
+            <li><a href="#predefined-anchors">Predefined anchors</a></li>
+            <li><a href="#rpn-architecture">RPN architecture</a></li>
+            <li><a href="#create-labeled-data-for-training-rpn">Create labeled data for training RPN</a></li>
+            <li><a href="#rpn-losses">RPN losses</a></li>
+            <li><a href="#use-rpn-to-propose-regions">Use RPN to propose regions</a></li>
+          </ul>
+        </li>
+        <li><a href="#region-based-convolutional-neural-network">Region-based Convolutional Neural Network</a>
+          <ul>
+            <li><a href="#roi-pooling">RoI Pooling</a></li>
+            <li><a href="#detection-network">Detection Network</a></li>
+            <li><a href="#labeled-data-for-rcnn">Labeled data for RCNN</a></li>
+            <li><a href="#rcnn-losses">RCNN losses</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+      
+    </div>
 
-  
+    <main class="col-12 col-md-0 col-xl-10 py-md-3 pl-md-5 docs-content" role="main">
+
+      <article class="article">
+        
 
 
 
@@ -572,7 +607,7 @@
   
   <span class="middot-divider"></span>
   <span class="article-reading-time">
-    10 min read
+    11 min read
   </span>
   
 
@@ -607,126 +642,73 @@
 </div>
 
 
-
-  <div class="article-container">
-
-    <div class="article-style">
-      <p>Last year, I had a chance to be involved in an Advanced Computer Vision class held by a non-profit organization. During the class, object detection is one of the fields that I found myself interested in the most. This motivated me to write a series of blogs in order to understand better some famous approaches that has been applied in the field. Though, the idea has been postponed until recently :v. The first part of this series is about Faster RCN, one of the state-of-the-art method used for object detection. In this blog post, I will walk you through the detail of Faster RCNN. Hopefully, at the end of this blog, you would figure out the way Faster RCNN works.</p>
-<h2 id="outline">Outline</h2>
-<ul>
-<li>
-<a href="#intro">Object detection</a></li>
-<li>
-<a href="#faster-rcnn">Faster RCNN</a>
-<ul>
-<li>
-<a href="">VGG Shared Network</a></li>
-<li>
-<a href="">Region Proposal Network</a></li>
-<li>
-<a href="">Region-based CNN</a></li>
-</ul>
-</li>
-<li>
-<a href="#loss-function">Loss Function</a>
-<ul>
-<li>
-<a href="">Regression Loss</a></li>
-<li>
-<a href="">Classification Loss</a></li>
-</ul>
-</li>
-<li>
-<a href="#training">Training</a>
-<ul>
-<li>
-<a href="">Augment data</a></li>
-<li>
-<a href="">Create anchor generator</a></li>
-</ul>
-</li>
-<li>
-<a href="#detection">Detection</a></li>
-</ul>
-<h2 id="a-little-bit-of-object-detection">A little bit of object detection</h2>
-<p>In object detection, we received an image with bounding boxes indicating a various type of objects. There are many approaches these days.</p>
-<p><img src="https://i.imgur.com/agk4axh.jpg" alt=""></p>
-<p><a id="faster-rcnn"></a></p>
+        <div class="article-container">
+          <div class="article-style">
+            <p>Last year, I had a chance to be involved in an Advanced Computer Vision class held by a non-profit organization. During the class, object detection is one of the fields that I found myself interested. This motivated me to write a series of blogs in order to understand better some famous approaches that has been applied in the field. Though, the idea has been postponed until now :v. The first part of this series is about Faster RCN, one of the state-of-the-art methods used for object detection. In this blog post, I will walk you through the details of Faster RCNN. Hopefully, at the end of this blog, you would figure out the way Faster RCNN works.</p>
+<h2 id="a-little-warm-up">A little warm-up</h2>
+<p>In object detection, we receive an image as input and localize bounding boxes, indicating various types of objects, as output.</p>
+<img src="https://i.imgur.com/agk4axh.png" width="600"/>
+<p align="center">
+source: <a href="https://highstonecorp.com/post/object-detection.html" target="_blank">https://highstonecorp.com/post/object-detection.html</a>
+</p>
+<p>So what are bounding boxes? A bounding box is just a rectangle in the image. Its coordinates is defined as a tuple of $(x, y, w, h)$, where $(x, y)$ is the coordinate of the bounding box&rsquo;s center and $w, h$ is its width, height, respectively. A bounding box is said to be best-fit an object if it is the smallest rectangle that fully encloses the object like the figure below.</p>
+<img src="https://i.imgur.com/wj5Zreo.png" width="400"/>
+<p>Hence, we should label best-fit bounding box for the best quality of supervised data. In the next part, we will discuss Faster RCNN in detail.</p>
 <h2 id="faster-rcnn-architecture">Faster RCNN architecture</h2>
-<p>Faster RCNN is the last detection model in the RCNN trilogy (RCNN - Fast RCNN - Faster RCNN), which relies on proposed regions to detect objects. Though, unlike its predecessors  which use selective search to find out the best regions, Faster RCNN makes use of neural network and &ldquo;learn&rdquo; to propose regions directly. These proposed regions then is fed into another neural network to be refined once again.</p>
+<p>Faster RCNN, published in 2015, is the last of the RCNN trilogy (RCNN - Fast RCNN - Faster RCNN), which relies on proposed regions to detect objects. Though, unlike its predecessors  which use <code>selective search</code> to find out the best regions, Faster RCNN makes use of neural network and &ldquo;learn&rdquo; to propose regions directly. These proposed regions is then fed into another neural network to be refined once again.</p>
 <!-- This is the main reason that makes Faster RCNN faster and better than its predecessors. -->
-<p>First, let take a look at the overall architecture of Faster RCNN. It comprises of $2$ modules</p>
+<p>Let us take a look at the overall architecture of Faster RCNN. The model comprises of $2$ modules</p>
 <ul>
-<li>The region proposal module takes feature map from a feature network and proposes regions</li>
-<li>The Fast RCNN detector module takes those regions to predict the classes that the object belongs to.</li>
+<li>The <code>region proposal module</code> takes feature map from a feature network and proposes regions.</li>
+<li>The <code>Fast RCNN detector module</code> takes those regions to predict the classes that the object belongs to.</li>
 </ul>
 <p><img src="https://i.imgur.com/Zsu3nEn.png" alt=""></p>
-<p>The feature network, which is VGG in the context of this blog, is shared between both model.</p>
-<p>To easily keep track of the story, let&rsquo;s follow a specific example in which we are given an image of shape $300\times400\times3$.</p>
+<p>Note that the feature network, which is VGG in the context of this blog, is shared between both modules. Also, to easily keep track of the story, let us follow a specific case in which we are given an image of shape $320\times400\times3$.</p>
 <h3 id="feature-shared-network">Feature Shared Network</h3>
-<p>[TODO]Pretrained models</p>
-<p>We use VGG as a feature network. The VGG receives an input image and produce a feature map with reduced sizes. The size of the feature map is determined by the net structure. For example, in case we use VGG, the feature map&rsquo;s shape is $18 \times 25 \times 512$.</p>
-<p><img src="https://i.imgur.com/dut8uoM.png" alt=""></p>
+<p>The original paper uses ZF-net and VGG-net as feature network. Though, we only discuss VGG in the scope of this blog. The VGG receives an input image and produce a feature map with reduced spatial size. This size is determined by the net structure. In case the of VGG, the image spatial size is reduced $16$ times at the output layer. Hence, in our example, the feature map&rsquo;s shape  is $320/16 \times400/16\times512$, or $20 \times 25 \times 512$. The number $512$ is due to the number of filters in the last layer of VGG.</p>
+<img src="https://i.imgur.com/k1KMWGJ.png" width="400"/>
+<p>The feature map is then used for both <code>region proposal network</code> and <code>region-based convolutional neural network</code>, which will be discussed later.</p>
 <h3 id="region-proposal-network-rpn">Region Proposal Network (RPN)</h3>
-<p>The goal of RPN is to propose regions that highly contain object. In order to do that, RPN does</p>
+<p>The goal of RPN is to propose regions that highly contain object. In order to do that, given the feature map, RPN does</p>
 <ul>
-<li>generate a predefined number of fixed-size anchors</li>
+<li>generate a predefined number of fixed-size anchors based on the feature map</li>
 <li>predict the objectness of each of these anchors</li>
 <li>refine their coordinates</li>
 </ul>
 <h4 id="predefined-anchors">Predefined anchors</h4>
 <!-- RPN accepts VGG feature map as input. -->
-<p>For each pixel spatial location on the VGG feature map, we generate a predefined number of fixed size anchors. The shape of these anchor boxes are determined by a combination of predefined scales and edge ratios. In our example, if we use $3$ scales $64$, $128$, $256$ and $3$ edge ratios $1:1$, $1:2$, $2:1$, there will be $3*3=9$ type of anchors at each pixel location and a total of $18 * 25 * 9 = 4050$ anchors to be generated as a result.
-<img src="https://i.imgur.com/BxG5M0Z.png" alt=""></p>
+<p>Specifically, for each pixel spatial location on the VGG feature map, we generate a predefined number of fixed size anchors. The shape of these anchor boxes are determined by a combination of predefined scales and edge ratios. In our example, if we use $3$ scales $64$, $128$, $256$ and $3$ edge ratios $1:1$, $1:2$, $2:1$, there will be $3*3=9$ type of anchors at each pixel location. A total of $20 * 25 * 9 = 4500$ anchors will be generated as a result.
+<img src="https://i.imgur.com/lr07We4.png" alt=""></p>
 <p>It is important to note that even though anchor boxes are created based on the feature map&rsquo;s spatial location, they reference to the original input image, in which anchor boxes generated from the same feature map pixel location are centered at the same point on the original input, as illustrated in this figure below.
 <img src="https://i.imgur.com/BNTidcL.png" width="400"/></p>
-<!-- ![](https://i.imgur.com/3D1N77A.png) -->
-<!-- ![](https://i.imgur.com/scAnbm9.png) -->
 <h4 id="rpn-architecture">RPN architecture</h4>
-<!-- It consists of 3 convolution layers: one convolutional layer with 512 filters of size 3x3 followed by two sibling 1x1 convolutional layers - one with $K$ filters acting as a classifier and the other with $4K$ filters acting as a regressor. -->
-<p>The RPN is then designed to predict objectness of each anchor (classification) and its coordinates (regression). It consists of $3$ layers: one convolutional layer with $512$ filters of size $3 \times 3$ followed by two sibling $1 \times 1$ convolutional layers. These two sibling layers - one with $K$ filters and the other with $4K$ filters - allow for classification and regression, respectively.</p>
-<p><img                    src="https://i.imgur.com/o1pTYG2.png" width="500"
-/></p>
-<p>In our example, after passing the VGG feature map through RPN, it produces a classification output with shape of $18 \times 25 \times K$ and a regression output with shape of $18 \times 25 \times 4K$, where $K$ denotes the number of generated anchors at each feature map location.</p>
-<!-- ![](https://i.imgur.com/o1pTYG2.png) -->
-<pre><code class="language-python">def rpn(base_layers, num_anchors):
-    x = Conv2D(512, (3, 3), padding='same', activation='relu', kernel_initializer='normal', name='rpn_conv1')(base_layers)
-
-    x_class = Conv2D(num_anchors, (1, 1), activation='sigmoid', kernel_initializer='uniform', name='rpn_out_class')(x)
-    x_regr = Conv2D(num_anchors * 4, (1, 1), activation='linear', kernel_initializer='zero', name='rpn_out_regress')(x)
-
-    return [x_class, x_regr, base_layers]
-</code></pre>
+<p>The RPN is then designed to predict objectness of each anchor (classification) and refine its coordinates (regression). It consists of $3$ layers: one convolutional layer with $512$ filters of size $3 \times 3$ followed by two sibling $1 \times 1$ convolutional layers. These two sibling layers - one with $K$ filters and the other with $4K$ filters - allow for classification and regression, respectively. $K$ is determined as the number of generated anchors at each feature map location.</p>
+<img src="https://i.imgur.com/iE8KSck.png" width="500"/>
+<p>In our example when $K = 9$, after passing the VGG feature map through RPN, it produces a classification output with shape of $20 \times 25 \times 9$ and a regression output with shape of $20 \times 25 \times 36$. The total predictions of RPN will then have the shape of $20\times25\times45$, like the figure above.</p>
 <h4 id="create-labeled-data-for-training-rpn">Create labeled data for training RPN</h4>
-<p>Now, we need labeled data to train the RPN.</p>
 <h5 id="label-for-classification">Label for classification</h5>
-<p>For training classification task, each anchor box is labeled as</p>
+<p>Now, we need labeled data to train the RPN. For training classification task, each anchor box is labeled as</p>
 <ul>
-<li>positive - containing object</li>
-<li>negative - background</li>
-<li>ignored - being ignored when training</li>
+<li>positive if it contains object</li>
+<li>negative if it is background</li>
+<li>ignored if we want it to be ignored when training</li>
 </ul>
 <p>based on the overlap with its nearest ground-truth bounding box.</p>
-<p><img src="https://i.imgur.com/3m5ITZD.png" alt=""></p>
-<p>We use IoU to measure these overlaps. Let $p$ denotes the IoU between current anchor box and its nearest ground-truth bounding box. The rule is detailed as follows</p>
+<p><img src="https://i.imgur.com/3m5ITZD.png" alt="">
+To be more specific, we use the famous IoU (Intersection over Union) to measure the overlap. Let $p$ denotes the IoU between current anchor box and its nearest ground-truth bounding box. Then, we need to decide two thresholds $p_{neg}$, $p_{pos}$ for labelling. The labelling rule is then detailed as follows</p>
 <ul>
-<li>If $p &gt; \text{max_rpn}$, label it positive</li>
-<li>If $p &lt; \text{min_rpn}$, label it negative</li>
-<li>If $\text{min_rpn} &lt; p &lt; \text{max_rpn}$, ignore it when training</li>
+<li>If $p \geq p_{pos}$, label the bounding box as positive</li>
+<li>If $p \leq p_{neg}$, label it as negative</li>
+<li>If $p_{neg} &lt; p &lt; p_{pos}$, ignore it when training</li>
 </ul>
-<pre><code class="language-python"># overlaps for RPN
-cfg.rpn_min_overlap = 0.3
-cfg.rpn_max_overlap = 0.7
-</code></pre>
 <h5 id="label-for-regression">Label for regression</h5>
-<p>The anchor box refinement is modeled as a regression problem, in which we predict the delta $(\color{red}{t_x, t_y, t_w, t_h})$ for each anchor box. This delta denotes the change needed to refine our predefined anchor boxes, as illustrated in this figure below</p>
-<!-- ![](https://i.imgur.com/x7kGAvI.png) -->
+<p>The anchor box refinement is modeled as a regression problem, in which we predict the delta $({\color{red}{t_x, t_y, t_w, t_h}})$ for each anchor box. This delta denotes the change needed to refine our predefined anchor boxes, as illustrated in this figure below</p>
 <img src="https://i.imgur.com/7h3T6TK.png" width="400"/>
 <p>Formally, we have</p>
 <div>
 $$\begin{align}
-\color{blue}{x} & = x_a + \color{red}{t_x}*w_a \\
-\color{blue}{y} & = y_a + \color{red}{t_y}*h_a \\
+\color{blue}{x} & = x_a + {\color{red}{t_x}}*w_a \\
+\color{blue}{y} & = y_a + {\color{red}{t_y}}*h_a \\
 \color{blue}{w} & = w_a * e^{\color{red}{t_w}} \\
 \color{blue}{h} & = h_a * e^{\color{red}{t_h}}
 \end{align}
@@ -735,72 +717,59 @@ $$
 <p>or</p>
 <div>
 $$\begin{align}
-\color{red}{t_x} & = (\color{blue}{x} - x_a) / w_a \\
-\color{red}{t_y} & = (\color{blue}{y} - y_a) / h_a \\
-\color{red}{t_w} & = log(\color{blue}{w}/w_a) \\
-\color{red}{t_h} & = log(\color{blue}{h}/h_a)
+\color{red}{t_x} & = ({\color{blue}{x}} - x_a) / w_a \\
+\color{red}{t_y} & = ({\color{blue}{y}} - y_a) / h_a \\
+\color{red}{t_w} & = log({\color{blue}{w}}/w_a) \\
+\color{red}{t_h} & = log({\color{blue}{h}}/h_a)
 \end{align}
 $$
 </div>
-<p>where $(x_a, y_a, w_a, h_a)$ denotes the anchor box&rsquo;s coordinates and $(\color{blue}{x, y, w, h})$ denotes the refined box&rsquo;s coordinates.</p>
-<p>To create data for anchor regression training, we calculate the &ldquo;ground-truth&rdquo; delta $(\color{red}{t_x^*, t_y^*, t_w^*, t_h^*})$ based on each anchor box&rsquo;s coordinates $(x_a, y_a, w_a, h_a)$ and its nearest ground-truth bounding box&rsquo;s coordinates $(\color{blue}{x^*, y^*, w^*, h^*})$.</p>
+<p>where $(x_a, y_a, w_a, h_a)$ denotes the anchor box&rsquo;s coordinates and $({\color{blue}{x, y, w, h}})$ denotes the refined box&rsquo;s coordinates.</p>
+<p>To create data for anchor regression training, we calculate the &ldquo;ground-truth&rdquo; delta $({\color{red}{t_x^*, t_y^*, t_w^*, t_h^*}})$ based on each anchor box&rsquo;s coordinates $(x_a, y_a, w_a, h_a)$ and its nearest ground-truth bounding box&rsquo;s coordinates $({\color{blue}{x^*, y^*, w^*, h^*}})$.</p>
 <div>
-$$\begin{align}
-\color{red}{t_x^*} & = (\color{blue}{x^*} - x_a) / w_a \\
-\color{red}{t_y^*} & = (\color{blue}{y^*} - y_a) / h_a \\
-\color{red}{t_w^*} & = log(\color{blue}{w^*}/w_a) \\
-\color{red}{t_h^*} & = log(\color{blue}{h^*}/h_a)
+$$
+\begin{align}
+\color{red}{t_x^*} & = ({\color{blue}{x^*}} - x_a) / w_a \\
+\color{red}{t_y^*} & = ({\color{blue}{y^*}} - y_a) / h_a \\
+\color{red}{t_w^*} & = log({\color{blue}{w^*}}/w_a) \\
+\color{red}{t_h^*} & = log({\color{blue}{h^*}}/h_a)
 \end{align}
 $$
 </div>
-<p>Among those generated anchor boxes, the positive anchors are probably outnumbered by the negative ones. Thus, to avoid imbalanced classification, we only use some anchor boxes for training. Specifically, only $256$ anchor boxes is chosen for training the RPN.</p>
-<p>For example, with $4050$ anchor boxes generated, assume that we have $4000$ anchor boxes labeled as &ldquo;positive&rdquo;, $50$ anchor boxes labeled as &ldquo;negative&rdquo;</p>
+<p>Among those generated anchor boxes, the positive anchors are probably outnumbered by the negative ones. Thus, to avoid imbalanced classification, only a specific number of anchor boxes is used for training. In our example, among $4500$ anchor boxes generated, assume that we have $500$ &ldquo;positive&rdquo; anchor boxes, $2000$ &ldquo;negative&rdquo; anchor boxes and $2000$ &ldquo;ignored&rdquo; anchor boxes. Then, we only chose $256$ anchor boxes for training the RPN, including $128$ boxes of each type (&ldquo;positive&rdquo; and &ldquo;negative&rdquo;).</p>
 <h4 id="rpn-losses">RPN losses</h4>
-<h5 id="1-regression-loss">1. Regression Loss</h5>
+<h5 id="regression-loss">Regression Loss</h5>
 <p>The smooth L1 loss is used for regression training. Its formulation is as below</p>
-<p>$$smooth_{L1}(x) =
+<div>
+$$smooth_{L1}(x) =
 \begin{cases}
-0.5x^2 &amp; \mbox{if} ;  \lvert x \rvert &lt; 1, \<br>
-\lvert x \rvert - 0.5 &amp; \mbox{otherwise}.
+0.5x^2 & \mbox{if} \;  \lvert x \rvert < 1, \\
+\lvert x \rvert - 0.5 & \mbox{otherwise}.
 \end{cases}
-$$</p>
-<p>where $x$ denotes the difference between prediction and ground truth $t  - \color{blue}{t^*}$.</p>
+$$
+</div>
+where $x$ denotes the difference between prediction and ground truth $t  - {\color{blue}{t^*}}$.
 <img src="https://i.imgur.com/HKcpwC2.png" width="300"/>
+<p align="center">
+source: <a href="https://arxiv.org/pdf/1711.06753.pdf" target="_blank"> figure 3 in https://arxiv.org/pdf/1711.06753.pdf </a>
+</p>
 <p>The reason smooth L1 loss is preferred to L1 and L2 loss is because it can handle the problem of these two losses. Being quadratic for small values ($\lvert x \rvert &lt; 1$) and linear for large values ($\lvert x \rvert \geq 1$), smooth L1 loss is now less sensitive to outliers than L2 loss and also does not suffer from the problem of L1 loss, which is not differentiable around zero.</p>
-<pre><code class="language-python"># regression loss for rpn
-def rpn_loss_regr(cfg):
-    def rpn_loss_regr_fixed_num(y_true, y_pred):
-        x = y_true[:, :, :, 4 * cfg.num_anchors:] - y_pred
-        x_abs = K.abs(x)
-        x_bool = K.cast(K.less_equal(x_abs, 1.0), tf.float32)
-
-        return cfg.lambda_rpn_regr * K.sum(
-            y_true[:, :, :, :4 * cfg.num_anchors] * (x_bool * (0.5 * x * x) + (1 - x_bool) * (x_abs - 0.5))) / K.sum(cfg.epsilon + y_true[:, :, :, :4 * cfg.num_anchors])
-
-    return rpn_loss_regr_fixed_num
-</code></pre>
-<h5 id="2-classification-loss">2. Classification Loss</h5>
-<pre><code class="language-python">def rpn_loss_cls(cfg):
-    def rpn_loss_cls_fixed_num(y_true, y_pred):
-        return cfg.lambda_rpn_class * K.sum(y_true[:, :, :, :cfg.num_anchors] * K.binary_crossentropy(y_pred[:, :, :, :], y_true[:, :, :, cfg.num_anchors:])) / K.sum(cfg.epsilon + y_true[:, :, :, :cfg.num_anchors])
-
-    return rpn_loss_cls_fixed_num
-</code></pre>
+<h5 id="classification-loss">Classification Loss</h5>
+<p>For RPN binary classification, the binary cross-entropy loss is used.</p>
 <h4 id="use-rpn-to-propose-regions">Use RPN to propose regions</h4>
-<h5 id="rpn-prediction">RPN prediction</h5>
-<img src="https://i.imgur.com/uNnQDrw.png" width="400"/>
 <p>After training, we use RPN to predict the bounding box coordinates at each feature map location.</p>
+<img src="https://i.imgur.com/uNnQDrw.png" width="400"/>
 <!-- $$\begin{align}
 \color{blue}{x} & = x_a + \color{red}{t_x}*w_a \\
 \color{blue}{y} & = y_a + \color{red}{t_y}*h_a \\
 \color{blue}{w} & = w_a * e^{\color{red}{t_w}} \\
 \color{blue}{h} & = h_a * e^\color{red}{t_h}
 \end{align}$$ -->
-<p>In our example, there is $4050$ anchor boxes in total. Assume that the RPN predict $3000$ positive bounding boxes - meaning that they are containing object.</p>
+<p>Assume that the RPN predict $1000$ positive bounding boxes out of $4500$ anchor boxes. There are a lot of proposals. Hence, it is very likely that there are many bounding boxes referring to the same object, among those are predicted by RPN. This leads to redundant proposals, which can be eliminated by an algorithm known as <code>non max suppression</code>.</p>
 <h5 id="non-max-suppression">Non-max suppression</h5>
 <img src="https://i.imgur.com/dn7grUV.png" width="400"/>
-<p>It is very likely that there are many bounding boxes, among those are predicted by RPN, referring to the same object. This leads to redundant proposals, which can be eliminated by an algorithm known as non max suppression. The idea of non max suppression is to filter out all but the box with highest confidence score for each highly-overlapped bounding box cluster, making sure that a particular object is identified only once.</p>
-<p>The algorithm can be summarized as follows:</p>
+<p>The idea of non max suppression is to filter out all but the box with highest confidence score for each highly-overlapped bounding box cluster (like the figure above), making sure that a particular object is identified only once.</p>
+<p>The algorithm can be summarized as follows</p>
 <ul>
 <li>Given a list of proposals along with their confidence score, and a predefined overlap threshold
 <ul>
@@ -817,75 +786,49 @@ def rpn_loss_regr(cfg):
 </ul>
 </li>
 </ul>
-<img src="https://i.imgur.com/Mh1L9XC.png" width="400"/>
+<p>After non max suppression, we obtain some &ldquo;good&rdquo; bounding boxes in the input image. These boxes correspond with scaled regions in the VGG feature map. Then, these feature map patches are extracted as proposed regions, as shown in the figure below</p>
+<img src="https://i.imgur.com/qWj647y.png" width="500"/>
 <h3 id="region-based-convolutional-neural-network">Region-based Convolutional Neural Network</h3>
-<p>Now we have feature map patches as regions ready for the next phase. Now one notable problem arises here is that those proposed regions are not in the same shape, which makes it difficult for neural network training. This is where we need RoI pooling layer to help construct fixed-size feature maps from those arbitrary-size regions.</p>
+<p>Now we have proposed regions ready for the next phase. One notable problem arises here is that these proposed regions are not in the same shape, which make it difficult for neural network training. This is where we need RoI pooling layer to help construct fixed-size feature maps from these arbitrary-size regions.</p>
 <h4 id="roi-pooling">RoI Pooling</h4>
-<p>To understand RoI pooling, let begin with a 2D example.</p>
-<h5 id="a-2d-example">A 2D example</h5>
-<!--  Given an input slice of arbitrary size, -->
-<p>No matter what the shape of the input slice is, a $2 \times 2$ RoI pooling layer always transform the input to the output of size $2 \times 2$ by</p>
+<p>To understand RoI pooling, let begin with a 2D example. No matter what the shape of the input slice is, a $2 \times 2$ RoI pooling layer always transform the input to the output of size $2 \times 2$ by</p>
 <ul>
 <li>Split the input into a $2 \times 2$ matrix of roughly equal regions</li>
 <li>Do max pooling on each region</li>
 </ul>
 <p>like this figure below (given input of shape $4 \times 4$ or $5 \times 5$).</p>
-<!-- ![](https://i.imgur.com/oSbRTQf.png) -->
 <img src="https://i.imgur.com/0Z6wlit.png" width="400"/>
 <h5 id="roi-used-in-faster-rcnn">RoI used in Faster RCNN</h5>
-<img src="https://i.imgur.com/Clu7DyN.png" width="400"/>
+<p>In Faster RCNN, we apply RoI pooling to a 3D proposed regions to obtain fixed-size regions. In our example, if $7\times7$ RoI pooling is used, those fixed-size regions have the shape of $7\times7\times512$.<br>
+<img src="https://i.imgur.com/YxF0Tt8.png" width="400"/></p>
 <h4 id="detection-network">Detection Network</h4>
-<!-- Those fixed-size feature maps from RoI pooling are subsequently fed into the final classifier. -->
 <p>Those fixed-size feature maps from RoI pooling are then flattened and subsequently fed into a fully connected network for final detection. The net consists of $2$ fully connected layers of $4096$ neurons, followed by other $2$ sibling fully connected layers - one has $N$ neurons for classifying proposals and the other has $4*(N - 1)$ neurons for bounding box regression, where $N$ denotes the number of classes, including the background. Note that when a bounding box is classified as background, regression is unneeded. Hence, it makes sense that we only need $4*(N - 1)$ neurons for regression in total.</p>
-<img src="https://i.imgur.com/o05O9LM.png" width="500"/>
+<img src="https://i.imgur.com/tHjHMWg.png" width="500"/>
 <p>In our example, each $7\times7\times512$ feature map is fed to the detection net to produce the classification output has size of $4$, and the regression output has size of $12$.</p>
-<h4 id="labeled-data-for-fcnn">Labeled data for FCNN</h4>
-<!-- After non max suppresion step, we get
-For each proposed region, the RPN predict  -->
+<h4 id="labeled-data-for-rcnn">Labeled data for RCNN</h4>
 <h5 id="label-for-classification-1">Label for classification</h5>
-<p>Similar to the RPN, we make use of IoU metric to label data. Let $p$ denotes the overlap between a refined anchor box produced by RPN and its nearest ground-truth anchor box. For each anchor box we label as follows</p>
+<p>Similar to the RPN, we make use of IoU metric to label data. Let $r$ now denotes the overlap between a refined anchor box produced by RPN and its nearest ground-truth anchor box. For each anchor box we label as follows</p>
 <ul>
-<li>if $p &lt; \text{min_cls}$, ignore it when training.</li>
-<li>if $\text{min_cls} \leq p &lt; \text{max_cls}$, label it as background.</li>
-<li>if $p \geq \text{max_cls}$, label it as the class to which its nearest ground-truth box belongs.</li>
+<li>if $r \leq r_{min}$, label the proposed anchor box as background.</li>
+<li>if $r_{min} &lt; r &lt; r_{max}$, ignore it when training.</li>
+<li>if $r \geq r_{max}$, label it as the class to which its nearest ground-truth box belongs.</li>
 </ul>
-<pre><code class="language-python">cfg.classifier_min_overlap = 0.1
-cfg.classifier_max_overlap = 0.5
-</code></pre>
+<p>where $r_{min}$ and $r_{max}$ are the two predefined thresholds.</p>
 <h5 id="label-for-bounding-box-regression">Label for bounding box regression</h5>
 <p>For regression, we also calculate the &ldquo;ground-truth&rdquo; deltas $(\color{red}{t_x^*, t_y^*, t_w^*, t_h^*})$ in the same fashion as those in RPN, but now based on each refined anchor box&rsquo;s coordinates from the RPN $(x_r, y_r, w_r, h_r)$ and its nearest ground-truth bounding box&rsquo;s coordinates $(\color{blue}{x^*, y^*, w^*, h^*})$.</p>
-<!-- <a id="loss-function"></a> -->
 <h4 id="rcnn-losses">RCNN losses</h4>
-<h5 id="1-regression-loss-1">1. Regression Loss</h5>
-<pre><code class="language-python"># regresssion loss for detection network
-def class_loss_regr(num_classes, cfg):
-    def class_loss_regr_fixed_num(y_true, y_pred):
-        x = y_true[:, :, 4*num_classes:] - y_pred
-        x_abs = K.abs(x)
-        x_bool = K.cast(K.less_equal(x_abs, 1.0), 'float32')
-        return cfg.lambda_cls_regr * K.sum(y_true[:, :, :4*num_classes] * (x_bool * (0.5 * x * x) + (1 - x_bool) * (x_abs - 0.5))) / K.sum(cfg.epsilon + y_true[:, :, :4*num_classes])
-    return class_loss_regr_fixed_num
-</code></pre>
-<h5 id="2-classification-loss-1">2. Classification Loss</h5>
-<pre><code class="language-python">def class_loss_cls(cfg):
-    def class_loss_cls_fixed_num(y_true, y_pred):
-        return cfg.lambda_cls_class * K.mean(categorical_crossentropy(y_true[0, :, :], y_pred[0, :, :]))
-    return class_loss_cls_fixed_num
-</code></pre>
-<!-- <a id="training"></a>
-## Training
-
-<a id="detection"></a>
-## Detection -->
+<p>RCNN also uses smooth  L1 loss for regression and categorical cross-entropy loss for classification.</p>
+<p>Now, we are done walking through Faster RCNN. Its entire architecture can be pictured as follows</p>
+<p><img src="https://i.imgur.com/ZcaFqbz.png" alt=""></p>
+<p>[TODO - introduce Colab links]</p>
 <p><strong>References</strong></p>
 <ol>
-<li>Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks (
+<li>Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks, 2015. (
 <a href="https://arxiv.org/abs/1506.01497" target="_blank" rel="noopener">arxiv</a>)</li>
 </ol>
 
-    </div>
-
-    
+          </div>
+          
 
 
 
@@ -896,6 +839,8 @@ def class_loss_regr(num_classes, cfg):
   <a class="badge badge-light" href="/tags/object-detection/">object detection</a>
   
   <a class="badge badge-light" href="/tags/rcnn/">rcnn</a>
+  
+  <a class="badge badge-light" href="/tags/faster-rcnn/">faster-rcnn</a>
   
 </div>
 
@@ -1100,6 +1045,27 @@ def class_loss_regr(num_classes, cfg):
 <section id="comments">
   
     
+<div id="disqus_thread"></div>
+<script>
+  let disqus_config = function () {
+    
+    
+    
+  };
+  (function() {
+    if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+      document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+      return;
+    }
+    var d = document, s = d.createElement('script'); s.async = true;
+    s.src = 'https://' + "joocxi" + '.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
 
   
 </section>
@@ -1115,7 +1081,7 @@ def class_loss_regr(num_classes, cfg):
   
   <div class="post-nav-item">
     <div class="meta-nav">Next</div>
-    <a href="/post/lda-part-1/" rel="next">Variational Expectation Maximization for Latent Dirichlet Allocation</a>
+    <a href="/post/lda-part-1/" rel="next">Variational Expectation Maximization for Latent Dirichlet Allocation - Part One</a>
   </div>
   
   
@@ -1135,9 +1101,13 @@ def class_loss_regr(num_classes, cfg):
   
 
 
+        </div>
+      </article>
 
+    </main>
   </div>
-</article>
+</div>
+
 
       
 
@@ -1223,7 +1193,7 @@ def class_loss_regr(num_classes, cfg):
 
     
     
-    <script id="dsq-count-scr" src="https://.disqus.com/count.js" async></script>
+    <script id="dsq-count-scr" src="https://joocxi.disqus.com/count.js" async></script>
     
 
     

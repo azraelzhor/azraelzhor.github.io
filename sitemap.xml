@@ -48,6 +48,11 @@
   </url>
   
   <url>
+    <loc>https://azraelzhor.github.io/tags/latent-dirichlet-allocation/</loc>
+    <lastmod>2020-03-20T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://azraelzhor.github.io/tags/lda/</loc>
     <lastmod>2020-03-20T00:00:00+00:00</lastmod>
   </url>
@@ -68,6 +73,11 @@
   </url>
   
   <url>
+    <loc>https://azraelzhor.github.io/tags/variational-em/</loc>
+    <lastmod>2020-03-20T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://azraelzhor.github.io/post/lda-part-1/</loc>
     <lastmod>2020-03-20T00:00:00+00:00</lastmod>
   </url>
@@ -83,6 +93,11 @@
   </url>
   
   <url>
+    <loc>https://azraelzhor.github.io/tags/faster-rcnn/</loc>
+    <lastmod>2020-02-15T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://azraelzhor.github.io/tags/object-detection/</loc>
     <lastmod>2020-02-15T00:00:00+00:00</lastmod>
   </url>
@@ -93,7 +108,17 @@
   </url>
   
   <url>
+    <loc>https://azraelzhor.github.io/tags/computer-vision/</loc>
+    <lastmod>2020-01-19T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://azraelzhor.github.io/tags/generative-model/</loc>
+    <lastmod>2020-01-19T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://azraelzhor.github.io/tags/invertible-residual-networks/</loc>
     <lastmod>2020-01-19T00:00:00+00:00</lastmod>
   </url>
   
@@ -103,7 +128,7 @@
   </url>
   
   <url>
-    <loc>https://azraelzhor.github.io/tags/residual-networks/</loc>
+    <loc>https://azraelzhor.github.io/tags/normalizing-flows/</loc>
     <lastmod>2020-01-19T00:00:00+00:00</lastmod>
   </url>
   
