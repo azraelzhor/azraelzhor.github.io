@@ -5,12 +5,20 @@
     <link>https://azraelzhor.github.io/tags/lda/</link>
       <atom:link href="https://azraelzhor.github.io/tags/lda/index.xml" rel="self" type="application/rss+xml" />
     <description>lda</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>joocxi@2020</copyright><lastBuildDate>Fri, 20 Mar 2020 00:00:00 +0000</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>joocxi@2020</copyright><lastBuildDate>Fri, 03 Apr 2020 16:42:30 +0700</lastBuildDate>
     <image>
       <url>img/map[gravatar:%!s(bool=true) shape:circle]</url>
       <title>lda</title>
       <link>https://azraelzhor.github.io/tags/lda/</link>
     </image>
+    
+    <item>
+      <title>Latent Dirichlet Allocation</title>
+      <link>https://azraelzhor.github.io/talk/latent-dirichlet-allocation/</link>
+      <pubDate>Fri, 03 Apr 2020 16:42:30 +0700</pubDate>
+      <guid>https://azraelzhor.github.io/talk/latent-dirichlet-allocation/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Variational Expectation Maximization for Latent Dirichlet Allocation - Part One</title>

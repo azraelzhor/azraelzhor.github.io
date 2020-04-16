@@ -5,20 +5,12 @@
     <link>https://azraelzhor.github.io/talk/</link>
       <atom:link href="https://azraelzhor.github.io/talk/index.xml" rel="self" type="application/rss+xml" />
     <description>Recent &amp; Upcoming Talks</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>joocxi@2020</copyright><lastBuildDate>Fri, 03 Apr 2020 18:12:38 +0700</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>joocxi@2020</copyright><lastBuildDate>Fri, 03 Apr 2020 16:42:30 +0700</lastBuildDate>
     <image>
       <url>img/map[gravatar:%!s(bool=true) shape:circle]</url>
       <title>Recent &amp; Upcoming Talks</title>
       <link>https://azraelzhor.github.io/talk/</link>
     </image>
-    
-    <item>
-      <title>Vietnamese Data Augmentation</title>
-      <link>https://azraelzhor.github.io/talk/vietnamese-data-augmentation/</link>
-      <pubDate>Fri, 03 Apr 2020 18:12:38 +0700</pubDate>
-      <guid>https://azraelzhor.github.io/talk/vietnamese-data-augmentation/</guid>
-      <description></description>
-    </item>
     
     <item>
       <title>Latent Dirichlet Allocation</title>
@@ -29,10 +21,26 @@
     </item>
     
     <item>
+      <title>Object Detection</title>
+      <link>https://azraelzhor.github.io/talk/object-detection/</link>
+      <pubDate>Wed, 11 Mar 2020 00:00:00 +0000</pubDate>
+      <guid>https://azraelzhor.github.io/talk/object-detection/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Generative Models</title>
       <link>https://azraelzhor.github.io/talk/generative-models/</link>
-      <pubDate>Fri, 03 Apr 2020 16:41:51 +0700</pubDate>
+      <pubDate>Wed, 05 Feb 2020 00:00:00 +0000</pubDate>
       <guid>https://azraelzhor.github.io/talk/generative-models/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Vietnamese Data Augmentation</title>
+      <link>https://azraelzhor.github.io/talk/vietnamese-data-augmentation/</link>
+      <pubDate>Fri, 01 Nov 2019 00:00:00 +0000</pubDate>
+      <guid>https://azraelzhor.github.io/talk/vietnamese-data-augmentation/</guid>
       <description></description>
     </item>
     

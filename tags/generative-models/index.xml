@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>generative models | Thang Le</title>
+    <link>https://azraelzhor.github.io/tags/generative-models/</link>
+      <atom:link href="https://azraelzhor.github.io/tags/generative-models/index.xml" rel="self" type="application/rss+xml" />
+    <description>generative models</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>joocxi@2020</copyright><lastBuildDate>Wed, 05 Feb 2020 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>img/map[gravatar:%!s(bool=true) shape:circle]</url>
+      <title>generative models</title>
+      <link>https://azraelzhor.github.io/tags/generative-models/</link>
+    </image>
+    
+    <item>
+      <title>Generative Models</title>
+      <link>https://azraelzhor.github.io/talk/generative-models/</link>
+      <pubDate>Wed, 05 Feb 2020 00:00:00 +0000</pubDate>
+      <guid>https://azraelzhor.github.io/talk/generative-models/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

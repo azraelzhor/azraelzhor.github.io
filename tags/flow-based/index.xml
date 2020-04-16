@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>flow-based | Thang Le</title>
+    <link>https://azraelzhor.github.io/tags/flow-based/</link>
+      <atom:link href="https://azraelzhor.github.io/tags/flow-based/index.xml" rel="self" type="application/rss+xml" />
+    <description>flow-based</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>joocxi@2020</copyright><lastBuildDate>Wed, 05 Feb 2020 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>img/map[gravatar:%!s(bool=true) shape:circle]</url>
+      <title>flow-based</title>
+      <link>https://azraelzhor.github.io/tags/flow-based/</link>
+    </image>
+    
+    <item>
+      <title>Generative Models</title>
+      <link>https://azraelzhor.github.io/talk/generative-models/</link>
+      <pubDate>Wed, 05 Feb 2020 00:00:00 +0000</pubDate>
+      <guid>https://azraelzhor.github.io/talk/generative-models/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

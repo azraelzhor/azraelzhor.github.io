@@ -5,12 +5,20 @@
     <link>https://azraelzhor.github.io/tags/faster-rcnn/</link>
       <atom:link href="https://azraelzhor.github.io/tags/faster-rcnn/index.xml" rel="self" type="application/rss+xml" />
     <description>faster-rcnn</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>joocxi@2020</copyright><lastBuildDate>Sat, 15 Feb 2020 00:00:00 +0000</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>joocxi@2020</copyright><lastBuildDate>Wed, 11 Mar 2020 00:00:00 +0000</lastBuildDate>
     <image>
       <url>img/map[gravatar:%!s(bool=true) shape:circle]</url>
       <title>faster-rcnn</title>
       <link>https://azraelzhor.github.io/tags/faster-rcnn/</link>
     </image>
+    
+    <item>
+      <title>Object Detection</title>
+      <link>https://azraelzhor.github.io/talk/object-detection/</link>
+      <pubDate>Wed, 11 Mar 2020 00:00:00 +0000</pubDate>
+      <guid>https://azraelzhor.github.io/talk/object-detection/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Dive into Faster RCNN</title>

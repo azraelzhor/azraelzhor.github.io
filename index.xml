@@ -5,20 +5,12 @@
     <link>https://azraelzhor.github.io/</link>
       <atom:link href="https://azraelzhor.github.io/index.xml" rel="self" type="application/rss+xml" />
     <description>Thang Le</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>joocxi@2020</copyright><lastBuildDate>Fri, 03 Apr 2020 18:12:38 +0700</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>joocxi@2020</copyright><lastBuildDate>Fri, 03 Apr 2020 17:25:56 +0700</lastBuildDate>
     <image>
       <url>img/map[gravatar:%!s(bool=true) shape:circle]</url>
       <title>Thang Le</title>
       <link>https://azraelzhor.github.io/</link>
     </image>
-    
-    <item>
-      <title>Vietnamese Data Augmentation</title>
-      <link>https://azraelzhor.github.io/talk/vietnamese-data-augmentation/</link>
-      <pubDate>Fri, 03 Apr 2020 18:12:38 +0700</pubDate>
-      <guid>https://azraelzhor.github.io/talk/vietnamese-data-augmentation/</guid>
-      <description></description>
-    </item>
     
     <item>
       <title>Vietnamese Data Augmentation</title>
@@ -41,14 +33,6 @@
       <link>https://azraelzhor.github.io/talk/latent-dirichlet-allocation/</link>
       <pubDate>Fri, 03 Apr 2020 16:42:30 +0700</pubDate>
       <guid>https://azraelzhor.github.io/talk/latent-dirichlet-allocation/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Generative Models</title>
-      <link>https://azraelzhor.github.io/talk/generative-models/</link>
-      <pubDate>Fri, 03 Apr 2020 16:41:51 +0700</pubDate>
-      <guid>https://azraelzhor.github.io/talk/generative-models/</guid>
       <description></description>
     </item>
     
@@ -326,6 +310,14 @@ $$ --&gt;
     </item>
     
     <item>
+      <title>Object Detection</title>
+      <link>https://azraelzhor.github.io/talk/object-detection/</link>
+      <pubDate>Wed, 11 Mar 2020 00:00:00 +0000</pubDate>
+      <guid>https://azraelzhor.github.io/talk/object-detection/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Dive into Faster RCNN</title>
       <link>https://azraelzhor.github.io/post/faster-rcnn/</link>
       <pubDate>Sat, 15 Feb 2020 00:00:00 +0000</pubDate>
@@ -513,6 +505,14 @@ source: &lt;a href=&#34;https://arxiv.org/pdf/1711.06753.pdf&#34; target=&#34;_b
 &lt;a href=&#34;https://arxiv.org/abs/1506.01497&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;arxiv&lt;/a&gt;)&lt;/li&gt;
 &lt;/ol&gt;
 </description>
+    </item>
+    
+    <item>
+      <title>Generative Models</title>
+      <link>https://azraelzhor.github.io/talk/generative-models/</link>
+      <pubDate>Wed, 05 Feb 2020 00:00:00 +0000</pubDate>
+      <guid>https://azraelzhor.github.io/talk/generative-models/</guid>
+      <description></description>
     </item>
     
     <item>
@@ -762,6 +762,14 @@ $$&lt;/p&gt;
 &lt;a href=&#34;http://proceedings.mlr.press/v37/hana15.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Large-scale Log-determinant Computation through Stochastic Chebyshev Expansions&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 </description>
+    </item>
+    
+    <item>
+      <title>Vietnamese Data Augmentation</title>
+      <link>https://azraelzhor.github.io/talk/vietnamese-data-augmentation/</link>
+      <pubDate>Fri, 01 Nov 2019 00:00:00 +0000</pubDate>
+      <guid>https://azraelzhor.github.io/talk/vietnamese-data-augmentation/</guid>
+      <description></description>
     </item>
     
   </channel>

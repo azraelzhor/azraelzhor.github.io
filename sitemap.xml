@@ -3,22 +3,12 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://azraelzhor.github.io/talk/</loc>
-    <lastmod>2020-04-03T18:12:38+07:00</lastmod>
+    <loc>https://azraelzhor.github.io/project/</loc>
+    <lastmod>2020-04-03T17:25:56+07:00</lastmod>
   </url>
   
   <url>
     <loc>https://azraelzhor.github.io/</loc>
-    <lastmod>2020-04-03T18:12:38+07:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://azraelzhor.github.io/talk/vietnamese-data-augmentation/</loc>
-    <lastmod>2020-04-03T18:12:38+07:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://azraelzhor.github.io/project/</loc>
     <lastmod>2020-04-03T17:25:56+07:00</lastmod>
   </url>
   
@@ -38,8 +28,23 @@
   </url>
   
   <url>
-    <loc>https://azraelzhor.github.io/talk/generative-models/</loc>
-    <lastmod>2020-04-03T16:41:51+07:00</lastmod>
+    <loc>https://azraelzhor.github.io/tags/lda/</loc>
+    <lastmod>2020-04-03T16:42:30+07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://azraelzhor.github.io/talk/</loc>
+    <lastmod>2020-04-03T16:42:30+07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://azraelzhor.github.io/tags/</loc>
+    <lastmod>2020-04-03T16:42:30+07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://azraelzhor.github.io/tags/topic-modeling/</loc>
+    <lastmod>2020-04-03T16:42:30+07:00</lastmod>
   </url>
   
   <url>
@@ -53,22 +58,7 @@
   </url>
   
   <url>
-    <loc>https://azraelzhor.github.io/tags/lda/</loc>
-    <lastmod>2020-03-20T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://azraelzhor.github.io/post/</loc>
-    <lastmod>2020-03-20T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://azraelzhor.github.io/tags/</loc>
-    <lastmod>2020-03-20T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://azraelzhor.github.io/tags/topic-modeling/</loc>
     <lastmod>2020-03-20T00:00:00+00:00</lastmod>
   </url>
   
@@ -88,12 +78,22 @@
   </url>
   
   <url>
-    <loc>https://azraelzhor.github.io/post/faster-rcnn/</loc>
-    <lastmod>2020-02-15T00:00:00+00:00</lastmod>
+    <loc>https://azraelzhor.github.io/tags/faster-rcnn/</loc>
+    <lastmod>2020-03-11T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://azraelzhor.github.io/tags/faster-rcnn/</loc>
+    <loc>https://azraelzhor.github.io/talk/object-detection/</loc>
+    <lastmod>2020-03-11T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://azraelzhor.github.io/tags/yolo/</loc>
+    <lastmod>2020-03-11T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://azraelzhor.github.io/post/faster-rcnn/</loc>
     <lastmod>2020-02-15T00:00:00+00:00</lastmod>
   </url>
   
@@ -108,12 +108,37 @@
   </url>
   
   <url>
-    <loc>https://azraelzhor.github.io/tags/computer-vision/</loc>
-    <lastmod>2020-01-19T00:00:00+00:00</lastmod>
+    <loc>https://azraelzhor.github.io/tags/flow-based/</loc>
+    <lastmod>2020-02-05T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://azraelzhor.github.io/tags/gan/</loc>
+    <lastmod>2020-02-05T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>https://azraelzhor.github.io/tags/generative-model/</loc>
+    <lastmod>2020-02-05T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://azraelzhor.github.io/talk/generative-models/</loc>
+    <lastmod>2020-02-05T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://azraelzhor.github.io/tags/generative-models/</loc>
+    <lastmod>2020-02-05T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://azraelzhor.github.io/tags/vae/</loc>
+    <lastmod>2020-02-05T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://azraelzhor.github.io/tags/computer-vision/</loc>
     <lastmod>2020-01-19T00:00:00+00:00</lastmod>
   </url>
   
@@ -130,6 +155,26 @@
   <url>
     <loc>https://azraelzhor.github.io/tags/normalizing-flows/</loc>
     <lastmod>2020-01-19T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://azraelzhor.github.io/tags/backtranslation/</loc>
+    <lastmod>2019-11-01T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://azraelzhor.github.io/tags/data-augmentation/</loc>
+    <lastmod>2019-11-01T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://azraelzhor.github.io/tags/nlp/</loc>
+    <lastmod>2019-11-01T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://azraelzhor.github.io/talk/vietnamese-data-augmentation/</loc>
+    <lastmod>2019-11-01T00:00:00+00:00</lastmod>
   </url>
   
   <url>
