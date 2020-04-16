@@ -18,15 +18,15 @@
       <pubDate>Fri, 20 Mar 2020 00:00:00 +0000</pubDate>
       <guid>https://azraelzhor.github.io/post/lda-part-1/</guid>
       <description>&lt;p&gt;Text data is everywhere. When having massive amounts of them, a need naturally arises is that we want them to be organized efficiently. A naive way is to organize them based on topics, meaning that text covering the same topics should be put into the same groups. The problem is that we do not know which topics a text document belongs to and manually labeling topics for all of them is very expensive. Hence, topic modeling comes as an efficient way to automatically discover abstract topics contained in these text documents.&lt;/p&gt;
-&lt;img src=&#34;https://i.imgur.com/lQZ2f5r.png&#34; width=&#34;400&#34;/&gt;
+&lt;img src=&#34;https://i.imgur.com/lQZ2f5r.png&#34; width=&#34;350&#34;/&gt;
 &lt;p&gt;One of the most common topic models is Latent Dirichlet Allocation (LDA), was introduced long time ago (D. Blei et al, 2003) but is still powerful now. LDA is a complex, hierarchical latent variable model with some probabilistic assumptions over it. Thus, before diving into detail of LDA, let us review some knowledges about &lt;code&gt;latent variable model&lt;/code&gt; and how to handle some problems associated with it.&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; My blog on LDA contains two parts. This is the first part about theoretical understanding of LDA. The  second part involves a basic implementation of LDA, which you can check out 
 &lt;a href=&#34;&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h2 id=&#34;latent-variable-model&#34;&gt;Latent variable model&lt;/h2&gt;
-&lt;p&gt;A latent variable model assumes that data, which we can observe, is controlled by some underlying unknown factor. This dependency is often parameterized by a known distribution along with its associated parameters, known as model parameter. A simple latent variable model consists of three parts: observed data $x$, latent variable $z$ that controls $x$ and model parameter $\theta$ like the picture below.&lt;/p&gt;
-&lt;img src=&#34;https://i.imgur.com/bT71bXf.png&#34; width=&#34;300&#34;/&gt;
+&lt;p&gt;A latent variable model assumes that data, which we can observe, is controlled by some underlying unknown factor. This dependency is often parameterized by a known distribution along with its associated parameters, known as model parameter. A simple latent variable model consists of three parts: observed data $x$, latent variable $z$ that controls $x$ and model parameter $\theta$ like the picture below.
+&lt;img src=&#34;https://i.imgur.com/i3cEZQW.png&#34; width=&#34;300&#34;/&gt;&lt;/p&gt;
 &lt;!-- [TODO - example of latent variable model]
 For an example of latent variable models, imagine that you are an observer at a casino, where people are playing a dice game. The dice dealer rolls the dice at each turn. The dice values range from $1$ to $6$.
 $$
@@ -107,14 +107,13 @@ $$ --&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;If you want to go into the details of EM, &lt;strong&gt;Gaussian Mixture&lt;/strong&gt; (when $z$ is discrete) and &lt;strong&gt;Probabilistic Principal Component Analysis&lt;/strong&gt; (or Probabilistic PCA in short, when $z$ is continuous) are the two perfect cases to study.&lt;/p&gt;
 &lt;h3 id=&#34;variational-inference&#34;&gt;Variational Inference&lt;/h3&gt;
-&lt;p&gt;In many of the cases, the posterior distribution $p(z|x;\theta)$ we are interested in can not be inferred analytically, or in other words, it is intractable. This leads naturally to the field of &lt;code&gt;approximate inference&lt;/code&gt;, in which we try to approximate the intractable posterior. Variational inference is such a technique in approximate inference which is fast and effective enough for a good approximation of $p(z|x;\theta)$.&lt;/p&gt;
-&lt;p&gt;The idea of variational inference is simple that we reformulate the problem of inference as an optimization problem by&lt;/p&gt;
+&lt;p&gt;In many of the cases, the posterior distribution $p(z|x;\theta)$ we are interested in can not be inferred analytically, or in other words, it is intractable. This leads naturally to the field of &lt;code&gt;approximate inference&lt;/code&gt;, in which we try to approximate the intractable posterior. Variational inference is such a technique in approximate inference which is fast and effective enough for a good approximation of $p(z|x;\theta)$. The process can be pictured as follows
+&lt;img src=&#34;https://i.imgur.com/eqdLdPA.png&#34; width=&#34;400&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;As we can see, the idea of variational inference is simple that we reformulate the problem of inference as an optimization problem by&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;First, posit a variational family ${q(z;v)}$ controlled by variational parameter $v$&lt;/li&gt;
 &lt;li&gt;Then, find the optimal ${q(z;v^*)}$ in this family, which is as &amp;ldquo;close&amp;rdquo; to $p(z|x;\theta)$ as possible&lt;/li&gt;
 &lt;/ul&gt;
-&lt;img src=&#34;https://i.imgur.com/zXCukxg.png&#34; width=&#34;400&#34;/&gt;
-&lt;p align=&#34;center&#34;&gt;Mean field approximation&lt;/p&gt;
 &lt;p&gt;Specifically, the goal of variational inference is then to minimize the $KL$ divergence between the variational family and the true posterior: $\mathop{min}_{q, v}KL({{q(z;v)}}||p(z|x;\theta))$. But how can we minimize such an intractable term?&lt;/p&gt;
 &lt;!-- But how can we minimize a term that can not be evaluated analytically? --&gt;
 &lt;p&gt;Recall from $(1)$ (with the variational distribution ${q(z;v)}$  now being chosen as ${q(z)}$), we have the $ELBO$&lt;/p&gt;
@@ -178,8 +177,7 @@ $$&lt;/p&gt;
 &lt;p&gt;In our example above, the document is a categorical distribution over $K = 4$ &lt;code&gt;topics&lt;/code&gt;, with its parameter $\theta = [0.4, 0.2, 0.3, 0.1]$. Similarly, each &lt;code&gt;topic&lt;/code&gt; is also a categorical distribution over $K = 6$ &lt;code&gt;words&lt;/code&gt;.&lt;/p&gt;
 &lt;h3 id=&#34;dirichlet-distribution&#34;&gt;Dirichlet distribution&lt;/h3&gt;
 &lt;p&gt;Another distribution which plays an important role in LDA is the Dirichlet distribution (hence the name LDA). Dirichlet distribution is a &lt;code&gt;continuous&lt;/code&gt; multivariate probability distribution over a $(K-1)$-simplex, which can be seen as a set of $K$-dimensional vectors $x=[x_1, x_2, &amp;hellip;, x_K]$ such that each $x_k \geq 0$ and $\sum_{k=1}^Kx_k = 1$. For example, the 2-simplex is a triangle in $3D$ space (see figure below).&lt;/p&gt;
-&lt;img src=&#34;https://i.imgur.com/3wvle5s.png&#34; width=&#34;300&#34;/&gt;
-&lt;p align=&#34;center&#34;&gt;2-simplex in 3D space&lt;/p&gt;
+&lt;img src=&#34;https://i.imgur.com/XYL7AoT.png&#34; width=&#34;300&#34;/&gt;
 &lt;p&gt;The distribution is parameterized by a positive $K$-dimensional vector $\alpha$, with its probability density function defined as&lt;/p&gt;
 &lt;p&gt;$$
 p(x;\alpha) = \frac{1}{B(\alpha)} \prod_{k=1}^{K}x_k^{\alpha_k - 1}
@@ -231,7 +229,6 @@ $$&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h3 id=&#34;the-two-problems-of-lda&#34;&gt;The two problems of LDA&lt;/h3&gt;
 &lt;img src=&#34;https://i.imgur.com/VUMrTKJ.png&#34; width=&#34;400&#34;/&gt;
-&lt;p align=&#34;center&#34;&gt;LDA as a probabilistic graphical model&lt;/p&gt;
 &lt;p&gt;LDA is a latent variable model, consisting of: observed data $w$;  model parameters $\alpha, \beta$; and latent variables $z, \theta$; as shown in the figure above. Hence, just like any typical latent variable model, LDA also have two problems needed to be solved.&lt;/p&gt;
 &lt;!--
 $$
@@ -240,8 +237,7 @@ $$ --&gt;
 &lt;h4 id=&#34;inference&#34;&gt;Inference&lt;/h4&gt;
 &lt;p&gt;Given a document $d$ has $N$ words ${w_1^{(d)}, &amp;hellip;, w_N^{(d)}}$ and model parameters $\alpha$, $\beta$; infer the posterior distribution $p(z, \theta| w^{(d)}; \alpha, \beta)$.&lt;/p&gt;
 &lt;p&gt;We can then use mean-field approximation to approximate $p(z, \theta| w^{(d)}; \alpha, \beta)$, by introducing the mean-field variational distribution $q(z, \theta; \gamma, \phi) = q(\theta;\gamma)\prod_{i=1}^{N}q(z_i;\phi_i)$.
-&lt;img src=&#34;https://i.imgur.com/O5a0mY3.png&#34; width=&#34;250&#34;/&gt;&lt;/p&gt;
-&lt;p align=&#34;center&#34;&gt;The mean-field variational distribution&lt;/p&gt;
+&lt;img src=&#34;https://i.imgur.com/Tr25JyX.png&#34; width=&#34;250&#34;/&gt;&lt;/p&gt;
 &lt;p&gt;Deriving the ELBO to yield coordinate ascent update for each variational parameter is mathematically heavy so I will not put the mathematical stuff here. For reference, the derivation could be found in the Appendix of the original paper. Based on the coordinate ascent update, we obtain the optimal form for $q(\theta;\gamma)$ which is a Dirichlet distribution and each $q(z_i;\phi_i)$ which is a categorical distribution. The coordinate ascent algorithm then return the optimal parameters $\gamma^*, \phi^*$.&lt;/p&gt;
 &lt;h4 id=&#34;parameter-estimation&#34;&gt;Parameter estimation&lt;/h4&gt;
 &lt;!-- Likelihood function for each document is --&gt;
