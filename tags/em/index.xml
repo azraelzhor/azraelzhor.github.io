@@ -13,7 +13,7 @@
     </image>
     
     <item>
-      <title>Variational Expectation Maximization for Latent Dirichlet Allocation - Part One</title>
+      <title>Variational Expectation Maximization for Latent Dirichlet Allocation - Part 1</title>
       <link>https://azraelzhor.github.io/post/lda-part-1/</link>
       <pubDate>Fri, 20 Mar 2020 00:00:00 +0000</pubDate>
       <guid>https://azraelzhor.github.io/post/lda-part-1/</guid>
@@ -22,7 +22,7 @@
 &lt;p&gt;One of the most common topic models is Latent Dirichlet Allocation (LDA), was introduced long time ago (D. Blei et al, 2003) but is still powerful now. LDA is a complex, hierarchical latent variable model with some probabilistic assumptions over it. Thus, before diving into detail of LDA, let us review some knowledges about &lt;code&gt;latent variable model&lt;/code&gt; and how to handle some problems associated with it.&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; My blog on LDA contains two parts. This is the first part about theoretical understanding of LDA. The  second part involves a basic implementation of LDA, which you can check out 
-&lt;a href=&#34;&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;a href=&#34;https://azraelzhor.github.io/post/lda-part-2/&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h2 id=&#34;latent-variable-model&#34;&gt;Latent variable model&lt;/h2&gt;
 &lt;p&gt;A latent variable model assumes that data, which we can observe, is controlled by some underlying unknown factor. This dependency is often parameterized by a known distribution along with its associated parameters, known as model parameter. A simple latent variable model consists of three parts: observed data $x$, latent variable $z$ that controls $x$ and model parameter $\theta$ like the picture below.
@@ -257,16 +257,18 @@ $$ --&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;E step&lt;/strong&gt;:
 &lt;ul&gt;
-&lt;li&gt;For each document $d$, use mean-field approximation to approximate the posterior $p(z^{(d)}, \theta^{(d)}|w^{(d)};{{\alpha^{(t)}, \beta^{(t)}}})$:
+&lt;li&gt;For each document $d$
 &lt;ul&gt;
-&lt;li&gt;Introduce the mean-field $q(z, \theta; \gamma, \phi) = q(\theta;\gamma)\prod_{i=1}^{N}q(z_i;\phi_i)$&lt;/li&gt;
-&lt;li&gt;Use coordinate ascent update algorithm to yield optimal $\gamma^*, \phi^*$&lt;/li&gt;
+&lt;li&gt;Introduce the mean-field $q(z, \theta; \gamma, \phi) = q(\theta;\gamma)\prod_{i=1}^{N}q(z_i;\phi_i)$ to approximate the posterior $p(z^{(d)}, \theta^{(d)}|w^{(d)};{{\alpha^{(t)}, \beta^{(t)}}})$&lt;/li&gt;
+&lt;li&gt;Use coordinate ascent update algorithm to yield optimal $\gamma^{(d)}, \phi^{(d)}$&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;M step&lt;/strong&gt;: Maximize the expected log-likelihood
-  &lt;div&gt;$\mathop{max}_{{\alpha^{(t+1)}, \beta^{(t+1)}}} \mathrm{E}_{z, \theta \sim q(z, \theta; \gamma^{*}, \phi^{*})} {p(w, z, \theta ;{{\alpha^{(t+1)}, \beta^{(t+1)}}}})$&lt;/div&gt;
+&lt;li&gt;&lt;strong&gt;M step&lt;/strong&gt;: Maximize the expected log-likelihood (up to some constant) with respect to $\alpha, \beta$
+  &lt;div&gt;$$
+  \mathop{max}_{{\alpha^{(t+1)}, \beta^{(t+1)}}} \sum_{d=1}^{M} \mathrm{E}_{z, \theta \sim q(z, \theta; \gamma^{(d)}, \phi^{(d)})} {\log p(w, z, \theta ;{{\alpha^{(t+1)}, \beta^{(t+1)}}}})
+  $$&lt;/div&gt;
 &lt;/li&gt;
 &lt;li&gt;If the convergence standard is satisfied, stop&lt;/li&gt;
 &lt;/ul&gt;

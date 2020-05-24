@@ -5,7 +5,7 @@
     <link>https://azraelzhor.github.io/tags/variational-inference/</link>
       <atom:link href="https://azraelzhor.github.io/tags/variational-inference/index.xml" rel="self" type="application/rss+xml" />
     <description>variational inference</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>joocxi@2020</copyright><lastBuildDate>Fri, 20 Mar 2020 00:00:00 +0000</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>joocxi@2020</copyright><lastBuildDate>Tue, 12 May 2020 00:00:00 +0000</lastBuildDate>
     <image>
       <url>img/map[gravatar:%!s(bool=true) shape:circle]</url>
       <title>variational inference</title>
@@ -13,7 +13,647 @@
     </image>
     
     <item>
-      <title>Variational Expectation Maximization for Latent Dirichlet Allocation - Part One</title>
+      <title>Variational Expectation Maximization for Latent Dirichlet Allocation - Part 2</title>
+      <link>https://azraelzhor.github.io/post/lda-part-2/</link>
+      <pubDate>Tue, 12 May 2020 00:00:00 +0000</pubDate>
+      <guid>https://azraelzhor.github.io/post/lda-part-2/</guid>
+      <description>&lt;p&gt;After discussing LDA in the previous part, we now get our hands dirty by implementing the Variational EM algorithm. Recall that the goal is to estimate $\alpha, \beta$ that maximizes the ELBO&lt;/p&gt;
+&lt;div&gt;
+$$
+\mathrm{E}_{q}\log p(w, \theta, z;\alpha, \beta) - \mathrm{E}_{q}\log {q(z, \theta;\gamma, \phi)}
+$$
+&lt;/div&gt;
+&lt;p&gt;where the joint likelihood and the variational distribution are factorized as follows&lt;/p&gt;
+&lt;p&gt;$$
+p(w, \theta, z; \alpha, \beta) = Dir(\theta;\alpha)\prod_{n=1}^{N}Cat(z_n;\theta) Cat(w_n;z_n, \beta)
+$$&lt;/p&gt;
+&lt;p&gt;$$
+q(z, \theta; \gamma, \phi) = Dir(\theta;\gamma)\prod_{n=1}^{N}Cat(z_n;\phi_n)
+$$&lt;/p&gt;
+&lt;h2 id=&#34;working-with-the-elbo&#34;&gt;Working with the ELBO&lt;/h2&gt;
+&lt;p&gt;But before getting into code, we need to derive the ELBO. Substituting these factorizations into the ELBO, we obtain&lt;/p&gt;
+&lt;div&gt;
+\begin{align}
+L &amp; = \mathrm{E}_{q}\log p(w, \theta, z;\alpha, \beta) - \mathrm{E}_{q}\log {q(z, \theta;\gamma, \phi)} \\
+&amp; = \mathrm{E}_{q}\log Dir(\theta; \alpha) + \sum_{n=1}^{N} \Big[ \mathrm{E}_{q} \log Cat(z_n; \theta) + \mathrm{E}_{q} \log Cat(w_n; z_n, \beta) \Big] \\
+&amp; \quad - \mathrm{E}_{q} \log Dir(\theta; \gamma) - \sum_{n=1}^{N}\mathrm{E}_{q} \log Cat (z_n;\phi_n) \tag{1}
+\end{align}
+&lt;/div&gt;
+&lt;h3 id=&#34;dealing-with-expected-values&#34;&gt;Dealing with expected values&lt;/h3&gt;
+&lt;p&gt;To handle the expectations in the ELBO, we need to rewrite the Dirichlet distribution in exponential form as follows&lt;/p&gt;
+&lt;div&gt;
+\begin{align}
+Dir(x;\alpha) &amp; = \frac{1}{B(\alpha)} \prod_{k=1}^{K}x_k^{\alpha_k - 1} \\
+&amp; = \frac{\Gamma(\sum_{k=1}^{K}\alpha_k)}{\sum_{k=1}^{K}\Gamma(\alpha_k)} \prod_{k=1}^{K}x_k^{\alpha_k - 1} \\
+&amp; = \exp\Big[ \sum_{k=1}^{K} (\alpha_k - 1) \log x_k + \log \Gamma(\sum_{k=1}^{K}\alpha_k) - \sum_{k=1}^{K}\log\Gamma(\alpha_k) \Big]
+\end{align}
+&lt;/div&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Exponential family distribution&lt;/strong&gt;
+$$
+p(x|\theta) = h(x) exp(\eta \cdot T(x) - A(\eta))
+$$&lt;/p&gt;
+&lt;p&gt;where $h(x)$ is known as &lt;strong&gt;base measure&lt;/strong&gt;, $\eta(\theta)$ is &lt;strong&gt;natural parameter&lt;/strong&gt;, $T(x)$ is &lt;strong&gt;sufficient statistic&lt;/strong&gt; and $A(\theta)$ is &lt;strong&gt;log normalizer&lt;/strong&gt;. One important property of the exponential family is that the mean of the sufficient statistic $T(x)$ can be derived by differentiating the natural parameter $A(\eta)$
+$$
+E[T_j]= \frac{\partial A(\eta)}{\partial \eta_j} \tag{2}
+$$&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Applying property $(2)$ for the case of the Dirichlet distribution, we have&lt;/p&gt;
+&lt;div&gt;
+\begin{align}
+\mathrm{E}_{x \sim Dir(x;\alpha)}\log x_k &amp; = \frac{\partial(\sum_{j=1}^{K}\log\Gamma(\alpha_j) - \log \Gamma(\sum_{j=1}^{K}\alpha_j))  }{\partial (\alpha_k - 1)} \\
+&amp; = \frac{\partial(\sum_{j=1}^{K}\log\Gamma(\alpha_j) - \log \Gamma(\sum_{j=1}^{K}\alpha_j))  }{\partial \alpha_k} \\
+&amp; = \Psi(\alpha_k) - \Psi(\sum_{j=1}^{K}\alpha_j)
+\end{align}
+&lt;/div&gt;
+&lt;p&gt;where $\Psi(\cdot)$ is the derivative of the logarithm of Gamma function (also known as Digamma).&lt;/p&gt;
+&lt;p&gt;Also, the categorical distribution can be represented using 
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Iverson_bracket&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Iverson bracket&lt;/a&gt; $[\cdot]$&lt;/p&gt;
+&lt;p&gt;$$
+Cat(x;\theta) = \prod_{i=1}^K \theta_i^{[x=i]}
+$$&lt;/p&gt;
+&lt;p&gt;where $[x=i]$ evaluates to  $1$ if $x = i$, $0$ otherwise (with the assumption that values of $x$ fall into the range ${1, 2, &amp;hellip;, K}$).&lt;/p&gt;
+&lt;!-- $$
+\log Cat(x;\theta) = \sum_{i=1}^K [x=i] \log \theta_i
+$$ --&gt;
+&lt;p&gt;Expectation of a function $f(x)$ with respect to the categorical distribution is computed as&lt;/p&gt;
+&lt;div&gt;
+$$
+\mathrm{E}_{x\sim Cat(x;\theta)} f(x) = \sum_{i=1}^{K} \theta_i f(i)
+$$
+&lt;/div&gt;
+&lt;h3 id=&#34;deriving-the-elbo&#34;&gt;Deriving the ELBO&lt;/h3&gt;
+&lt;p&gt;Using these results above, we have&lt;/p&gt;
+&lt;div&gt;
+\begin{align}
+&amp; \mathrm{E}_{q}\log Dir(\theta; \alpha) \\
+&amp; = \mathrm{E}_{q} \Big[\sum_{k=1}^{K} (\alpha_k - 1) \log \theta_k + \log \Gamma(\sum_{k=1}^{K}\alpha_k) - \sum_{k=1}^{K}\log\Gamma(\alpha_k)\Big] \\
+&amp; = \sum_{k=1}^{K}(\alpha_k - 1) \mathrm{E}_{\theta \sim Dir(\theta;\gamma)} \log\theta_k + \log \Gamma(\sum_{k=1}^{K}\alpha_k) - \sum_{k=1}^{K}\log\Gamma(\alpha_k) \\
+&amp; = \sum_{k=1}^{K}(\alpha_k - 1) (\Psi(\gamma_k) - \Psi(\sum_{j=1}^{K}\gamma_j)) + \log \Gamma(\sum_{k=1}^{K}\alpha_k) - \sum_{k=1}^{K}\log\Gamma(\alpha_k) \tag{3} \\
+&amp;\\
+&amp; \mathrm{E}_{q} \log Cat(z_n; \theta) \\
+&amp; = E_{z_n \sim Cat(z_n;\phi_n), \theta \sim Dir(\theta;\gamma)} \log Cat(z_n;\theta) \\
+&amp; = E_{z_n \sim Cat(z_n;\phi_n), \theta \sim Dir(\theta;\gamma)} \sum_{j=1}^{K}[z_n=j]\log \theta_j \\
+&amp; = \sum_{i=1}^{K} \phi_{ni} \mathrm{E}_{\theta \sim Dir(\theta; \gamma)} \sum_{j=1}^{K}[i=j]\log \theta_j \\
+&amp; = \sum_{i=1}^{K} \phi_{ni} \mathrm{E}_{\theta \sim Dir(\theta; \gamma)} \log \theta_i \\
+&amp; = \sum_{i=1}^{K} \phi_{ni}(\Psi(\gamma_i) - \Psi(\sum_{j=1}^{K}\gamma_j)) \tag{4} \\
+&amp;\\
+&amp; \mathrm{E}_{q} \log Cat(w_n;z_n, \beta) \\
+&amp; = \mathrm{E}_{z_n \sim Cat(z_n;\phi_n)} \log Cat(w_n;\beta_{z_n}) \\
+&amp; = \mathrm{E}_{z_n \sim Cat(z_n;\phi_n)} \sum_{j=1}^{V} [w_n=j] \log \beta_{z_n j} \\
+&amp;\quad \textrm{(assumming that $w_n$ represents the index of word in the vocabulary)} \\
+&amp; = \sum_{i=1}^{K} \phi_{ni} \sum_{j=1}^{V} [w_n=j] \log \beta_{ij}\\
+&amp; = \sum_{i=1}^{K} \sum_{j=1}^{V} \phi_{ni} [w_n=j] \log \beta_{ij} \tag{5} \\
+&amp;\\
+&amp; \mathrm{E}_{q} \log Dir(\theta;\gamma) \\
+&amp; = \mathrm{E}_{q} \Big[\sum_{k=1}^{K} (\gamma_k - 1) \log \theta_k + \log \Gamma(\sum_{k=1}^{K}\gamma_k) - \sum_{k=1}^{K}\log\Gamma(\gamma_k)\Big] \\
+&amp; = \sum_{k=1}^{K}(\gamma_k - 1) \mathrm{E}_{\theta \sim Dir(\theta;\gamma)} \log\theta_k + \log \Gamma(\sum_{k=1}^{K}\gamma_k) - \sum_{k=1}^{K}\log\Gamma(\alpha_k) \\
+&amp; = \sum_{k=1}^{K}(\gamma_k - 1) (\Psi(\gamma_k) - \Psi(\sum_{j=1}^{K}\gamma_j)) + \log \Gamma(\sum_{k=1}^{K}\gamma_k) - \sum_{k=1}^{K}\log\Gamma(\gamma_k) \tag{6} \\
+&amp;\\
+&amp; \mathrm{E}_{q} \log q(z_n; \phi_n) \\
+&amp; = \mathrm{E}_{z_n \sim Cat(z_n;\phi_n)} \log Cat(z_n;\phi_n) \\
+&amp; = \mathrm{E}_{z_n \sim Cat(z_n;\phi_n)} \sum_{j=1}^{K}[z_n = j]\log \phi_{nj} \\
+&amp; = \sum_{i=1}^{K} \phi_{ni} \sum_{j=1}^{K} [i=j] \log \phi_{nj} \\
+&amp; = \sum_{i=1}^{K} \phi_{ni} \log \phi_{ni} \tag{7}
+\end{align}
+&lt;/div&gt;
+&lt;p&gt;Substituting $(3), (4), (5), (6), (7)$ into $(1)$, the ELBO becomes&lt;/p&gt;
+&lt;div&gt;
+\begin{align}
+L&amp;(\gamma, \phi;\alpha, \beta) \\
+= &amp;\sum_{k=1}^{K}(\alpha_k - 1) (\Psi(\gamma_k) - \Psi(\sum_{j=1}^{K}\gamma_j)) + \log \Gamma(\sum_{k=1}^{K}\alpha_k) - \sum_{k=1}^{K}\log\Gamma(\alpha_k) \\
+&amp; + \sum_{n=1}^{N} \sum_{i=1}^{K} \phi_{ni}(\Psi(\gamma_i) - \Psi(\sum_{j=1}^{K}\gamma_j)) \\
+&amp; + \sum_{n=1}^{N} \sum_{i=1}^{K} \sum_{j=1}^{V} \phi_{ni} [w_n = j]\log \beta_{ij}\\
+&amp; - \sum_{k=1}^{K}(\gamma_k - 1) (\Psi(\gamma_k) - \Psi(\sum_{j=1}^{K}\gamma_j)) - \log \Gamma(\sum_{k=1}^{K}\gamma_k) + \sum_{k=1}^{K}\log\Gamma(\gamma_k) \\
+&amp; - \sum_{n=1}^{N} \sum_{i=1}^{K} \phi_{ni} \log \phi_{ni} \tag{8}
+\end{align}
+&lt;/div&gt;
+which is now much easier to deal with.
+&lt;h2 id=&#34;preparing-data&#34;&gt;Preparing data&lt;/h2&gt;
+&lt;p&gt;Now we dive into the code. For illustration purpose, we use a public dataset from Kaggle. The dataset contains news headlines crawled from ABC News. Here is some code to load the data&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;news_data_path = &amp;quot;abcnews-date-text.csv&amp;quot;
+
+gdown.download(&amp;quot;https://drive.google.com/uc?id=1BGaMi0XURByE0WM4omDwskoq83WnTXyx&amp;quot;,
+               news_data_path,
+               quiet=False)
+
+data_df = pd.read_csv(news_data_path, error_bad_lines=False);
+data_df.head()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;A small piece of the data will look like this&lt;/p&gt;
+&lt;div&gt;
+&lt;style scoped&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+&lt;pre&gt;&lt;code&gt;.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+
+td, th, tr {
+    border: 1px solid #ddd;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;/style&gt;&lt;/p&gt;
+&lt;table border=&#34;0&#34; class=&#34;dataframe&#34; style=&#34;display:table;&#34;&gt;
+  &lt;thead&gt;
+    &lt;tr style=&#34;text-align: right;&#34;&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;publish_date&lt;/th&gt;
+      &lt;th&gt;headline_text&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;20030219&lt;/td&gt;
+      &lt;td&gt;aba decides against community broadcasting lic...&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;20030219&lt;/td&gt;
+      &lt;td&gt;act fire witnesses must be aware of defamation&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;20030219&lt;/td&gt;
+      &lt;td&gt;a g calls for infrastructure protection summit&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;20030219&lt;/td&gt;
+      &lt;td&gt;air nz staff in aust strike for pay rise&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;td&gt;20030219&lt;/td&gt;
+      &lt;td&gt;air nz strike to affect australian travellers&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;h2 id=&#34;preprocessing-data&#34;&gt;Preprocessing data&lt;/h2&gt;
+&lt;p&gt;There is a total of $1186018$ headlines in the original dataset but for a quick experiment, we extract the very first $10000$ headlines only&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;data = data_df[&amp;quot;headline_text&amp;quot;][:10000]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Then, we need to do some preprocessing stuff&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Remove the stop words using &lt;code&gt;stopwords&lt;/code&gt; from &lt;code&gt;nltk&lt;/code&gt; package&lt;/li&gt;
+&lt;li&gt;Build the vocabulary with &lt;code&gt;word2idx&lt;/code&gt; and &lt;code&gt;idx2word&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Create the &lt;code&gt;corpus&lt;/code&gt; containing all documents&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;corpus = []
+word2idx = {}
+idx2word = {}
+
+for line in data:
+    doc = [w for w in line.split(&#39; &#39;) if w not in stopwords.words()]
+    for word in doc:
+        if word not in word2idx:
+            word2idx[word] = len(word2idx)
+            idx2word[len(idx2word)] = word
+
+    corpus.append(doc)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;global-configuration&#34;&gt;Global configuration&lt;/h2&gt;
+&lt;p&gt;Next, we set up some global configuration before implementing LDA model.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;max_doc_length = 0
+for doc in corpus:
+    if max_doc_length &amp;lt; len(doc):
+        max_doc_length = len(doc)
+
+class Config:
+    corpus = corpus
+    word2idx = word2idx
+    idx2word = idx2word
+    num_vocabs = len(word2idx) # V
+    max_doc_length = max_doc_length # N
+    va_threshold = 1e-6 # threshold for variational infrence
+    em_threshold = 1e-4 # threshold for variational EM
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;lda-model-definition&#34;&gt;LDA model definition&lt;/h2&gt;
+&lt;p&gt;We then define an &lt;code&gt;LDA&lt;/code&gt; class to handle the main logic of Variational EM&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;class LDA(object):
+    def __init__(self,
+                 corpus,
+                 num_topics,
+                 num_words,
+                 num_vocabs,
+                 word2idx,
+                 idx2word):
+
+        self.corpus = corpus # collection of documents
+        self.K = num_topics # number of topics in total
+        self.V = num_vocabs # number of vocabulary
+
+        self.word2idx = word2idx
+        self.idx2word = idx2word
+
+        # model parameters
+        self.alpha = None
+        self.beta = None
+
+        # sufficient statistics
+        self.beta_ss = None
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;compute-the-log-likelihood&#34;&gt;Compute the log-likelihood&lt;/h2&gt;
+&lt;p&gt;Evaluating $(8)$ requires the computation of Gamma and Digamma functions. Fortunately, we can make use of the &lt;code&gt;scipy&lt;/code&gt; package to handle the heavy work.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from scipy.special import digamma, loggamma
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We can then implement the &lt;code&gt;log_likelihood&lt;/code&gt; function for current document and variational parameters $\gamma$, $\phi$; given model parameters $\alpha, \beta$&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def log_likelihood(doc,
+                   gamma,
+                   phi):
+    &amp;quot;&amp;quot;&amp;quot;
+    Compute the (approximate) log-likelihood
+    &amp;quot;&amp;quot;&amp;quot;
+    # (K,)
+    digamma_derivative = digamma(gamma) - digamma(np.sum(gamma))
+
+    l1 = loggamma(np.sum(self.alpha)) - np.sum(loggamma(self.alpha)) \
+        + np.sum((self.alpha - 1) * digamma_derivative) \
+        - loggamma(np.sum(gamma)) + np.sum(loggamma(gamma)) \
+        - np.sum((gamma - 1) * digamma_derivative)
+
+    l2 = 0
+    for i in range(self.K):
+        for n in range(len(doc)):
+            if phi[n, i] &amp;gt; 0:
+                l2 += phi[n, i] * (digamma_derivative[i] \
+                    + np.log(self.beta[i, self.word2idx[doc[n]]]) \
+                    - np.log(phi[n, i]))
+
+    return l1 + l2
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;variational-inference&#34;&gt;Variational Inference&lt;/h2&gt;
+&lt;p&gt;The goal of variational inference is to find the optimal $\phi^*, \gamma^*$ for the mean-field distribution $q(z, \theta; \gamma, \phi)$. By taking derivatives of $(8)$ with respect to $\phi, \gamma$ and set it to zero, we obtain coordinate updates
+$$
+\phi_{ni} \propto \beta_{iv} \exp(\Psi(\gamma_i) - \Psi(\sum_{j=1}^{K}\gamma_j))
+$$&lt;/p&gt;
+&lt;p&gt;$$
+\gamma_i = \alpha_i + \sum_{n=1}^{N} \phi_{ni}
+$$&lt;/p&gt;
+&lt;p&gt;where $v$ denotes the unique index of the word $w_n$ in the vocabulary. For more detailed derivation of these updates, we refer to Appendix A (section 3.1, 3.2) of the original LDA paper. Then, we can implement the coordinate ascent algorithm for variational inference as follows&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def variational_inference(self, doc):
+    &amp;quot;&amp;quot;&amp;quot;
+    Do the variational inference for each document
+    &amp;quot;&amp;quot;&amp;quot;
+
+    N = len(doc)
+    # init variational parameters
+    # (N, K)
+    phi = np.full(N, self.K), 1.0 / self.K)
+    # (K,)
+    gamma = self.alpha + N * 1.0 / self.K
+
+    old_likelihood = -math.inf
+
+    # coordinate ascent
+    while True:
+        # update phi
+        for n in range(N):
+            for i in range(self.K):
+                phi[n, i] = self.beta[i, self.word2idx[doc[n]]] \
+                * np.exp(digamma(gamma[i]))
+
+        # normalize phi   
+        phi = phi / np.sum(phi, axis=1, keepdims=True)
+
+        # update gamma
+        gamma = self.alpha + np.sum(phi, axis=0)
+
+        likelihood = self.log_likelihood(doc, gamma, phi)
+
+        converged = (old_likelihood - likelihood) / likelihood
+
+        old_likelihood = likelihood
+
+        if converged &amp;lt; cfg.va_threshold:
+            break
+
+    return phi, gamma, likelihood
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;variational-em&#34;&gt;Variational EM&lt;/h2&gt;
+&lt;p&gt;Recall that the Variational EM algorithm consisting of&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Initialize parameters $\alpha^{(0)}, \beta^{(0)}$&lt;/li&gt;
+&lt;li&gt;For each loop $t$ start from $0$
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;E step&lt;/strong&gt;: For each document $d$, obtain the optimal $\gamma^{(d)}, \phi^{(d)}$ of the variational distribution $q(z, \theta; \gamma, \phi) = q(\theta;\gamma)\prod_{n=1}^{N}q(z_n;\phi_n)$&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;M step&lt;/strong&gt;: Maximize the expected log-likelihood (up to some constant)
+  &lt;div&gt;$$
+  \mathop{max}_{{\alpha^{(t+1)}, \beta^{(t+1)}}} \sum_{d=1}^{M} \mathrm{E}_{z, \theta \sim q(z, \theta; \gamma^{(d)}, \phi^{(d)})} {\log p(w, z, \theta ;{{\alpha^{(t+1)}, \beta^{(t+1)}}}})
+  $$&lt;/div&gt;
+&lt;/li&gt;
+&lt;li&gt;If the convergence standard is satisfied, stop&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Hence, the Variational EM algorithm can be implemented as function &lt;code&gt;variational_em&lt;/code&gt; below&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def variational_em(self):
+    &amp;quot;&amp;quot;&amp;quot;
+    Fit LDA model using variational EM
+    &amp;quot;&amp;quot;&amp;quot;
+
+    self.init_param()
+
+    old_llhood = -math.inf
+
+    ite = 0
+
+    while True:
+        ite += 1
+        llhood = self.variational_e_step(self.corpus)
+        self.m_step()
+
+        converged = (old_llhood - llhood) / llhood
+        old_llhood = llhood
+
+        print(&amp;quot;STEP EM: {} - Likelihood: {} - Converged rate: {}&amp;quot;.\
+            format(ite, llhood, converged))
+
+        if converged &amp;lt; cfg.em_threshold:
+            break
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The function &lt;code&gt;init_param&lt;/code&gt; is to initialize parameter $\alpha, \beta$&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt; def init_param(self):
+    &amp;quot;&amp;quot;&amp;quot;
+    Init parameters
+    &amp;quot;&amp;quot;&amp;quot;
+    self.alpha = np.full(self.K, 1.0)
+    self.beta = np.random.randint(1, 50, (self.K, self.V))
+    self.beta = self.beta / np.sum(self.beta, axis=1, keepdims=True)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Then, two functions &lt;code&gt;variational_e_step&lt;/code&gt; and &lt;code&gt;m_step&lt;/code&gt; are corresponding to &lt;code&gt;E-step&lt;/code&gt; and &lt;code&gt;M-step&lt;/code&gt; of the algorithm, respectively.&lt;/p&gt;
+&lt;h3 id=&#34;e-step&#34;&gt;E Step&lt;/h3&gt;
+&lt;p&gt;In the &lt;code&gt;E-step&lt;/code&gt;, we perform variational inference for each document $d$ to obtain $\phi^{(d)}, \gamma^{(d)}$&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def variational_e_step(self, corpus):
+    &amp;quot;&amp;quot;&amp;quot;
+    Approximate the posterior distribution
+
+    : corpus - list of documents
+
+    &amp;quot;&amp;quot;&amp;quot;
+
+    total_likelihood = 0
+
+    self.beta_ss = np.zeros((self.K, self.V)) + 1e-20
+
+    for i, doc in enumerate(corpus):
+        phi, gamma, doc_likelihood = self.variational_inference(doc)
+
+        # add to total likelihood
+        total_likelihood += doc_likelihood
+
+        # update statistics
+        for n in range(len(doc)):
+            for k in range(self.K):
+                self.beta_ss[k, self.word2idx[doc[n]]] += phi[n, k]
+
+    return total_likelihood
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;m-step&#34;&gt;M Step&lt;/h3&gt;
+&lt;p&gt;In &lt;code&gt;M-step&lt;/code&gt;, we obtain optimal $\alpha, \beta$. Though, the optimal update for $\alpha$ is kind of complex (Appendix A, section 4.2). Thus, for a simple illustration, we consider &lt;code&gt;alpha&lt;/code&gt; as fixed in the scope of this blog. Setting the derivate of the ELBO $(8)$ with respect to $\beta$ to zero, we yield&lt;/p&gt;
+&lt;p&gt;$$
+\beta_{ij} \propto \sum_{d=1}^{M} \sum_{n=1}^{N} \phi_{ni}^{(d)} w_{n}^{j} \quad \textrm{(Appendix A, section 4.1)}
+$$&lt;/p&gt;
+&lt;p&gt;For coding convenience, we implement these updates right in the function &lt;code&gt;variational_e_step&lt;/code&gt; and store these unnormalized results in the variable &lt;code&gt;self.beta_ss&lt;/code&gt;. Hence, in the &lt;code&gt;M-step&lt;/code&gt;, we just normalize and assign it to &lt;code&gt;self.beta&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def m_step(self):
+    &amp;quot;&amp;quot;&amp;quot;
+    Maximum likelihood estimation
+    &amp;quot;&amp;quot;&amp;quot;
+
+    # alpha is considered fixed known constant, hence skip here
+    # self.alpha
+
+    # (K, V)
+    self.beta = self.beta_ss / np.sum(self.beta_ss, axis=1, keepdims=True)
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;training&#34;&gt;Training&lt;/h2&gt;
+&lt;p&gt;Now everything is setup. We then run the following code for training LDA&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;model = LDA(corpus=cfg.corpus,
+            num_topics=10,
+            num_words=cfg.max_doc_length,
+            num_vocabs=cfg.num_vocabs,
+            word2idx=cfg.word2idx,
+            idx2word=cfg.idx2word)
+
+model.variational_em()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The output will be like&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;STEP EM: 1 - Likelihood: -357373.4968604174 - Converged rate: 1.798192951590305
+STEP EM: 2 - Likelihood: -303489.3001228882 - Converged rate: 0.1775489175918577
+STEP EM: 3 - Likelihood: -299860.97107707005 - Converged rate: 0.012100037670076039
+STEP EM: 4 - Likelihood: -294189.9329730006 - Converged rate: 0.019276791856062188
+STEP EM: 5 - Likelihood: -287787.73198189674 - Converged rate: 0.02224626097510863
+STEP EM: 6 - Likelihood: -282157.87102739484 - Converged rate: 0.0199528757925569
+STEP EM: 7 - Likelihood: -277893.16594093136 - Converged rate: 0.015346563388931922
+...........................................
+STEP EM: 32 - Likelihood: -264753.70609608945 - Converged rate: 0.00017462683995490507
+STEP EM: 33 - Likelihood: -264713.55673188687 - Converged rate: 0.00015167097861647994
+STEP EM: 34 - Likelihood: -264676.9793795508 - Converged rate: 0.0001381961983313688
+STEP EM: 35 - Likelihood: -264643.03067223117 - Converged rate: 0.00012828113112741676
+STEP EM: 36 - Likelihood: -264611.45086573914 - Converged rate: 0.000119344066134337
+STEP EM: 37 - Likelihood: -264582.51780543657 - Converged rate: 0.0001093536358432039
+STEP EM: 38 - Likelihood: -264556.4361364331 - Converged rate: 9.85864089506385e-05
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;result&#34;&gt;Result&lt;/h2&gt;
+&lt;p&gt;After training, we can extract the top words of the 10 &amp;ldquo;abstract&amp;rdquo; topics.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;topk = 10
+
+indices = np.argpartition(model.beta, -topk, axis=1)[:, -topk:]
+
+topic_top_words_dict = {}
+for k in range(model.K):
+    topic_top_words_dict[&amp;quot;Topic {}&amp;quot;.format(k + 1)] = \
+        [model.idx2word[idx] for idx in indices[k]]
+
+topic_df = pd.DataFrame(topic_top_words_dict)
+topic_df
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div&gt;
+&lt;style scoped&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+&lt;pre&gt;&lt;code&gt;.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;/style&gt;&lt;/p&gt;
+&lt;table border=&#34;0&#34; class=&#34;dataframe&#34;&gt;
+  &lt;thead&gt;
+    &lt;tr style=&#34;text-align: right;&#34;&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;Topic 1&lt;/th&gt;
+      &lt;th&gt;Topic 2&lt;/th&gt;
+      &lt;th&gt;Topic 3&lt;/th&gt;
+      &lt;th&gt;Topic 4&lt;/th&gt;
+      &lt;th&gt;Topic 5&lt;/th&gt;
+      &lt;th&gt;Topic 6&lt;/th&gt;
+      &lt;th&gt;Topic 7&lt;/th&gt;
+      &lt;th&gt;Topic 8&lt;/th&gt;
+      &lt;th&gt;Topic 9&lt;/th&gt;
+      &lt;th&gt;Topic 10&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;air&lt;/td&gt;
+      &lt;td&gt;murder&lt;/td&gt;
+      &lt;td&gt;gets&lt;/td&gt;
+      &lt;td&gt;continue&lt;/td&gt;
+      &lt;td&gt;denies&lt;/td&gt;
+      &lt;td&gt;tas&lt;/td&gt;
+      &lt;td&gt;community&lt;/td&gt;
+      &lt;td&gt;high&lt;/td&gt;
+      &lt;td&gt;act&lt;/td&gt;
+      &lt;td&gt;lead&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;takes&lt;/td&gt;
+      &lt;td&gt;probe&lt;/td&gt;
+      &lt;td&gt;season&lt;/td&gt;
+      &lt;td&gt;protesters&lt;/td&gt;
+      &lt;td&gt;farmers&lt;/td&gt;
+      &lt;td&gt;south&lt;/td&gt;
+      &lt;td&gt;public&lt;/td&gt;
+      &lt;td&gt;ban&lt;/td&gt;
+      &lt;td&gt;three&lt;/td&gt;
+      &lt;td&gt;australian&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;baghdad&lt;/td&gt;
+      &lt;td&gt;charged&lt;/td&gt;
+      &lt;td&gt;trial&lt;/td&gt;
+      &lt;td&gt;water&lt;/td&gt;
+      &lt;td&gt;vic&lt;/td&gt;
+      &lt;td&gt;final&lt;/td&gt;
+      &lt;td&gt;go&lt;/td&gt;
+      &lt;td&gt;work&lt;/td&gt;
+      &lt;td&gt;forces&lt;/td&gt;
+      &lt;td&gt;union&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;election&lt;/td&gt;
+      &lt;td&gt;aust&lt;/td&gt;
+      &lt;td&gt;saddam&lt;/td&gt;
+      &lt;td&gt;found&lt;/td&gt;
+      &lt;td&gt;korea&lt;/td&gt;
+      &lt;td&gt;clash&lt;/td&gt;
+      &lt;td&gt;water&lt;/td&gt;
+      &lt;td&gt;continues&lt;/td&gt;
+      &lt;td&gt;claims&lt;/td&gt;
+      &lt;td&gt;four&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;td&gt;first&lt;/td&gt;
+      &lt;td&gt;pm&lt;/td&gt;
+      &lt;td&gt;home&lt;/td&gt;
+      &lt;td&gt;back&lt;/td&gt;
+      &lt;td&gt;boost&lt;/td&gt;
+      &lt;td&gt;get&lt;/td&gt;
+      &lt;td&gt;missing&lt;/td&gt;
+      &lt;td&gt;wins&lt;/td&gt;
+      &lt;td&gt;dead&lt;/td&gt;
+      &lt;td&gt;minister&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;5&lt;/th&gt;
+      &lt;td&gt;coast&lt;/td&gt;
+      &lt;td&gt;crash&lt;/td&gt;
+      &lt;td&gt;top&lt;/td&gt;
+      &lt;td&gt;plan&lt;/td&gt;
+      &lt;td&gt;urged&lt;/td&gt;
+      &lt;td&gt;world&lt;/td&gt;
+      &lt;td&gt;new&lt;/td&gt;
+      &lt;td&gt;set&lt;/td&gt;
+      &lt;td&gt;council&lt;/td&gt;
+      &lt;td&gt;mp&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;6&lt;/th&gt;
+      &lt;td&gt;oil&lt;/td&gt;
+      &lt;td&gt;may&lt;/td&gt;
+      &lt;td&gt;win&lt;/td&gt;
+      &lt;td&gt;anti&lt;/td&gt;
+      &lt;td&gt;govt&lt;/td&gt;
+      &lt;td&gt;call&lt;/td&gt;
+      &lt;td&gt;killed&lt;/td&gt;
+      &lt;td&gt;calls&lt;/td&gt;
+      &lt;td&gt;support&lt;/td&gt;
+      &lt;td&gt;qld&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;7&lt;/th&gt;
+      &lt;td&gt;coalition&lt;/td&gt;
+      &lt;td&gt;iraqi&lt;/td&gt;
+      &lt;td&gt;still&lt;/td&gt;
+      &lt;td&gt;death&lt;/td&gt;
+      &lt;td&gt;iraq&lt;/td&gt;
+      &lt;td&gt;cup&lt;/td&gt;
+      &lt;td&gt;fire&lt;/td&gt;
+      &lt;td&gt;funds&lt;/td&gt;
+      &lt;td&gt;us&lt;/td&gt;
+      &lt;td&gt;british&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;8&lt;/th&gt;
+      &lt;td&gt;howard&lt;/td&gt;
+      &lt;td&gt;court&lt;/td&gt;
+      &lt;td&gt;two&lt;/td&gt;
+      &lt;td&gt;sars&lt;/td&gt;
+      &lt;td&gt;north&lt;/td&gt;
+      &lt;td&gt;australia&lt;/td&gt;
+      &lt;td&gt;rain&lt;/td&gt;
+      &lt;td&gt;security&lt;/td&gt;
+      &lt;td&gt;troops&lt;/td&gt;
+      &lt;td&gt;wa&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;9&lt;/th&gt;
+      &lt;td&gt;nsw&lt;/td&gt;
+      &lt;td&gt;police&lt;/td&gt;
+      &lt;td&gt;woman&lt;/td&gt;
+      &lt;td&gt;protest&lt;/td&gt;
+      &lt;td&gt;health&lt;/td&gt;
+      &lt;td&gt;report&lt;/td&gt;
+      &lt;td&gt;hospital&lt;/td&gt;
+      &lt;td&gt;drought&lt;/td&gt;
+      &lt;td&gt;says&lt;/td&gt;
+      &lt;td&gt;group&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;p&gt;Full code available 
+&lt;a href=&#34;https://colab.research.google.com/drive/15nqnmXiA3RnfiYPHDrRVMjJVTdszaGJ-?usp=sharing&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;References&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Latent Dirichlet Allocation. David M. Blei, Andrew Y. Ng, Michael I. Jordan. 2003 (
+&lt;a href=&#34;http://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;pdf&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;Dataset (
+&lt;a href=&#34;https://www.kaggle.com/therohk/million-headlines&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;link&lt;/a&gt;)&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Variational Expectation Maximization for Latent Dirichlet Allocation - Part 1</title>
       <link>https://azraelzhor.github.io/post/lda-part-1/</link>
       <pubDate>Fri, 20 Mar 2020 00:00:00 +0000</pubDate>
       <guid>https://azraelzhor.github.io/post/lda-part-1/</guid>
@@ -22,7 +662,7 @@
 &lt;p&gt;One of the most common topic models is Latent Dirichlet Allocation (LDA), was introduced long time ago (D. Blei et al, 2003) but is still powerful now. LDA is a complex, hierarchical latent variable model with some probabilistic assumptions over it. Thus, before diving into detail of LDA, let us review some knowledges about &lt;code&gt;latent variable model&lt;/code&gt; and how to handle some problems associated with it.&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; My blog on LDA contains two parts. This is the first part about theoretical understanding of LDA. The  second part involves a basic implementation of LDA, which you can check out 
-&lt;a href=&#34;&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;a href=&#34;https://azraelzhor.github.io/post/lda-part-2/&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h2 id=&#34;latent-variable-model&#34;&gt;Latent variable model&lt;/h2&gt;
 &lt;p&gt;A latent variable model assumes that data, which we can observe, is controlled by some underlying unknown factor. This dependency is often parameterized by a known distribution along with its associated parameters, known as model parameter. A simple latent variable model consists of three parts: observed data $x$, latent variable $z$ that controls $x$ and model parameter $\theta$ like the picture below.
@@ -257,16 +897,18 @@ $$ --&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;E step&lt;/strong&gt;:
 &lt;ul&gt;
-&lt;li&gt;For each document $d$, use mean-field approximation to approximate the posterior $p(z^{(d)}, \theta^{(d)}|w^{(d)};{{\alpha^{(t)}, \beta^{(t)}}})$:
+&lt;li&gt;For each document $d$
 &lt;ul&gt;
-&lt;li&gt;Introduce the mean-field $q(z, \theta; \gamma, \phi) = q(\theta;\gamma)\prod_{i=1}^{N}q(z_i;\phi_i)$&lt;/li&gt;
-&lt;li&gt;Use coordinate ascent update algorithm to yield optimal $\gamma^*, \phi^*$&lt;/li&gt;
+&lt;li&gt;Introduce the mean-field $q(z, \theta; \gamma, \phi) = q(\theta;\gamma)\prod_{i=1}^{N}q(z_i;\phi_i)$ to approximate the posterior $p(z^{(d)}, \theta^{(d)}|w^{(d)};{{\alpha^{(t)}, \beta^{(t)}}})$&lt;/li&gt;
+&lt;li&gt;Use coordinate ascent update algorithm to yield optimal $\gamma^{(d)}, \phi^{(d)}$&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;M step&lt;/strong&gt;: Maximize the expected log-likelihood
-  &lt;div&gt;$\mathop{max}_{{\alpha^{(t+1)}, \beta^{(t+1)}}} \mathrm{E}_{z, \theta \sim q(z, \theta; \gamma^{*}, \phi^{*})} {p(w, z, \theta ;{{\alpha^{(t+1)}, \beta^{(t+1)}}}})$&lt;/div&gt;
+&lt;li&gt;&lt;strong&gt;M step&lt;/strong&gt;: Maximize the expected log-likelihood (up to some constant) with respect to $\alpha, \beta$
+  &lt;div&gt;$$
+  \mathop{max}_{{\alpha^{(t+1)}, \beta^{(t+1)}}} \sum_{d=1}^{M} \mathrm{E}_{z, \theta \sim q(z, \theta; \gamma^{(d)}, \phi^{(d)})} {\log p(w, z, \theta ;{{\alpha^{(t+1)}, \beta^{(t+1)}}}})
+  $$&lt;/div&gt;
 &lt;/li&gt;
 &lt;li&gt;If the convergence standard is satisfied, stop&lt;/li&gt;
 &lt;/ul&gt;

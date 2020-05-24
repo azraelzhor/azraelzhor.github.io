@@ -234,7 +234,7 @@
   
   <meta property="og:site_name" content="Thang Le">
   <meta property="og:url" content="https://azraelzhor.github.io/post/lda-part-1/">
-  <meta property="og:title" content="Variational Expectation Maximization for Latent Dirichlet Allocation - Part One | Thang Le">
+  <meta property="og:title" content="Variational Expectation Maximization for Latent Dirichlet Allocation - Part 1 | Thang Le">
   <meta property="og:description" content="Text data is everywhere. When having massive amounts of them, a need naturally arises is that we want them to be organized efficiently. A naive way is to organize them based on topics, meaning that text covering the same topics should be put into the same groups. The problem is that we do not know which topics a text document belongs to and manually labeling topics for all of them is very expensive."><meta property="og:image" content="img/map[gravatar:%!s(bool=true) shape:circle]">
   <meta property="twitter:image" content="img/map[gravatar:%!s(bool=true) shape:circle]"><meta property="og:locale" content="en-us">
   
@@ -267,7 +267,7 @@
     "@type": "WebPage",
     "@id": "https://azraelzhor.github.io/post/lda-part-1/"
   },
-  "headline": "Variational Expectation Maximization for Latent Dirichlet Allocation - Part One",
+  "headline": "Variational Expectation Maximization for Latent Dirichlet Allocation - Part 1",
   
   "datePublished": "2020-03-20T00:00:00Z",
   "dateModified": "2020-03-20T00:00:00Z",
@@ -303,7 +303,7 @@
 
 
 
-  <title>Variational Expectation Maximization for Latent Dirichlet Allocation - Part One | Thang Le</title>
+  <title>Variational Expectation Maximization for Latent Dirichlet Allocation - Part 1 | Thang Le</title>
 
 </head>
 
@@ -580,7 +580,7 @@
   
   
 <div class="article-container pt-3">
-  <h1>Variational Expectation Maximization for Latent Dirichlet Allocation - Part One</h1>
+  <h1>Variational Expectation Maximization for Latent Dirichlet Allocation - Part 1</h1>
 
   
 
@@ -650,7 +650,7 @@
 <p>One of the most common topic models is Latent Dirichlet Allocation (LDA), was introduced long time ago (D. Blei et al, 2003) but is still powerful now. LDA is a complex, hierarchical latent variable model with some probabilistic assumptions over it. Thus, before diving into detail of LDA, let us review some knowledges about <code>latent variable model</code> and how to handle some problems associated with it.</p>
 <blockquote>
 <p><strong>Note:</strong> My blog on LDA contains two parts. This is the first part about theoretical understanding of LDA. The  second part involves a basic implementation of LDA, which you can check out 
-<a href="">here</a>.</p>
+<a href="https://azraelzhor.github.io/post/lda-part-2/">here</a>.</p>
 </blockquote>
 <h2 id="latent-variable-model">Latent variable model</h2>
 <p>A latent variable model assumes that data, which we can observe, is controlled by some underlying unknown factor. This dependency is often parameterized by a known distribution along with its associated parameters, known as model parameter. A simple latent variable model consists of three parts: observed data $x$, latent variable $z$ that controls $x$ and model parameter $\theta$ like the picture below.
@@ -885,16 +885,18 @@ $$ -->
 <ul>
 <li><strong>E step</strong>:
 <ul>
-<li>For each document $d$, use mean-field approximation to approximate the posterior $p(z^{(d)}, \theta^{(d)}|w^{(d)};{{\alpha^{(t)}, \beta^{(t)}}})$:
+<li>For each document $d$
 <ul>
-<li>Introduce the mean-field $q(z, \theta; \gamma, \phi) = q(\theta;\gamma)\prod_{i=1}^{N}q(z_i;\phi_i)$</li>
-<li>Use coordinate ascent update algorithm to yield optimal $\gamma^*, \phi^*$</li>
+<li>Introduce the mean-field $q(z, \theta; \gamma, \phi) = q(\theta;\gamma)\prod_{i=1}^{N}q(z_i;\phi_i)$ to approximate the posterior $p(z^{(d)}, \theta^{(d)}|w^{(d)};{{\alpha^{(t)}, \beta^{(t)}}})$</li>
+<li>Use coordinate ascent update algorithm to yield optimal $\gamma^{(d)}, \phi^{(d)}$</li>
 </ul>
 </li>
 </ul>
 </li>
-<li><strong>M step</strong>: Maximize the expected log-likelihood
-  <div>$\mathop{max}_{{\alpha^{(t+1)}, \beta^{(t+1)}}} \mathrm{E}_{z, \theta \sim q(z, \theta; \gamma^{*}, \phi^{*})} {p(w, z, \theta ;{{\alpha^{(t+1)}, \beta^{(t+1)}}}})$</div>
+<li><strong>M step</strong>: Maximize the expected log-likelihood (up to some constant) with respect to $\alpha, \beta$
+  <div>$$
+  \mathop{max}_{{\alpha^{(t+1)}, \beta^{(t+1)}}} \sum_{d=1}^{M} \mathrm{E}_{z, \theta \sim q(z, \theta; \gamma^{(d)}, \phi^{(d)})} {\log p(w, z, \theta ;{{\alpha^{(t+1)}, \beta^{(t+1)}}}})
+  $$</div>
 </li>
 <li>If the convergence standard is satisfied, stop</li>
 </ul>
@@ -947,7 +949,7 @@ $$ -->
       
       
       <li>
-        <a href="https://twitter.com/intent/tweet?url=https://azraelzhor.github.io/post/lda-part-1/&amp;text=Variational%20Expectation%20Maximization%20for%20Latent%20Dirichlet%20Allocation%20-%20Part%20One" target="_blank" rel="noopener" class="share-btn-twitter">
+        <a href="https://twitter.com/intent/tweet?url=https://azraelzhor.github.io/post/lda-part-1/&amp;text=Variational%20Expectation%20Maximization%20for%20Latent%20Dirichlet%20Allocation%20-%20Part%201" target="_blank" rel="noopener" class="share-btn-twitter">
           <i class="fab fa-twitter"></i>
         </a>
       </li>
@@ -960,7 +962,7 @@ $$ -->
       
       
       <li>
-        <a href="https://www.facebook.com/sharer.php?u=https://azraelzhor.github.io/post/lda-part-1/&amp;t=Variational%20Expectation%20Maximization%20for%20Latent%20Dirichlet%20Allocation%20-%20Part%20One" target="_blank" rel="noopener" class="share-btn-facebook">
+        <a href="https://www.facebook.com/sharer.php?u=https://azraelzhor.github.io/post/lda-part-1/&amp;t=Variational%20Expectation%20Maximization%20for%20Latent%20Dirichlet%20Allocation%20-%20Part%201" target="_blank" rel="noopener" class="share-btn-facebook">
           <i class="fab fa-facebook"></i>
         </a>
       </li>
@@ -973,7 +975,7 @@ $$ -->
       
       
       <li>
-        <a href="mailto:?subject=Variational%20Expectation%20Maximization%20for%20Latent%20Dirichlet%20Allocation%20-%20Part%20One&amp;body=https://azraelzhor.github.io/post/lda-part-1/" target="_blank" rel="noopener" class="share-btn-email">
+        <a href="mailto:?subject=Variational%20Expectation%20Maximization%20for%20Latent%20Dirichlet%20Allocation%20-%20Part%201&amp;body=https://azraelzhor.github.io/post/lda-part-1/" target="_blank" rel="noopener" class="share-btn-email">
           <i class="fas fa-envelope"></i>
         </a>
       </li>
@@ -986,7 +988,7 @@ $$ -->
       
       
       <li>
-        <a href="https://www.linkedin.com/shareArticle?url=https://azraelzhor.github.io/post/lda-part-1/&amp;title=Variational%20Expectation%20Maximization%20for%20Latent%20Dirichlet%20Allocation%20-%20Part%20One" target="_blank" rel="noopener" class="share-btn-linkedin">
+        <a href="https://www.linkedin.com/shareArticle?url=https://azraelzhor.github.io/post/lda-part-1/&amp;title=Variational%20Expectation%20Maximization%20for%20Latent%20Dirichlet%20Allocation%20-%20Part%201" target="_blank" rel="noopener" class="share-btn-linkedin">
           <i class="fab fa-linkedin-in"></i>
         </a>
       </li>
@@ -999,7 +1001,7 @@ $$ -->
       
       
       <li>
-        <a href="https://web.whatsapp.com/send?text=Variational%20Expectation%20Maximization%20for%20Latent%20Dirichlet%20Allocation%20-%20Part%20One%20https://azraelzhor.github.io/post/lda-part-1/" target="_blank" rel="noopener" class="share-btn-whatsapp">
+        <a href="https://web.whatsapp.com/send?text=Variational%20Expectation%20Maximization%20for%20Latent%20Dirichlet%20Allocation%20-%20Part%201%20https://azraelzhor.github.io/post/lda-part-1/" target="_blank" rel="noopener" class="share-btn-whatsapp">
           <i class="fab fa-whatsapp"></i>
         </a>
       </li>
@@ -1012,7 +1014,7 @@ $$ -->
       
       
       <li>
-        <a href="https://service.weibo.com/share/share.php?url=https://azraelzhor.github.io/post/lda-part-1/&amp;title=Variational%20Expectation%20Maximization%20for%20Latent%20Dirichlet%20Allocation%20-%20Part%20One" target="_blank" rel="noopener" class="share-btn-weibo">
+        <a href="https://service.weibo.com/share/share.php?url=https://azraelzhor.github.io/post/lda-part-1/&amp;title=Variational%20Expectation%20Maximization%20for%20Latent%20Dirichlet%20Allocation%20-%20Part%201" target="_blank" rel="noopener" class="share-btn-weibo">
           <i class="fab fa-weibo"></i>
         </a>
       </li>
@@ -1166,6 +1168,13 @@ $$ -->
 <div class="article-widget">
   
 <div class="post-nav">
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Next</div>
+    <a href="/post/lda-part-2/" rel="next">Variational Expectation Maximization for Latent Dirichlet Allocation - Part 2</a>
+  </div>
   
   
   

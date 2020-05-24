@@ -240,7 +240,7 @@
   <meta property="og:description" content="Who am I in this manipulated world? A lost sheep seeking for piousness"><meta property="og:image" content="img/map[gravatar:%!s(bool=true) shape:circle]">
   <meta property="twitter:image" content="img/map[gravatar:%!s(bool=true) shape:circle]"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-03-20T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-05-12T00:00:00&#43;00:00">
   
 
   
@@ -511,7 +511,22 @@
     
     
     <div>
-      <h2><a href="/post/lda-part-1/" >Variational Expectation Maximization for Latent Dirichlet Allocation - Part One</a></h2>
+      <h2><a href="/post/lda-part-2/" >Variational Expectation Maximization for Latent Dirichlet Allocation - Part 2</a></h2>
+      <div class="article-style">
+        
+          After discussing LDA in the previous part, we now get our hands dirty by implementing the Variational EM algorithm. Recall that the goal is to estimate $\alpha, \beta$ that maximizes the ELBO
+ $$ \mathrm{E}_{q}\log p(w, \theta, z;\alpha, \beta) - \mathrm{E}_{q}\log {q(z, \theta;\gamma, \phi)} $$  where the joint likelihood and the variational distribution are factorized as follows
+$$ p(w, \theta, z; \alpha, \beta) = Dir(\theta;\alpha)\prod_{n=1}^{N}Cat(z_n;\theta) Cat(w_n;z_n, \beta) $$
+$$ q(z, \theta; \gamma, \phi) = Dir(\theta;\gamma)\prod_{n=1}^{N}Cat(z_n;\phi_n) $$
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
+      <h2><a href="/post/lda-part-1/" >Variational Expectation Maximization for Latent Dirichlet Allocation - Part 1</a></h2>
       <div class="article-style">
         
           Text data is everywhere. When having massive amounts of them, a need naturally arises is that we want them to be organized efficiently. A naive way is to organize them based on topics, meaning that text covering the same topics should be put into the same groups. The problem is that we do not know which topics a text document belongs to and manually labeling topics for all of them is very expensive.
